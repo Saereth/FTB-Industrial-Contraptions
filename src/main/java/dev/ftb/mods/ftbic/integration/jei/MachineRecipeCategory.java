@@ -4,6 +4,7 @@ import dev.ftb.mods.ftbic.FTBICConfig;
 import dev.ftb.mods.ftbic.block.ElectricBlockInstance;
 import dev.ftb.mods.ftbic.recipe.MachineRecipe;
 import dev.ftb.mods.ftbic.recipe.MachineRecipeType;
+import dev.ftb.mods.ftbic.util.FTBICUtils;
 import dev.ftb.mods.ftbic.util.IngredientWithCount;
 import dev.ftb.mods.ftbic.util.StackWithChance;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
@@ -42,7 +43,7 @@ public class MachineRecipeCategory extends AbstractRecipeCategory<RecipeHolder<M
 
 	public MachineRecipeCategory(MachineRecipeType type, ElectricBlockInstance machine, IGuiHelper helper, int maxInputs) {
 		super(jeiRecipeType(type),
-				Component.literal(machine.name),
+				Component.translatable("block.ftbic." + machine.id),
 				helper.createDrawableItemStack(new ItemStack(machine.item.get())),
 				widthFor(maxInputs),
 				HEIGHT);
@@ -103,7 +104,7 @@ public class MachineRecipeCategory extends AbstractRecipeCategory<RecipeHolder<M
 			double chance = out.chance();
 			if (chance < 1.0D) {
 				slot.addRichTooltipCallback((slotView, tooltip) ->
-						tooltip.add(Component.literal(String.format("Chance: %.1f%%", chance * 100D))
+						tooltip.add(Component.translatable("ftbic.jei.chance", FTBICUtils.fmtDouble(chance * 100D, 1))
 								.withStyle(ChatFormatting.GRAY)));
 			}
 			ox += 18;
@@ -125,8 +126,8 @@ public class MachineRecipeCategory extends AbstractRecipeCategory<RecipeHolder<M
 			double energyPerTick = machine.energyUsage.get();
 			long zaps = Math.round(ticks * energyPerTick);
 			double seconds = ticks / 20.0D;
-			tooltip.add(Component.literal(String.format("%.1fs · %,d zaps", seconds, zaps)));
-			tooltip.add(Component.literal(String.format("%.0f z/t", energyPerTick))
+			tooltip.add(Component.translatable("ftbic.jei.recipe_time_energy", FTBICUtils.fmtDouble(seconds, 1), FTBICUtils.fmtInt(zaps)));
+			tooltip.add(Component.translatable("ftbic.jei.energy_per_tick", FTBICUtils.fmtDouble(energyPerTick, 0))
 					.withStyle(ChatFormatting.DARK_GRAY));
 		}
 	}

@@ -3,6 +3,7 @@ package dev.ftb.mods.ftbic.integration.jei;
 import dev.ftb.mods.ftbic.block.FTBICElectricBlocks;
 import dev.ftb.mods.ftbic.recipe.AntimatterBoostRecipe;
 import dev.ftb.mods.ftbic.recipe.FTBICRecipes;
+import dev.ftb.mods.ftbic.util.FTBICUtils;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.widgets.IRecipeExtrasBuilder;
 import mezz.jei.api.helpers.IGuiHelper;
@@ -40,8 +41,7 @@ public class AntimatterBoostCategory extends AbstractRecipeCategory<RecipeHolder
 
 	@Override
 	public void createRecipeExtras(IRecipeExtrasBuilder builder, RecipeHolder<AntimatterBoostRecipe> holder, IFocusGroup focuses) {
-		String text = String.format("+%,.0f zaps boost", holder.value().boost());
-		builder.addText(Component.literal(text), 80, 9)
+		builder.addText(Component.translatable("ftbic.jei.boost", FTBICUtils.fmtInt(Math.round(holder.value().boost()))), 80, 9)
 				.setPosition(26, 9)
 				.setColor(0xFF0A7F0A);
 	}
