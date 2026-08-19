@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [26.1.2.10]
+
+### Fixed
+
+* **GUI and JEI text can now be translated.** Around 160 strings were hardcoded English. Added `ftbic.gui.*`, `ftbic.jei.*` and `ftbic.reactor.*` keys now.
+* JEI machine categories take their title from the machine's block translation key instead of its internal display name, so a translated machine name shows up in JEI too.
+* Numbers in JEI and GUI tooltips format through a single pair of helpers under `Locale.ROOT`, so decimal separators no longer follow the system locale and large zap counts are grouped consistently.
+
+### Added
+
+* **Japanese (ja_jp) translation** — 454 entries covering every block, item, tooltip and config string. Thanks to [@Nia1111](https://github.com/Nia1111) ([FTBTeam/FTB-Industrial-Contraptions#48](https://github.com/FTBTeam/FTB-Industrial-Contraptions/pull/48)).
+* **Chinese (zh_cn) translation** expanded from 142 to 424 entries, covering the newly translatable GUI and JEI text plus the reactor simulator. Thanks to [@xingluo01](https://github.com/xingluo01) for the translation and for the original localization work in [FTBTeam/FTB-Industrial-Contraptions#50](https://github.com/FTBTeam/FTB-Industrial-Contraptions/pull/50).
+
 ## [26.1.2.9]
 
 ### Fixed
