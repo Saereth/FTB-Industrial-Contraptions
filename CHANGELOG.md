@@ -30,6 +30,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * **GUI and JEI text can now be translated.** Around 160 strings were hardcoded English and no language file could reach them: every reactor component tooltip in JEI, the recipe time and energy readouts, machine progress and slot tooltips, the pump, quarry, solar panel and teleporter screens, and the whole reactor simulator UI (buttons, verdict lines, stats, preset management, and the per-component tooltips). All of them are `ic.gui.*`, `ic.jei.*` and `ic.reactor.*` keys now.
 * JEI machine categories take their title from the machine's block translation key instead of its internal display name, so a translated machine name shows up in JEI too.
+* Numbers in JEI and GUI tooltips format through a single pair of helpers under `Locale.ROOT`, so decimal separators no longer follow the system locale and large zap counts are grouped consistently.
 
 ### Added
 
