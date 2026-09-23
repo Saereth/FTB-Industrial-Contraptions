@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+* Lapis Lazuli ore can be macerated into dust again.
 * Crash when opening either centrifuge with an empty hand.
 * Unreadable text and clipped button labels, component names, and material counts in the Reactor Design panel.
 * I/O configuration forgetting the selected tab when reopened.
@@ -22,7 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 * Persistent input-slot locks, copied by Configuration Cards.
-* Batch Feeder for delivering complete ingredient sets to adjacent inventories.
+* Unpowered Batch Feeder for delivering complete item and fluid batches to adjacent machines.
 * Centrifuge fluid inputs and outputs, with three item outputs on the Advanced Centrifuge.
 * Advanced Centrifuge lava processing: one bucket yields two tin nuggets, one copper nugget, and a 25% chance of a gold nugget. Tin nuggets craft to and from ingots.
 * Configurable machine faces for item, fluid, and energy transfers.

@@ -2,7 +2,7 @@
   "type": "ftbic:macerating",
   "inputs": [
     {
-      "ingredient": "#c:ores/lapis_lazuli"
+      "ingredient": "#c:ores/lapis"
     }
   ],
   "outputs": [
