@@ -70,6 +70,7 @@ import net.minecraft.world.clock.WorldClocks;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -1007,6 +1008,60 @@ public class FTBICGameTestFunctions {
 		helper.assertTrue(inserted > 0D, "Battery should accept energy insertion");
 		helper.assertTrue(handler.getEnergy(battery) > before,
 				"Battery energy should increase (before=" + before + ", now=" + handler.getEnergy(battery) + ")");
+		helper.succeed();
+	}
+
+	static void chargePadChargesInsertedItems(GameTestHelper helper) {
+		helper.setBlock(CENTER.below(), Blocks.STONE);
+		helper.setBlock(CENTER, FTBICElectricBlocks.CHARGE_PAD.block.get());
+		ChargePadBlockEntity pad = helper.getBlockEntity(CENTER, ChargePadBlockEntity.class);
+		helper.assertValueEqual(4, pad.getSlotCount(), "Charge Pad slot count");
+
+		ItemStack[] items = {
+				new ItemStack(FTBICItems.CARBON_CHESTPLATE.get()),
+				new ItemStack(FTBICItems.QUANTUM_CHESTPLATE.get()),
+				new ItemStack(FTBICItems.LV_BATTERY.get()),
+				new ItemStack(FTBICItems.MV_BATTERY.get())
+		};
+		for (int i = 0; i < items.length; i++) {
+			ItemStack stack = items[i];
+			helper.assertTrue(pad.isItemValid(i, stack), "Charge slot should accept " + stack.getItem());
+			EnergyItemHandler handler = (EnergyItemHandler) stack.getItem();
+			handler.setEnergy(stack, handler.getEnergyCapacity(stack) - 100D);
+			pad.setStackInSlot(i, stack);
+		}
+		helper.assertFalse(pad.isItemValid(0, new ItemStack(Items.DIAMOND)),
+				"Charge slot should reject items without energy storage");
+		helper.assertFalse(pad.isItemValid(0, new ItemStack(FTBICItems.SINGLE_USE_BATTERY.get())),
+				"Charge slot should reject batteries that cannot be recharged");
+
+		pad.energy = 400D;
+		pad.tick();
+		helper.assertValueEqual(0D, pad.energy, "Pad energy should be transferred to inserted items");
+		for (int i = 0; i < items.length; i++) {
+			ItemStack stack = pad.getStackInSlot(i);
+			EnergyItemHandler handler = (EnergyItemHandler) stack.getItem();
+			helper.assertValueEqual(handler.getEnergyCapacity(stack), handler.getEnergy(stack),
+					"Inserted item " + i + " should be fully charged");
+		}
+		helper.succeed();
+	}
+
+	static void chargePadChargesWornArmor(GameTestHelper helper) {
+		helper.setBlock(CENTER.below(), Blocks.STONE);
+		helper.setBlock(CENTER, FTBICElectricBlocks.CHARGE_PAD.block.get());
+		ChargePadBlockEntity pad = helper.getBlockEntity(CENTER, ChargePadBlockEntity.class);
+		pad.energy = 500D;
+
+		ServerPlayer player = mockSurvivalPlayer(helper);
+		ItemStack chestplate = new ItemStack(FTBICItems.CARBON_CHESTPLATE.get());
+		player.setItemSlot(EquipmentSlot.CHEST, chestplate);
+		pad.stepOn(player);
+
+		EnergyItemHandler handler = (EnergyItemHandler) chestplate.getItem();
+		helper.assertValueEqual(500D, handler.getEnergy(chestplate),
+				"Worn chestplate should gain energy when the player steps on the pad");
+		helper.assertValueEqual(0D, pad.energy, "Pad should spend the energy transferred to worn armor");
 		helper.succeed();
 	}
 

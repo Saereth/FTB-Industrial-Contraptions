@@ -17,6 +17,29 @@ public class ChargePadBlockEntity extends ElectricBlockEntityRef {
 	}
 
 	@Override
+	public boolean isItemValid(int slot, ItemStack stack) {
+		return slot >= 0 && slot < inputItems.length
+				&& stack.getItem() instanceof EnergyItemHandler handler
+				&& handler.canInsertEnergy() && !handler.isCreativeEnergyItem();
+	}
+
+	@Override
+	public void tick() {
+		super.tick();
+		if (level == null || level.isClientSide() || energy <= 0D) return;
+		for (ItemStack stack : inputItems) {
+			if (!(stack.getItem() instanceof EnergyItemHandler handler) || handler.isCreativeEnergyItem()) continue;
+			double accepted = handler.insertEnergy(stack, energy, false);
+			if (accepted > 0D) {
+				energy -= accepted;
+				active = true;
+				setChanged();
+				if (energy <= 0D) return;
+			}
+		}
+	}
+
+	@Override
 	public void stepOn(ServerPlayer player) {
 		if (energy <= 0D) return;
 		Inventory inv = player.getInventory();

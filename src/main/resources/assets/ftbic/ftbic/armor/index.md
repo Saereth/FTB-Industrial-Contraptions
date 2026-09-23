@@ -20,7 +20,7 @@ navigation:
   ## <Color id="gold">Charging</Color>
 </Column>
 
-Drop pieces into a <ItemLink id="charge_pad" /> or a charge slot on a battery box. Quantum armor accepts EV charge rates; carbon armor caps at HV.
+Wear the chestplate and stand on a powered <ItemLink id="charge_pad" />, or place the chestplate in one of its four charging slots. The other armor pieces do not store energy.
 
 <ItemImage id="minecraft:air" scale="0.25"/>
 ***

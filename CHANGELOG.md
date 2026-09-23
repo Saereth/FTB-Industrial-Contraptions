@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 * Carbon and Quantum armor now render their own textures when equipped. {#12410}
+* Charge Pads now accept four rechargeable items in their UI while continuing to charge carried and worn items when stood on. ([Issue 2123](https://github.com/FTBTeam/FTB-Mods-Issues/issues/2123))
 
 ## [26.1.2.10]
 

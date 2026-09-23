@@ -1,5 +1,7 @@
 package dev.ftb.mods.ftbic.client.gui;
 
+import dev.ftb.mods.ftbic.block.entity.machine.BasicMachineBlockEntity;
+import dev.ftb.mods.ftbic.block.entity.machine.ChargePadBlockEntity;
 import dev.ftb.mods.ftbic.integration.jei.ClientRecipeCache;
 import dev.ftb.mods.ftbic.screen.MachineMenu;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -15,6 +17,7 @@ public class MachineScreen extends ElectricBlockScreen<MachineMenu> {
 		super(menu, inv, title);
 		energyX = 8;
 		energyY = 27;
+		if (menu.blockEntity instanceof ChargePadBlockEntity) drawDefaultArrow = false;
 	}
 
 	@Override
@@ -24,7 +27,7 @@ public class MachineScreen extends ElectricBlockScreen<MachineMenu> {
 		int outputs = this.menu.blockEntity.outputItems.length;
 
 		int inputCols = Math.max(1, Math.min(2, inputs));
-		int inputXStart = 59 - (inputCols - 1) * 18;
+		int inputXStart = this.menu.blockEntity instanceof ChargePadBlockEntity ? 69 : 59 - (inputCols - 1) * 18;
 		int inputRows = Math.max(1, (int) Math.ceil(inputs / (double) inputCols));
 		int yStart = 35 - ((inputRows - 1) * 9);
 		for (int i = 0; i < inputs; i++) {
@@ -41,9 +44,11 @@ public class MachineScreen extends ElectricBlockScreen<MachineMenu> {
 			int row = i / outputCols;
 			drawSlot(g, leftPos + 107 + col * 18, topPos + oyStart - 1 + row * 18);
 		}
-		drawSlot(g, leftPos + 7, topPos + 52);
-		for (int i = 0; i < 4; i++) {
-			drawSlot(g, leftPos + 151, topPos + 7 + i * 18);
+		if (this.menu.blockEntity instanceof BasicMachineBlockEntity) {
+			drawSlot(g, leftPos + 7, topPos + 52);
+			for (int i = 0; i < 4; i++) {
+				drawSlot(g, leftPos + 151, topPos + 7 + i * 18);
+			}
 		}
 	}
 

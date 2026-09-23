@@ -210,7 +210,8 @@ public interface FTBICElectricBlocks {
 			.advanced()
 			.noRotation()
 			.energyCapacity(FTBICConfig.MACHINES.CHARGE_PAD_CAPACITY)
-			.maxEnergyInput(FTBICConfig.ENERGY.IV_TRANSFER_RATE);
+			.maxEnergyInput(FTBICConfig.ENERGY.IV_TRANSFER_RATE)
+			.io(4, 0);
 
 	ElectricBlockInstance POWERED_CRAFTING_TABLE = register("powered_crafting_table", PoweredCraftingTableBlockEntity::new)
 			.wip()

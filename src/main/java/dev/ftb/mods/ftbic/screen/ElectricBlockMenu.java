@@ -2,6 +2,7 @@ package dev.ftb.mods.ftbic.screen;
 
 import dev.ftb.mods.ftbic.block.entity.ElectricBlockEntity;
 import dev.ftb.mods.ftbic.block.entity.machine.BasicMachineBlockEntity;
+import dev.ftb.mods.ftbic.block.entity.machine.ChargePadBlockEntity;
 import dev.ftb.mods.ftbic.block.entity.machine.MachineBlockEntity;
 import dev.ftb.mods.ftbic.item.UpgradeItem;
 import net.minecraft.network.FriendlyByteBuf;
@@ -59,7 +60,7 @@ public abstract class ElectricBlockMenu extends AbstractContainerMenu {
 		int outputs = blockEntity.outputItems.length;
 
 		int inputCols = Math.max(1, Math.min(2, inputs));
-		int inputXStart = 60 - (inputCols - 1) * 18;
+		int inputXStart = blockEntity instanceof ChargePadBlockEntity ? 70 : 60 - (inputCols - 1) * 18;
 		int inputRows = Math.max(1, (int) Math.ceil(inputs / (double) inputCols));
 		int yStart = 35 - ((inputRows - 1) * 9);
 

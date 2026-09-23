@@ -100,6 +100,8 @@ public class FTBICGameTests {
 		reg(event, "antimatter_constructor_progresses", FTBICGameTestFunctions::antimatterConstructorProgresses, env, 100);
 		reg(event, "powered_crafting_table_crafts_planks_into_table", FTBICGameTestFunctions::poweredCraftingTableCraftsPlanksIntoTable, env, 100);
 		reg(event, "charge_pad_transfers_energy_from_buffer_to_stack", FTBICGameTestFunctions::chargePadTransfersEnergyFromBufferToStack, env, 100);
+		reg(event, "charge_pad_charges_inserted_items", FTBICGameTestFunctions::chargePadChargesInsertedItems, env, 100);
+		reg(event, "charge_pad_charges_worn_armor", FTBICGameTestFunctions::chargePadChargesWornArmor, env, 100);
 
 		reg(event, "rechargeable_battery_accepts_and_holds_energy", FTBICGameTestFunctions::rechargeableBatteryAcceptsAndHoldsEnergy, env, 100);
 		reg(event, "rechargeable_battery_clears_component_at_zero", FTBICGameTestFunctions::rechargeableBatteryClearsComponentAtZero, env, 100);
