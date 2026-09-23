@@ -83,6 +83,7 @@ public class BasicMachineBlockEntity extends ElectricBlockEntity {
 			if (outputItems[i].isEmpty()) continue;
 
 			for (Direction dir : FTBICUtils.DIRECTIONS) {
+				if (!allowsTransfer(dev.ftb.mods.ftbic.util.SideConfiguration.Resource.ITEMS, dir, false)) continue;
 				if (outputItems[i].isEmpty()) break;
 				ResourceHandler<ItemResource> handler = itemEjectCache(serverLevel, dir).getCapability();
 				if (handler == null) continue;

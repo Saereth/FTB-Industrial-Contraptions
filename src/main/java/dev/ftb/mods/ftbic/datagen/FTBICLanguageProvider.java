@@ -12,6 +12,36 @@ public class FTBICLanguageProvider extends LanguageProvider {
 
 	@Override
 	protected void addTranslations() {
+		add("item.ftbic.reactor_blueprint", "Reactor Blueprint");
+		add("item.ftbic.reactor_blueprint.blank", "Blank: use on a Reactor Planner to copy its design.");
+		add("item.ftbic.reactor_blueprint.contents", "%s chambers, %s components");
+		add("item.ftbic.reactor_blueprint.load", "Use on a reactor or planner to load the design.");
+		add("item.ftbic.reactor_blueprint.write", "Sneak-use on a planner to overwrite this blueprint.");
+		add("item.ftbic.reactor_blueprint.written", "Reactor design written to blueprint.");
+		add("item.ftbic.reactor_blueprint.need_blank", "Keep a blank Reactor Blueprint in your inventory to write a design.");
+		add("item.ftbic.reactor_blueprint.planner_locked", "Pause the planner before loading a valid blueprint.");
+		add("ftbic.reactor.design.title", "Reactor Design");
+		add("ftbic.reactor.design.load", "Load Preset");
+		add("ftbic.reactor.design.paste", "Paste Design");
+		add("ftbic.reactor.design.build", "Build from Inventory");
+		add("ftbic.reactor.design.blueprint", "Write Blueprint");
+		add("ftbic.reactor.design.clear", "Clear");
+		add("ftbic.reactor.design.clear_hint", "Clear the design preview. Installed components stay in the reactor.");
+		add("ftbic.reactor.design.no_design", "Load a design to begin.");
+		add("ftbic.reactor.design.chambers", "Chambers: %s / %s");
+		add("ftbic.reactor.design.cooling", "Water: %s%% / %s%%");
+		add("ftbic.reactor.design.remaining", "Missing: %s  Conflicts: %s");
+		add("ftbic.reactor.design.materials", "Materials still needed");
+		add("ftbic.reactor.design.count", "%s available / %s needed");
+		add("ftbic.reactor.design.expected", "Design requires: %s");
+		add("ftbic.reactor.design.unexpected", "Design requires this slot to be empty.");
+		add("ftbic.reactor.design.build_hint", "Fill empty slots from your inventory. Remove red-marked conflicts manually. Components keep their heat and wear.");
+		add("ftbic.reactor.design.build_requirements", "Load a design, attach the required chambers, pause the reactor and disable redstone control before building.");
+		add("ftbic.reactor.design.environment_hint", "Actual / planned chambers and water cooling. Match the planner's environment before starting the reactor.");
+		add("ftbic.reactor.design.invalid", "Invalid reactor design. Copy a design from the planner and try again.");
+		add("ftbic.reactor.design.chambers_missing", "Attach the design's required reactor chambers before building.");
+		add("ftbic.reactor.design.pause_required", "Load a design, pause the reactor and disable redstone control before building.");
+		add("ftbic.reactor.design.built", "Placed %s components. Missing parts remain as ghosts; remove conflicting parts manually.");
 		MaterialEntries.all().forEach(entry -> {
 			String text = entry.component().translation(entry.material().displayName());
 			String suffix = FTBIC.MOD_ID + "." + entry.name();

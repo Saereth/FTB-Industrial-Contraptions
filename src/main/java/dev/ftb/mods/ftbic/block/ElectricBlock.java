@@ -1,8 +1,11 @@
 package dev.ftb.mods.ftbic.block;
 
 import dev.ftb.mods.ftbic.block.entity.ElectricBlockEntity;
+import dev.ftb.mods.ftbic.block.entity.generator.NuclearReactorBlockEntity;
+import dev.ftb.mods.ftbic.block.entity.machine.ReactorSimulatorBlockEntity;
 import dev.ftb.mods.ftbic.block.entity.machine.MachineBlockEntity;
 import dev.ftb.mods.ftbic.item.FTBICItems;
+import dev.ftb.mods.ftbic.item.ReactorBlueprintItem;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
@@ -19,6 +22,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.EntityBlock;
@@ -144,7 +148,9 @@ public class ElectricBlock extends Block implements EntityBlock, SprayPaintable 
 	@Override
 	protected void onPlace(BlockState state, Level level, BlockPos pos, BlockState state1, boolean b) {
 		super.onPlace(state, level, pos, state1, b);
-		if (!level.isClientSide() && !state.is(state1.getBlock())) {
+		if (!level.isClientSide() && (!state.is(state1.getBlock())
+				|| (electricBlockInstance.facingProperty != null && state.getValue(electricBlockInstance.facingProperty) != state1.getValue(electricBlockInstance.facingProperty)))) {
+			level.invalidateCapabilities(pos);
 			ElectricBlockEntity.electricNetworkUpdated(level, pos);
 		}
 	}
@@ -173,6 +179,11 @@ public class ElectricBlock extends Block implements EntityBlock, SprayPaintable 
 
 	@Override
 	protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+		if (stack.getItem() instanceof ReactorBlueprintItem
+				&& (level.getBlockEntity(pos) instanceof NuclearReactorBlockEntity
+				|| level.getBlockEntity(pos) instanceof ReactorSimulatorBlockEntity)) {
+			return stack.getItem().useOn(new UseOnContext(player, hand, hit));
+		}
 		if (!(level.getBlockEntity(pos) instanceof ElectricBlockEntity be)) {
 			return InteractionResult.TRY_WITH_EMPTY_HAND;
 		}

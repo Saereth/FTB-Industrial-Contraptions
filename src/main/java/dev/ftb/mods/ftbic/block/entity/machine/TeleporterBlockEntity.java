@@ -100,7 +100,7 @@ public class TeleporterBlockEntity extends GeneratorBlockEntity {
 
 	@Override
 	public boolean isValidEnergyInputSide(Direction direction) {
-		return true;
+		return allowsTransfer(dev.ftb.mods.ftbic.util.SideConfiguration.Resource.ENERGY, direction, true);
 	}
 
 	@Override

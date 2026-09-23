@@ -8,6 +8,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.ftb.mods.ftbic.item.reactor.NuclearReactor;
+import dev.ftb.mods.ftbic.item.reactor.ReactorItem;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
@@ -17,9 +18,42 @@ import net.minecraft.world.item.ItemStack;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.HashSet;
 
 public record ReactorDesign(int version, int chambers, double water, List<DesignSlot> slots) {
 	public static final int CURRENT_VERSION = 1;
+	public static final int MAX_JSON_LENGTH = 8192;
+
+	public ReactorDesign {
+		slots = List.copyOf(slots);
+	}
+
+	/** Validate imported designs before they can affect a real inventory. */
+	public boolean isValid() {
+		if (version != CURRENT_VERSION || chambers < 0 || chambers > 6
+				|| !Double.isFinite(water) || water < 0 || water > 1 || slots.size() > NuclearReactor.MAX_SLOTS) return false;
+		var occupied = new HashSet<Integer>();
+		for (DesignSlot slot : slots) {
+			if (slot.slot() < 0 || slot.slot() >= NuclearReactor.MAX_SLOTS
+					|| slot.slot() % NuclearReactor.MAX_COLUMNS >= 3 + chambers
+					|| !occupied.add(slot.slot())
+					|| !(resolveItem(slot) instanceof ReactorItem)) return false;
+		}
+		return true;
+	}
+
+	public static Item resolveItem(DesignSlot slot) {
+		return BuiltInRegistries.ITEM.getValue(ResourceKey.create(Registries.ITEM, slot.id()));
+	}
+
+	public ItemStack[] previewItems() {
+		ItemStack[] items = new ItemStack[NuclearReactor.MAX_SLOTS];
+		java.util.Arrays.fill(items, ItemStack.EMPTY);
+		if (isValid()) {
+			for (DesignSlot slot : slots) items[slot.slot()] = new ItemStack(resolveItem(slot));
+		}
+		return items;
+	}
 
 	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
@@ -43,6 +77,7 @@ public record ReactorDesign(int version, int chambers, double water, List<Design
 	}
 
 	public static ReactorDesign fromJson(String json) throws IllegalArgumentException {
+		if (json == null || json.length() > MAX_JSON_LENGTH) throw new IllegalArgumentException("Design is too large");
 		JsonElement parsed;
 		try {
 			parsed = JsonParser.parseString(json);
@@ -50,8 +85,10 @@ public record ReactorDesign(int version, int chambers, double water, List<Design
 			throw new IllegalArgumentException("Not valid JSON: " + e.getMessage());
 		}
 		var result = CODEC.parse(JsonOps.INSTANCE, parsed);
-		return result.resultOrPartial(err -> {}).orElseThrow(() ->
+		ReactorDesign design = result.resultOrPartial(err -> {}).orElseThrow(() ->
 				new IllegalArgumentException("Could not decode reactor design"));
+		if (!design.isValid()) throw new IllegalArgumentException("Invalid reactor design");
+		return design;
 	}
 
 	public static ReactorDesign fromReactor(int chambers, double water, ItemStack[] slots) {

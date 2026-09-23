@@ -7,6 +7,18 @@ import dev.ftb.mods.ftbic.block.ElectricBlock;
 import dev.ftb.mods.ftbic.block.ElectricBlockInstance;
 import dev.ftb.mods.ftbic.screen.MachineMenu;
 import dev.ftb.mods.ftbic.util.ZapEnergyHandler;
+import dev.ftb.mods.ftbic.util.SideConfiguration;
+import dev.ftb.mods.ftbic.util.SideConfiguration.Resource;
+import dev.ftb.mods.ftbic.util.SideConfiguration.Face;
+import dev.ftb.mods.ftbic.util.SideConfiguration.Mode;
+import dev.ftb.mods.ftbic.block.entity.generator.GeneratorBlockEntity;
+import dev.ftb.mods.ftbic.block.entity.generator.GeothermalGeneratorBlockEntity;
+import dev.ftb.mods.ftbic.block.entity.machine.PumpBlockEntity;
+import dev.ftb.mods.ftbic.block.entity.machine.ReactorSimulatorBlockEntity;
+import dev.ftb.mods.ftbic.block.entity.machine.TeleporterBlockEntity;
+import dev.ftb.mods.ftbic.block.entity.storage.BatteryBoxBlockEntity;
+import dev.ftb.mods.ftbic.block.entity.storage.TransformerBlockEntity;
+import dev.ftb.mods.ftbic.block.entity.storage.EnergyRectifierBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
@@ -74,6 +86,78 @@ public class ElectricBlockEntity extends BlockEntity implements ZapEnergyHandler
 	public double energyCapacity;
 	public double maxInputEnergy;
 	public boolean autoEject;
+	private SideConfiguration sideConfiguration = SideConfiguration.DEFAULT;
+
+	public SideConfiguration getSideConfiguration() { return sideConfiguration; }
+
+	public void setSideConfiguration(SideConfiguration settings) {
+		sideConfiguration = settings;
+		setChanged();
+		if (level != null && !level.isClientSide()) {
+			level.invalidateCapabilities(worldPosition);
+			// Chamber capabilities forward the reactor's live settings.
+			for (Direction side : Direction.values()) {
+				BlockPos adjacent = worldPosition.relative(side);
+				if (level.getBlockState(adjacent).getBlock() instanceof dev.ftb.mods.ftbic.block.NuclearReactorChamberBlock) {
+					level.invalidateCapabilities(adjacent);
+				}
+			}
+			electricNetworkUpdated(level, worldPosition);
+			level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);
+		}
+	}
+
+	public int supportedTransfers(Resource resource, Face face) {
+		if (this instanceof ReactorSimulatorBlockEntity) return 0;
+		if (resource == Resource.ITEMS) {
+			if (this instanceof TeleporterBlockEntity) return 3;
+			int mask = inputItems.length > 0 ? 1 : 0;
+			for (int slot = 0; slot < getSlotCount(); slot++) if (isSlotExtractable(slot)) { mask |= 2; break; }
+			return mask;
+		}
+		if (resource == Resource.FLUIDS) {
+			if (this instanceof TeleporterBlockEntity) return 3;
+			if (this instanceof PumpBlockEntity) return 2;
+			return this instanceof GeothermalGeneratorBlockEntity ? 1 : 0;
+		}
+		// These machines have dedicated electrical ports with different meanings.
+		if (this instanceof TransformerBlockEntity || this instanceof EnergyRectifierBlockEntity) return face == Face.FRONT ? 1 : 2;
+		if (this instanceof BatteryBoxBlockEntity) return face == Face.FRONT ? 2 : 1;
+		return (electricBlockInstance.maxEnergyInput.get() > 0 ? 1 : 0)
+				| (this instanceof GeneratorBlockEntity && electricBlockInstance.maxEnergyOutput.get() > 0 ? 2 : 0);
+	}
+
+	public boolean supportsResource(Resource resource) {
+		for (Face face : Face.values()) if (supportedTransfers(resource, face) != 0) return true;
+		return false;
+	}
+
+	public boolean supportsSideMode(Resource resource, Face face, Mode mode) {
+		int mask = supportedTransfers(resource, face);
+		return switch (mode) {
+			case DEFAULT, DISABLED -> true;
+			case INPUT -> (mask & 1) != 0;
+			case OUTPUT -> (mask & 2) != 0;
+			case BOTH -> mask == 3;
+		};
+	}
+
+	public boolean allowsTransfer(Resource resource, @Nullable Direction side, boolean input) {
+		if (isRemoved()) return false;
+		if (side == null) {
+			for (Direction direction : Direction.values()) if (allowsTransfer(resource, direction, input)) return true;
+			return false;
+		}
+		Face face = Face.relative(getFacing(Direction.NORTH), side);
+		Mode mode = sideConfiguration.mode(resource, face);
+		// DEFAULT deliberately retains legacy FE capability behavior as well as native machine rules.
+		return mode == Mode.DEFAULT || (mode.allows(input) && (supportedTransfers(resource, face) & (input ? 1 : 2)) != 0);
+	}
+
+	@Override
+	public boolean isValidEnergyInputSide(Direction direction) {
+		return allowsTransfer(Resource.ENERGY, direction, true);
+	}
 
 	public UUID placerId = Util.NIL_UUID;
 	public String placerName = "";
@@ -128,6 +212,7 @@ public class ElectricBlockEntity extends BlockEntity implements ZapEnergyHandler
 	protected void saveAdditional(ValueOutput output) {
 		super.saveAdditional(output);
 		output.putDouble("Energy", energy);
+		output.store("SideConfiguration", SideConfiguration.CODEC, sideConfiguration);
 		if (burnt) {
 			output.putBoolean("Burnt", true);
 		}
@@ -150,6 +235,7 @@ public class ElectricBlockEntity extends BlockEntity implements ZapEnergyHandler
 	protected void loadAdditional(ValueInput input) {
 		super.loadAdditional(input);
 		energy = input.getDoubleOr("Energy", 0D);
+		sideConfiguration = input.read("SideConfiguration", SideConfiguration.CODEC).orElse(SideConfiguration.DEFAULT);
 		burnt = input.getBooleanOr("Burnt", false);
 		placerId = input.read("PlacerId", UUIDUtil.CODEC).orElse(Util.NIL_UUID);
 		placerName = input.getStringOr("PlacerName", "");

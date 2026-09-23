@@ -857,6 +857,7 @@ public class FTBICRecipeProvider extends RecipeProvider {
 		shaped("iv_rectifier", ftbicStack("iv_rectifier", 1), new String[] {"RWR", "PTP", "RWR"}, 'R', i("minecraft:redstone_block"), 'W', i("ftbic:ev_cable"), 'P', commonOrTag("c:ingots/iridium"), 'T', i("ftbic:ev_rectifier"));
 		shaped("large_coolant_cell", ftbicStack("large_coolant_cell", 1), new String[] {"TCT", "TAT", "TCT"}, 'T', commonOrTag("c:ingots/tin"), 'C', i("ftbic:medium_coolant_cell"), 'A', i("ftbic:dense_copper_plate"));
 		shaped("location_card", ftbicStack("location_card", 1), new String[] {" P ", "PCP", " P "}, 'P', i("minecraft:paper"), 'C', i("ftbic:electronic_circuit"));
+		shapeless("reactor_blueprint", ftbicStack("reactor_blueprint", 1), i("minecraft:paper"), i("minecraft:blue_dye"), i("ftbic:electronic_circuit"));
 		shaped("lv_battery_box", ftbicStack("lv_battery_box", 1), new String[] {"PWP", "BBB", "PPP"}, 'W', i("ftbic:lv_cable"), 'B', i("ftbic:lv_battery"), 'P', commonOrTag("minecraft:planks"));
 		shaped("lv_cable", ftbicStack("lv_cable", 6), new String[] {"RRR", "MMM", "RRR"}, 'R', i("ftbic:rubber"), 'M', commonOrTag("c:ingots/copper"));
 		shaped("lv_rectifier", ftbicStack("lv_rectifier", 1), new String[] {"RWR", "PTP", "RWR"}, 'R', i("minecraft:redstone"), 'W', i("ftbic:lv_cable"), 'P', commonOrTag("c:ingots/copper"), 'T', i("ftbic:lv_transformer"));

@@ -255,7 +255,7 @@ public class ReactorSimulatorBlockEntity extends ElectricBlockEntityRef {
 	}
 
 	public boolean applyDesign(ReactorDesign design) {
-		if (isLocked()) return false;
+		if (isLocked() || !design.isValid()) return false;
 		reset();
 		chambers = Math.max(0, Math.min(6, design.chambers()));
 		waterThousandths = Math.max(0, Math.min(1000, (int) Math.round(design.water() * 1000D)));
@@ -307,17 +307,13 @@ public class ReactorSimulatorBlockEntity extends ElectricBlockEntityRef {
 
 	@Override
 	public boolean isItemValid(int slot, ItemStack stack) {
-		if (isLocked()) return false;
-		if (slot < 0 || slot >= inputItems.length) return false;
-		int col = slot % NuclearReactor.MAX_COLUMNS;
-		int row = slot / NuclearReactor.MAX_COLUMNS;
-		if (row >= NuclearReactor.ROWS || col >= getActiveColumns()) return false;
-		return stack.isEmpty() || stack.getItem() instanceof ReactorItem;
+		// Planner slots are ghost entries, populated only by setSlotItem.
+		return false;
 	}
 
 	@Override
 	public boolean isSlotExtractable(int slot) {
-		return !isLocked();
+		return false;
 	}
 
 	@Override

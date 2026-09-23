@@ -61,6 +61,7 @@ public final class ModCreativeTabs {
 						MaterialEntries.all().forEach(entry -> out.accept(entry.item().get()));
 
 						out.accept(FTBICItems.SINGLE_USE_BATTERY.get());
+						out.accept(FTBICItems.REACTOR_BLUEPRINT.get());
 						out.accept(FTBICItems.LV_BATTERY.get());
 						out.accept(FTBICItems.MV_BATTERY.get());
 						out.accept(FTBICItems.HV_BATTERY.get());

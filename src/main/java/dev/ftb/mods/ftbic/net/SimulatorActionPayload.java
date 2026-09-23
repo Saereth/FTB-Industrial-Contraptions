@@ -3,6 +3,7 @@ package dev.ftb.mods.ftbic.net;
 import dev.ftb.mods.ftbic.FTBIC;
 import dev.ftb.mods.ftbic.block.entity.machine.ReactorSimulatorBlockEntity;
 import dev.ftb.mods.ftbic.item.reactor.NuclearReactor;
+import dev.ftb.mods.ftbic.item.ReactorBlueprintItem;
 import dev.ftb.mods.ftbic.screen.ReactorSimulatorMenu;
 import dev.ftb.mods.ftbic.util.ReactorDesign;
 import net.minecraft.ChatFormatting;
@@ -30,6 +31,7 @@ public record SimulatorActionPayload(byte action, int intA, int intB, String str
 	public static final byte CLEAR_SLOT = 8;
 	public static final byte ANALYZE = 9;
 	public static final byte IMPORT = 10;
+	public static final byte WRITE_BLUEPRINT = 11;
 
 	public static final int MAX_IMPORT_JSON_BYTES = 8192;
 	public static final TagKey<Item> COMPONENT_TAG = TagKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath(FTBIC.MOD_ID, "reactor_component"));
@@ -91,7 +93,14 @@ public record SimulatorActionPayload(byte action, int intA, int intB, String str
 			if (!(context.player() instanceof ServerPlayer sp)) return;
 			if (!(sp.containerMenu instanceof ReactorSimulatorMenu menu)) return;
 			if (!(menu.blockEntity instanceof ReactorSimulatorBlockEntity be)) return;
+			if (!menu.stillValid(sp) || sp.distanceToSqr(be.getBlockPos().getCenter()) > 64D) return;
 			switch (payload.action) {
+				case WRITE_BLUEPRINT -> {
+					boolean written = ReactorBlueprintItem.writeBlank(sp.getInventory(), be.exportDesign());
+					sp.sendOverlayMessage(Component.translatable(written
+							? "item.ftbic.reactor_blueprint.written" : "item.ftbic.reactor_blueprint.need_blank"));
+					sp.inventoryMenu.broadcastChanges();
+				}
 				case START -> be.start();
 				case PAUSE -> be.pause();
 				case RESET -> be.reset();

@@ -65,7 +65,7 @@ public class EnergyRectifierBlockEntity extends GeneratorBlockEntity {
 	public boolean isValidEnergyOutputSide(Direction direction) {
 		BlockState st = getBlockState();
 		Direction inputFace = st.getValue(BlockStateProperties.FACING);
-		return direction != inputFace;
+		return direction != inputFace && allowsTransfer(dev.ftb.mods.ftbic.util.SideConfiguration.Resource.ENERGY, direction, false);
 	}
 
 	@Override

@@ -2,6 +2,13 @@ package dev.ftb.mods.ftbic.client.gui;
 
 import dev.ftb.mods.ftbic.FTBIC;
 import dev.ftb.mods.ftbic.screen.NuclearReactorMenu;
+import dev.ftb.mods.ftbic.block.entity.generator.NuclearReactorBlockEntity;
+import dev.ftb.mods.ftbic.item.reactor.ReactorItem;
+import dev.ftb.mods.ftbic.item.reactor.NuclearReactor;
+import dev.ftb.mods.ftbic.net.FTBICNet;
+import dev.ftb.mods.ftbic.net.ReactorDesignPayload;
+import dev.ftb.mods.ftbic.util.ReactorDesign;
+import dev.ftb.mods.ftbic.util.ReactorPresetLibrary;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -10,7 +17,14 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ServerboundContainerButtonClickPacket;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.client.renderer.RenderPipelines;
 import dev.ftb.mods.ftbic.integration.jei.ClientRecipeCache;
+
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
 
 public class NuclearReactorScreen extends ElectricBlockScreen<NuclearReactorMenu> {
 	public static final Identifier NUCLEAR_REACTOR_TEXTURE = FTBIC.id("textures/gui/nuclear_reactor.png");
@@ -21,9 +35,19 @@ public class NuclearReactorScreen extends ElectricBlockScreen<NuclearReactorMenu
 	private static final int CONTROL_STRIP_H = 19;
 	private static final int INVENTORY_Y = CONTROL_STRIP_TOP + CONTROL_STRIP_H;
 	private static final int HOTBAR_Y = INVENTORY_Y + 54;
+	private static final int PANEL_X = 180;
+	private static final int PANEL_W = 140;
+	private final Inventory inventory;
+	private List<ReactorPresetLibrary.Preset> presets = List.of();
+	private int selectedPreset;
+	private int materialPage;
+	private ReactorDesign cachedDesign;
+	private ItemStack[] ghosts = new ItemStack[0];
+	private record Material(Item item, int installed, int available, int required) {}
 
 	public NuclearReactorScreen(NuclearReactorMenu menu, Inventory inv, Component title) {
-		super(menu, inv, title, 176, HOTBAR_Y + 22);
+		super(menu, inv, title, 324, HOTBAR_Y + 22);
+		inventory = inv;
 		drawDefaultArrow = false;
 		energyX = -1;
 		energyY = -1;
@@ -40,6 +64,127 @@ public class NuclearReactorScreen extends ElectricBlockScreen<NuclearReactorMenu
 		this.titleLabelX = 8;
 		this.inventoryLabelX = 8;
 		this.inventoryLabelY = CONTROL_STRIP_TOP + 5;
+		presets = ReactorPresetLibrary.listAll();
+		selectedPreset = Math.min(selectedPreset, Math.max(0, presets.size() - 1));
+	}
+
+	@Override
+	protected void drawBase(GuiGraphicsExtractor g) {
+		g.blit(RenderPipelines.GUI_TEXTURED, getScreenTexture(), leftPos, topPos, 0F, 0F, 176, imageHeight, 256, 256);
+		g.fill(leftPos + 176, topPos, leftPos + imageWidth, topPos + imageHeight, 0xFF373737);
+		g.fill(leftPos + 178, topPos + 2, leftPos + imageWidth - 2, topPos + imageHeight - 2, 0xFFC6C6C6);
+	}
+
+	private ReactorDesign design() {
+		return menu.blockEntity instanceof NuclearReactorBlockEntity reactor ? reactor.getPlannedDesign() : null;
+	}
+
+	private List<Material> materials() {
+		var counts = new LinkedHashMap<Item, int[]>();
+		for (int i = 0; i < ghosts.length; i++) {
+			if (ghosts[i].isEmpty()) continue;
+			Item item = ghosts[i].getItem();
+			int[] count = counts.computeIfAbsent(item, key -> new int[3]);
+			count[2]++;
+			ItemStack installed = menu.blockEntity.getStackInSlot(i);
+			if (installed.is(item) && !((ReactorItem) item).isItemBroken(installed)) count[0]++;
+		}
+		for (int i = 0; i < 36; i++) {
+			ItemStack stack = inventory.getItem(i);
+			int[] count = counts.get(stack.getItem());
+			if (count != null && !((ReactorItem) stack.getItem()).isItemBroken(stack)) count[1] += stack.getCount();
+		}
+		var result = new ArrayList<Material>();
+		counts.forEach((item, count) -> result.add(new Material(item, count[0], count[1], count[2])));
+		return result;
+	}
+
+	private void designButton(GuiGraphicsExtractor g, int x, int y, int width, Component text, int mx, int my, boolean enabled) {
+		x += leftPos + PANEL_X;
+		y += topPos;
+		g.fill(x, y, x + width, y + 14, 0xFF444444);
+		g.fill(x + 1, y + 1, x + width - 1, y + 13,
+				enabled && isIn(mx, my, x, y, width, 14) ? 0xFFBCE0FF : 0xFFE0E0E0);
+		g.centeredText(font, text, x + width / 2, y + 3, enabled ? 0xFF202020 : 0xFF888888);
+	}
+
+	private boolean canBuild() {
+		return design() != null && menu.isPaused() && !menu.allowRedstone()
+				&& design().chambers() + 3 <= menu.getActiveColumns();
+	}
+
+	private void drawDesign(GuiGraphicsExtractor g, int mx, int my) {
+		ReactorDesign current = design();
+		if (current != cachedDesign) {
+			cachedDesign = current;
+			ghosts = current == null ? new ItemStack[0] : current.previewItems();
+			materialPage = 0;
+		}
+		int x = leftPos + PANEL_X;
+		g.text(font, Component.translatable("ftbic.reactor.design.title"), x + 4, topPos + 7, 0xFF303030, false);
+		designButton(g, 4, 20, 14, Component.literal("<"), mx, my, presets.size() > 1);
+		designButton(g, 122, 20, 14, Component.literal(">"), mx, my, presets.size() > 1);
+		String name = presets.isEmpty() ? "-" : presets.get(selectedPreset).name();
+		g.centeredText(font, font.plainSubstrByWidth(name, 98), x + PANEL_W / 2, topPos + 23, 0xFF303030);
+		designButton(g, 4, 37, 64, Component.translatable("ftbic.reactor.design.load"), mx, my, !presets.isEmpty());
+		designButton(g, 72, 37, 64, Component.translatable("ftbic.reactor.design.paste"), mx, my, true);
+		designButton(g, 4, 54, 132, Component.translatable("ftbic.reactor.design.build"), mx, my, canBuild());
+		designButton(g, 4, 71, 94, Component.translatable("ftbic.reactor.design.blueprint"), mx, my, current != null);
+		designButton(g, 102, 71, 34, Component.translatable("ftbic.reactor.design.clear"), mx, my, current != null);
+		if (current == null) {
+			g.text(font, Component.translatable("ftbic.reactor.design.no_design"), x + 4, topPos + 96, 0xFF606060, false);
+			return;
+		}
+		int actualChambers = menu.getActiveColumns() - 3;
+		int actualWater = menu.coolingThousandths.get() / 10;
+		int plannedWater = (int) Math.round(current.water() * 100D);
+		g.text(font, Component.translatable("ftbic.reactor.design.chambers", actualChambers, current.chambers()),
+				x + 4, topPos + 91, actualChambers < current.chambers() ? 0xFFAA2020 : 0xFF303030, false);
+		g.text(font, Component.translatable("ftbic.reactor.design.cooling", actualWater, plannedWater),
+				x + 4, topPos + 103, actualWater == plannedWater ? 0xFF303030 : 0xFFAA6020, false);
+		int conflicts = 0;
+		int missing = 0;
+		for (int i = 0; i < ghosts.length; i++) {
+			ItemStack existing = menu.blockEntity.getStackInSlot(i);
+			boolean wanted = !ghosts[i].isEmpty();
+			boolean conflict = !existing.isEmpty() && (!wanted || !existing.is(ghosts[i].getItem())
+					|| ((ReactorItem) ghosts[i].getItem()).isItemBroken(existing));
+			if (conflict) conflicts++;
+			if (wanted && (existing.isEmpty() || conflict)) missing++;
+			int sx = leftPos + 8 + (i % NuclearReactor.MAX_COLUMNS) * 18;
+			int sy = topPos + 18 + (i / NuclearReactor.MAX_COLUMNS) * 18;
+			if (existing.isEmpty() && wanted) {
+				g.item(ghosts[i], sx, sy);
+				g.fill(sx, sy, sx + 16, sy + 16, 0x998B8B8B);
+			}
+			if (conflict || (wanted && i % NuclearReactor.MAX_COLUMNS >= menu.getActiveColumns())) {
+				g.fill(sx - 1, sy - 1, sx + 17, sy, 0xFFFF5555);
+				g.fill(sx - 1, sy + 16, sx + 17, sy + 17, 0xFFFF5555);
+				g.fill(sx - 1, sy, sx, sy + 16, 0xFFFF5555);
+				g.fill(sx + 16, sy, sx + 17, sy + 16, 0xFFFF5555);
+			}
+		}
+		g.text(font, Component.translatable("ftbic.reactor.design.remaining", missing, conflicts),
+				x + 4, topPos + 115, conflicts > 0 ? 0xFFAA2020 : 0xFF303030, false);
+		g.text(font, Component.translatable("ftbic.reactor.design.materials"), x + 4, topPos + 130, 0xFF303030, false);
+		List<Material> entries = materials();
+		int pages = Math.max(1, (entries.size() + 2) / 3);
+		materialPage = Math.min(materialPage, pages - 1);
+		for (int row = 0; row < 3; row++) {
+			int index = materialPage * 3 + row;
+			if (index >= entries.size()) break;
+			Material material = entries.get(index);
+			int y = topPos + 143 + row * 19;
+			g.item(new ItemStack(material.item()), x + 4, y);
+			int needed = material.required() - material.installed();
+			g.text(font, font.plainSubstrByWidth(new ItemStack(material.item()).getHoverName().getString(), 110),
+					x + 24, y, 0xFF303030, false);
+			g.text(font, Component.translatable("ftbic.reactor.design.count", material.available(), needed),
+					x + 24, y + 9, material.available() >= needed ? 0xFF267026 : 0xFFAA2020, false);
+		}
+		designButton(g, 4, 202, 14, Component.literal("<"), mx, my, pages > 1);
+		designButton(g, 122, 202, 14, Component.literal(">"), mx, my, pages > 1);
+		g.centeredText(font, (materialPage + 1) + " / " + pages, x + 70, topPos + 205, 0xFF303030);
 	}
 
 	@Override
@@ -89,10 +234,44 @@ public class NuclearReactorScreen extends ElectricBlockScreen<NuclearReactorMenu
 		for (int col = 0; col < 9; col++) {
 			drawSlot(g, invX + col * 18 - 1, hotbarY - 1);
 		}
+		drawDesign(g, mouseX, mouseY);
 	}
 
 	@Override
 	protected void extractOverlayTooltips(GuiGraphicsExtractor g, int mouseX, int mouseY) {
+		if (isIn(mouseX, mouseY, leftPos + PANEL_X + 4, topPos + 54, 132, 14)) {
+			g.setTooltipForNextFrame(Component.translatable(canBuild()
+					? "ftbic.reactor.design.build_hint" : "ftbic.reactor.design.build_requirements"), mouseX, mouseY);
+		}
+		if (isIn(mouseX, mouseY, leftPos + PANEL_X + 4, topPos + 91, 132, 24)) {
+			g.setTooltipForNextFrame(Component.translatable("ftbic.reactor.design.environment_hint"), mouseX, mouseY);
+		}
+		if (isIn(mouseX, mouseY, leftPos + PANEL_X + 4, topPos + 71, 94, 14)) {
+			g.setTooltipForNextFrame(Component.translatable("item.ftbic.reactor_blueprint.need_blank"), mouseX, mouseY);
+		}
+		if (isIn(mouseX, mouseY, leftPos + PANEL_X + 102, topPos + 71, 34, 14)) {
+			g.setTooltipForNextFrame(Component.translatable("ftbic.reactor.design.clear_hint"), mouseX, mouseY);
+		}
+		List<Material> entries = materials();
+		for (int row = 0; row < 3; row++) {
+			int index = materialPage * 3 + row;
+			if (index < entries.size() && isIn(mouseX, mouseY, leftPos + PANEL_X + 4, topPos + 143 + row * 19, 132, 18)) {
+				g.setTooltipForNextFrame(new ItemStack(entries.get(index).item()).getHoverName(), mouseX, mouseY);
+			}
+		}
+		for (int i = 0; i < ghosts.length; i++) {
+			int x = leftPos + 8 + (i % NuclearReactor.MAX_COLUMNS) * 18;
+			int y = topPos + 18 + (i / NuclearReactor.MAX_COLUMNS) * 18;
+			if (isIn(mouseX, mouseY, x, y, 16, 16)) {
+				ItemStack existing = menu.blockEntity.getStackInSlot(i);
+				if (!ghosts[i].isEmpty() && (existing.isEmpty() || !existing.is(ghosts[i].getItem())
+						|| ((ReactorItem) ghosts[i].getItem()).isItemBroken(existing))) {
+					g.setTooltipForNextFrame(Component.translatable("ftbic.reactor.design.expected", ghosts[i].getHoverName()), mouseX, mouseY);
+				} else if (ghosts[i].isEmpty() && !existing.isEmpty()) {
+					g.setTooltipForNextFrame(Component.translatable("ftbic.reactor.design.unexpected"), mouseX, mouseY);
+				}
+			}
+		}
 		int stripY = topPos + CONTROL_STRIP_TOP + (CONTROL_STRIP_H - 10) / 2;
 		if (isIn(mouseX, mouseY, leftPos + 115, topPos + 5, 54, 10)) {
 			Component label = this.menu.isPaused()
@@ -125,6 +304,20 @@ public class NuclearReactorScreen extends ElectricBlockScreen<NuclearReactorMenu
 	public boolean mouseClicked(MouseButtonEvent event, boolean dragging) {
 		int mx = (int) event.x();
 		int my = (int) event.y();
+		if (isIn(mx, my, leftPos + PANEL_X, topPos, PANEL_W, imageHeight)) {
+			int x = mx - leftPos - PANEL_X;
+			int y = my - topPos;
+			if (isIn(x, y, 4, 20, 14, 14) && !presets.isEmpty()) selectedPreset = Math.floorMod(selectedPreset - 1, presets.size());
+			else if (isIn(x, y, 122, 20, 14, 14) && !presets.isEmpty()) selectedPreset = (selectedPreset + 1) % presets.size();
+			else if (isIn(x, y, 4, 37, 64, 14) && !presets.isEmpty()) loadDesign(presets.get(selectedPreset).design().toJson());
+			else if (isIn(x, y, 72, 37, 64, 14)) loadDesign(Minecraft.getInstance().keyboardHandler.getClipboard());
+			else if (isIn(x, y, 4, 54, 132, 14) && canBuild()) send(2);
+			else if (isIn(x, y, 4, 71, 94, 14) && design() != null) send(4);
+			else if (isIn(x, y, 102, 71, 34, 14) && design() != null) send(3);
+			else if (isIn(x, y, 4, 202, 14, 14)) materialPage = Math.floorMod(materialPage - 1, Math.max(1, (materials().size() + 2) / 3));
+			else if (isIn(x, y, 122, 202, 14, 14)) materialPage = (materialPage + 1) % Math.max(1, (materials().size() + 2) / 3);
+			return true;
+		}
 		int stripY = topPos + CONTROL_STRIP_TOP + (CONTROL_STRIP_H - 10) / 2;
 		if (isIn(mx, my, leftPos + 105, topPos + 5, 9, 10)) {
 			send(0);
@@ -144,5 +337,14 @@ public class NuclearReactorScreen extends ElectricBlockScreen<NuclearReactorMenu
 	private void send(int buttonId) {
 		Minecraft.getInstance().player.connection.send(
 				new ServerboundContainerButtonClickPacket(menu.containerId, buttonId));
+	}
+
+	private void loadDesign(String json) {
+		try {
+			ReactorDesign.fromJson(json);
+			FTBICNet.sendToServer(new ReactorDesignPayload(menu.containerId, json));
+		} catch (IllegalArgumentException e) {
+			Minecraft.getInstance().player.sendOverlayMessage(Component.translatable("ftbic.reactor.design.invalid"));
+		}
 	}
 }

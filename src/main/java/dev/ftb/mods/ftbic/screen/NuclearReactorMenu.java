@@ -3,6 +3,10 @@ package dev.ftb.mods.ftbic.screen;
 import dev.ftb.mods.ftbic.block.entity.ElectricBlockEntity;
 import dev.ftb.mods.ftbic.block.entity.generator.NuclearReactorBlockEntity;
 import dev.ftb.mods.ftbic.item.reactor.NuclearReactor;
+import dev.ftb.mods.ftbic.item.ReactorBlueprintItem;
+import dev.ftb.mods.ftbic.FTBICConfig;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -17,6 +21,7 @@ public class NuclearReactorMenu extends ElectricBlockMenu {
 	public final DataSlot energyOutShort = DataSlot.standalone();
 	public final DataSlot runningFlag = DataSlot.standalone();
 	public final DataSlot activeColumnsSlot = DataSlot.standalone();
+	public final DataSlot coolingThousandths = DataSlot.standalone();
 
 	public NuclearReactorMenu(int id, Inventory playerInv, FriendlyByteBuf buf) {
 		super(FTBICMenus.NUCLEAR_REACTOR.get(), id, playerInv, buf);
@@ -36,6 +41,7 @@ public class NuclearReactorMenu extends ElectricBlockMenu {
 		addDataSlot(energyOutShort);
 		addDataSlot(runningFlag);
 		addDataSlot(activeColumnsSlot);
+		addDataSlot(coolingThousandths);
 	}
 
 	@Override
@@ -101,7 +107,32 @@ public class NuclearReactorMenu extends ElectricBlockMenu {
 			energyOutShort.set(Math.min(Short.MAX_VALUE, (int) Math.round(reactor.reactor.energyOutput)));
 			runningFlag.set(reactor.reactor.energyOutput > 0D ? 1 : 0);
 			activeColumnsSlot.set(Math.max(3, Math.min(NuclearReactor.MAX_COLUMNS, reactor.reactor.activeColumns)));
+			double extraCooling = FTBICConfig.NUCLEAR.WATER_COOLING_MULTIPLIER.get() - 1D;
+			coolingThousandths.set(extraCooling <= 0D ? 0 : (int) Math.round(1000D * (reactor.computeEnvCooling() - 1D) / extraCooling));
 		}
+	}
+
+	@Override
+	public boolean stillValid(Player player) {
+		return super.stillValid(player) && player.level() == blockEntity.getLevel()
+				&& player.distanceToSqr(blockEntity.getBlockPos().getCenter()) <= 64D;
+	}
+
+	@Override
+	public ItemStack quickMoveStack(Player player, int index) {
+		if (index < 0 || index >= slots.size()) return ItemStack.EMPTY;
+		Slot slot = slots.get(index);
+		if (!slot.hasItem()) return ItemStack.EMPTY;
+		ItemStack stack = slot.getItem();
+		ItemStack original = stack.copy();
+		// Only active reactor columns have menu slots; the backing inventory always has 54.
+		boolean moved = index < machineSlotCount
+				? moveItemStackTo(stack, machineSlotCount, slots.size(), true)
+				: moveItemStackTo(stack, 0, machineSlotCount, false);
+		if (!moved) return ItemStack.EMPTY;
+		if (stack.isEmpty()) slot.set(ItemStack.EMPTY);
+		else slot.setChanged();
+		return original;
 	}
 
 	public boolean isPaused()           { return pausedSlot.get() == 1; }
@@ -113,7 +144,7 @@ public class NuclearReactorMenu extends ElectricBlockMenu {
 
 	@Override
 	public boolean clickMenuButton(Player player, int id) {
-		if (!(blockEntity instanceof NuclearReactorBlockEntity reactor)) return false;
+		if (!stillValid(player) || !(blockEntity instanceof NuclearReactorBlockEntity reactor)) return false;
 		switch (id) {
 			case 0 -> {
 				reactor.reactor.paused = !reactor.reactor.paused;
@@ -123,6 +154,27 @@ public class NuclearReactorMenu extends ElectricBlockMenu {
 			case 1 -> {
 				reactor.reactor.allowRedstoneControl = !reactor.reactor.allowRedstoneControl;
 				reactor.setChanged();
+				return true;
+			}
+			case 2 -> {
+				int placed = reactor.buildPlannedDesign(player.getInventory());
+				player.sendOverlayMessage(placed == -2
+						? Component.translatable("ftbic.reactor.design.chambers_missing")
+						: placed < 0 ? Component.translatable("ftbic.reactor.design.pause_required")
+						: Component.translatable("ftbic.reactor.design.built", placed));
+				broadcastChanges();
+				return true;
+			}
+			case 3 -> {
+				reactor.setPlannedDesign(null);
+				return true;
+			}
+			case 4 -> {
+				boolean written = reactor.getPlannedDesign() != null
+						&& ReactorBlueprintItem.writeBlank(player.getInventory(), reactor.getPlannedDesign());
+				player.sendOverlayMessage(Component.translatable(written
+						? "item.ftbic.reactor_blueprint.written" : "item.ftbic.reactor_blueprint.need_blank"));
+				broadcastChanges();
 				return true;
 			}
 		}

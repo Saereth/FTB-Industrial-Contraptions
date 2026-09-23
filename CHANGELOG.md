@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+* Reactor components and fuel rods now stack when their data matches, with reactor and planner slots limited to one item.
 * Carbon and Quantum armor now render their own textures when equipped. {#12410}
 * Charge Pads now accept four rechargeable items in their UI while continuing to charge carried and worn items when stood on. ([Issue 2123](https://github.com/FTBTeam/FTB-Mods-Issues/issues/2123))
 * Scrap Boxes now give a random reward when used. Reward selection is based on [PR 56](https://github.com/FTBTeam/FTB-Industrial-Contraptions/pull/56) by @jshipley. ([Issue 2124](https://github.com/FTBTeam/FTB-Mods-Issues/issues/2124))
@@ -17,6 +18,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+* Reactor design previews and inventory autofill from planner presets or exported layouts.
+* Reusable Reactor Blueprints for copying and sharing designs.
+* GuideMe instructions for recording and applying Reactor Blueprints.
 * Items with the `ftbic:loot_box` data component can open a chosen loot table. Crouching opens the whole stack at once. Based on [PR 56](https://github.com/FTBTeam/FTB-Industrial-Contraptions/pull/56) by @jshipley.
 
 ### Changed

@@ -2,6 +2,7 @@ package dev.ftb.mods.ftbic.registry;
 
 import com.mojang.serialization.Codec;
 import dev.ftb.mods.ftbic.FTBIC;
+import dev.ftb.mods.ftbic.util.ReactorDesign;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -65,6 +66,11 @@ public final class ModDataComponents {
 			DATA_COMPONENTS.registerComponentType("loot_box", b -> b
 					.persistent(Identifier.CODEC)
 					.networkSynchronized(Identifier.STREAM_CODEC));
+
+	public static final DeferredHolder<DataComponentType<?>, DataComponentType<ReactorDesign>> REACTOR_DESIGN =
+			DATA_COMPONENTS.registerComponentType("reactor_design", b -> b
+					.persistent(ReactorDesign.CODEC)
+					.networkSynchronized(ByteBufCodecs.fromCodec(ReactorDesign.CODEC)));
 
 	private ModDataComponents() {}
 }

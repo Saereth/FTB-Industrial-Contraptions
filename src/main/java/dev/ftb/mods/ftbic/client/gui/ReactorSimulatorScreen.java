@@ -50,7 +50,7 @@ public class ReactorSimulatorScreen extends ElectricBlockScreen<ReactorSimulator
 	private static final int GRID_BOTTOM = GRID_TOP + 6 * 18;
 
 	private static final int PANEL_TOP = GRID_BOTTOM;
-	private static final int PANEL_H = 90;
+	private static final int PANEL_H = 107;
 
 	private static final int BUTTON_H = 13;
 	private static final int STEPPER_BTN_W = 12;
@@ -699,6 +699,7 @@ public class ReactorSimulatorScreen extends ElectricBlockScreen<ReactorSimulator
 		drawTextButton(g, startX, y, BOTTOM_BTN_W, Component.translatable("ftbic.gui.reactor_sim.analyze").getString(), mouseX, mouseY);
 		drawTextButton(g, startX + BOTTOM_BTN_W + BOTTOM_BTN_GAP, y, BOTTOM_BTN_W, Component.translatable("ftbic.gui.reactor_sim.import_btn").getString(), mouseX, mouseY);
 		drawTextButton(g, startX + (BOTTOM_BTN_W + BOTTOM_BTN_GAP) * 2, y, BOTTOM_BTN_W, Component.translatable("ftbic.gui.reactor_sim.export_btn").getString(), mouseX, mouseY);
+		drawTextButton(g, startX, y + 17, 204, Component.translatable("ftbic.reactor.design.blueprint").getString(), mouseX, mouseY);
 	}
 
 	private void drawTextButton(GuiGraphicsExtractor g, int x, int y, int w, String label, int mouseX, int mouseY) {
@@ -820,6 +821,10 @@ public class ReactorSimulatorScreen extends ElectricBlockScreen<ReactorSimulator
 		int btnY = topPos + ROW_BUTTONS_Y;
 		int startX = leftPos + BOTTOM_BTN_START_X;
 		int gap = BOTTOM_BTN_GAP;
+		if (isIn(mx, my, startX, btnY + 17, 204, BUTTON_H)) {
+			ClientPacketDistributor.sendToServer(SimulatorActionPayload.simple(SimulatorActionPayload.WRITE_BLUEPRINT));
+			return true;
+		}
 		if (isIn(mx, my, startX, btnY, BOTTOM_BTN_W, BUTTON_H)) {
 			ClientPacketDistributor.sendToServer(SimulatorActionPayload.simple(SimulatorActionPayload.ANALYZE));
 			return true;

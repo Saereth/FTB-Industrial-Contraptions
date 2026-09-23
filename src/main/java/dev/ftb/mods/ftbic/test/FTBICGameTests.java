@@ -34,6 +34,13 @@ public class FTBICGameTests {
 				FTBIC.id("default"),
 				new TestEnvironmentDefinition.AllOf());
 
+		reg(event, "reactor_design_fill", ReactorDesignGameTests::fillsWithoutReplacingOrLosingData, env, 40);
+		reg(event, "reactor_design_requirements", ReactorDesignGameTests::enforcesBuildRequirements, env, 40);
+		reg(event, "reactor_design_persistence", ReactorDesignGameTests::persistsBlueprintAndPreview, env, 40);
+		reg(event, "reactor_design_validation", ReactorDesignGameTests::rejectsInvalidDesigns, env, 40);
+		reg(event, "reactor_design_blueprint_use", ReactorDesignGameTests::blueprintUseLoadsAndCopies, env, 40);
+		reg(event, "reactor_design_quick_move", ReactorDesignGameTests::quickMoveRespectsActiveSlots, env, 40);
+
 		reg(event, "basic_generator_burns_coal", FTBICGameTestFunctions::basicGeneratorBurnsCoal, env, 200);
 		reg(event, "basic_generator_empty_stays_idle", FTBICGameTestFunctions::basicGeneratorEmptyStaysIdle, env, 200);
 		reg(event, "basic_generator_stops_when_full", FTBICGameTestFunctions::basicGeneratorStopsWhenFull, env, 200);

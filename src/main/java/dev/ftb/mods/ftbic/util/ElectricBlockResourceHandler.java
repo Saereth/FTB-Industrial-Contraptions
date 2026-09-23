@@ -1,6 +1,8 @@
 package dev.ftb.mods.ftbic.util;
 
 import dev.ftb.mods.ftbic.block.entity.ElectricBlockEntity;
+import dev.ftb.mods.ftbic.block.entity.generator.NuclearReactorBlockEntity;
+import dev.ftb.mods.ftbic.block.entity.machine.ReactorSimulatorBlockEntity;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.transfer.ResourceHandler;
 import net.neoforged.neoforge.transfer.item.ItemResource;
@@ -54,6 +56,8 @@ public class ElectricBlockResourceHandler extends SnapshotJournal<Integer> imple
 	public long getCapacityAsLong(int index, ItemResource resource) {
 		if (index < 0 || index >= total()) return 0;
 		if (!isInputSlot(index)) return 0;
+		if (be instanceof ReactorSimulatorBlockEntity) return 0;
+		if (be instanceof NuclearReactorBlockEntity) return 1;
 		return resource.isEmpty() ? 64 : Math.min(resource.getMaxStackSize(), 64);
 	}
 

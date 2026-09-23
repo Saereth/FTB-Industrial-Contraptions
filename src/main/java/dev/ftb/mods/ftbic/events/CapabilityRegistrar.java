@@ -17,6 +17,10 @@ import dev.ftb.mods.ftbic.util.ElectricBlockResourceHandler;
 import dev.ftb.mods.ftbic.util.EnergyRectifierFEHandler;
 import dev.ftb.mods.ftbic.util.FTBICCapabilities;
 import dev.ftb.mods.ftbic.util.FluidCellHandler;
+import dev.ftb.mods.ftbic.util.SideConfiguration;
+import dev.ftb.mods.ftbic.util.SidedResourceHandler;
+import dev.ftb.mods.ftbic.util.SidedEnergyHandler;
+import dev.ftb.mods.ftbic.util.SidedZapHandler;
 import dev.ftb.mods.ftbic.util.GeothermalTankHandler;
 import dev.ftb.mods.ftbic.util.PumpTankHandler;
 import dev.ftb.mods.ftbic.util.TeleporterFluidPassthroughHandler;
@@ -44,11 +48,11 @@ public final class CapabilityRegistrar {
 			BlockEntityType<ElectricBlockEntity> type =
 					(BlockEntityType<ElectricBlockEntity>) (Object) instance.blockEntity.get();
 
-			event.registerBlockEntity(FTBICCapabilities.ZAP_ENERGY_BLOCK, type, (be, side) -> be);
+			event.registerBlockEntity(FTBICCapabilities.ZAP_ENERGY_BLOCK, type, (be, side) -> new SidedZapHandler(be, side));
 
 			if (instance != FTBICElectricBlocks.TELEPORTER && instance != FTBICElectricBlocks.REACTOR_SIMULATOR) {
 				event.registerBlockEntity(Capabilities.Item.BLOCK, type,
-						(be, side) -> new ElectricBlockResourceHandler(be));
+						(be, side) -> new SidedResourceHandler<>(be, side, SideConfiguration.Resource.ITEMS, new ElectricBlockResourceHandler(be)));
 			}
 
 			if (fullFE && instance.feCapMode != ElectricBlockInstance.FECapMode.INSERT_ONLY) {
@@ -58,22 +62,22 @@ public final class CapabilityRegistrar {
 					final boolean ci = canInsert;
 					final boolean ce = canExtract;
 					event.registerBlockEntity(Capabilities.Energy.BLOCK, type,
-							(be, side) -> new ElectricBlockEnergyHandler(be, ci, ce));
+							(be, side) -> new SidedEnergyHandler(be, side, new ElectricBlockEnergyHandler(be, ci, ce)));
 				}
 				continue;
 			}
 
 			switch (instance.feCapMode) {
 				case EXTRACT_ONLY -> event.registerBlockEntity(Capabilities.Energy.BLOCK, type,
-						(be, side) -> new ElectricBlockEnergyHandler(be, false, true));
+						(be, side) -> new SidedEnergyHandler(be, side, new ElectricBlockEnergyHandler(be, false, true)));
 				case INSERT_AND_EXTRACT -> event.registerBlockEntity(Capabilities.Energy.BLOCK, type,
-						(be, side) -> new ElectricBlockEnergyHandler(be, true, true));
+						(be, side) -> new SidedEnergyHandler(be, side, new ElectricBlockEnergyHandler(be, true, true)));
 				case INSERT_ONLY -> event.registerBlockEntity(Capabilities.Energy.BLOCK, type,
 						(be, side) -> {
 							if (!(be instanceof EnergyRectifierBlockEntity rec)) return null;
 							Direction inputFace = be.getBlockState().getValue(BlockStateProperties.FACING);
 							if (side != null && side != inputFace) return null;
-							return new EnergyRectifierFEHandler(rec);
+							return new SidedEnergyHandler(rec, side, new EnergyRectifierFEHandler(rec));
 						});
 				case NONE -> {
 				}
@@ -85,44 +89,44 @@ public final class CapabilityRegistrar {
 				(BlockEntityType<GeothermalGeneratorBlockEntity>)
 						(Object) FTBICElectricBlocks.GEOTHERMAL_GENERATOR.blockEntity.get();
 		event.registerBlockEntity(Capabilities.Fluid.BLOCK, geoType,
-				(be, side) -> new GeothermalTankHandler(be));
+				(be, side) -> new SidedResourceHandler<>(be, side, SideConfiguration.Resource.FLUIDS, new GeothermalTankHandler(be)));
 
 		@SuppressWarnings("unchecked")
 		BlockEntityType<PumpBlockEntity> pumpType =
 				(BlockEntityType<PumpBlockEntity>)
 						(Object) FTBICElectricBlocks.PUMP.blockEntity.get();
 		event.registerBlockEntity(Capabilities.Fluid.BLOCK, pumpType,
-				(be, side) -> new PumpTankHandler(be));
+				(be, side) -> new SidedResourceHandler<>(be, side, SideConfiguration.Resource.FLUIDS, new PumpTankHandler(be)));
 
 		@SuppressWarnings("unchecked")
 		BlockEntityType<TeleporterBlockEntity> teleType =
 				(BlockEntityType<TeleporterBlockEntity>)
 						(Object) FTBICElectricBlocks.TELEPORTER.blockEntity.get();
 		event.registerBlockEntity(Capabilities.Item.BLOCK, teleType,
-				(be, side) -> new TeleporterItemPassthroughHandler(be));
+				(be, side) -> new SidedResourceHandler<>(be, side, SideConfiguration.Resource.ITEMS, new TeleporterItemPassthroughHandler(be)));
 		event.registerBlockEntity(Capabilities.Fluid.BLOCK, teleType,
-				(be, side) -> new TeleporterFluidPassthroughHandler(be));
+				(be, side) -> new SidedResourceHandler<>(be, side, SideConfiguration.Resource.FLUIDS, new TeleporterFluidPassthroughHandler(be)));
 
 		event.registerItem(Capabilities.Fluid.ITEM,
 				(stack, access) -> new FluidCellHandler(access),
 				FTBICItems.FLUID_CELL.get());
 
 		event.registerBlock(Capabilities.Item.BLOCK,
-				(level, pos, state, be, side) -> forwardChamber(Capabilities.Item.BLOCK, level, pos),
+				(level, pos, state, be, side) -> forwardChamber(Capabilities.Item.BLOCK, level, pos, side),
 				FTBICBlocks.NUCLEAR_REACTOR_CHAMBER.get());
 		event.registerBlock(Capabilities.Energy.BLOCK,
-				(level, pos, state, be, side) -> forwardChamber(Capabilities.Energy.BLOCK, level, pos),
+				(level, pos, state, be, side) -> forwardChamber(Capabilities.Energy.BLOCK, level, pos, side),
 				FTBICBlocks.NUCLEAR_REACTOR_CHAMBER.get());
 		event.registerBlock(FTBICCapabilities.ZAP_ENERGY_BLOCK,
-				(level, pos, state, be, side) -> forwardChamber(FTBICCapabilities.ZAP_ENERGY_BLOCK, level, pos),
+				(level, pos, state, be, side) -> forwardChamber(FTBICCapabilities.ZAP_ENERGY_BLOCK, level, pos, side),
 				FTBICBlocks.NUCLEAR_REACTOR_CHAMBER.get());
 	}
 
-	private static <T> T forwardChamber(BlockCapability<T, Direction> cap, Level level, BlockPos chamberPos) {
+	private static <T> T forwardChamber(BlockCapability<T, Direction> cap, Level level, BlockPos chamberPos, @org.jetbrains.annotations.Nullable Direction side) {
 		for (Direction dir : Direction.values()) {
 			BlockPos neighbor = chamberPos.relative(dir);
 			if (level.getBlockEntity(neighbor) instanceof NuclearReactorBlockEntity) {
-				T handler = level.getCapability(cap, neighbor, dir.getOpposite());
+				T handler = level.getCapability(cap, neighbor, side);
 				if (handler != null) return handler;
 			}
 		}

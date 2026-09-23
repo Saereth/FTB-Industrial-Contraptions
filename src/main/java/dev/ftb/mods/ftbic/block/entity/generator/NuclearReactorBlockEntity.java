@@ -13,6 +13,7 @@ import dev.ftb.mods.ftbic.sound.FTBICSounds;
 import dev.ftb.mods.ftbic.util.FTBICUtils;
 import dev.ftb.mods.ftbic.util.NuclearExplosion;
 import dev.ftb.mods.ftbic.util.NuclearFallout;
+import dev.ftb.mods.ftbic.util.ReactorDesign;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -41,6 +42,48 @@ public class NuclearReactorBlockEntity extends GeneratorBlockEntity {
 	public int debugSpeed;
 	private boolean pendingChamberRecompute = true;
 	private double cachedEnvCooling = 1.0D;
+	@Nullable
+	private ReactorDesign plannedDesign;
+
+	@Nullable
+	public ReactorDesign getPlannedDesign() {
+		return plannedDesign;
+	}
+
+	public boolean setPlannedDesign(@Nullable ReactorDesign design) {
+		if (design != null && !design.isValid()) return false;
+		plannedDesign = design;
+		setChanged();
+		if (level != null && !level.isClientSide()) {
+			level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);
+		}
+		return true;
+	}
+
+	/** Fill empty slots only; existing components and their data are never replaced. */
+	public int buildPlannedDesign(Inventory inventory) {
+		if (plannedDesign == null || !plannedDesign.isValid() || !reactor.paused || reactor.allowRedstoneControl) return -1;
+		recomputeActiveColumns();
+		if (plannedDesign.chambers() + 3 > reactor.activeColumns) return -2;
+		int placed = 0;
+		for (ReactorDesign.DesignSlot target : plannedDesign.slots()) {
+			if (!inputItems[target.slot()].isEmpty()) continue;
+			var required = ReactorDesign.resolveItem(target);
+			for (int i = 0; i < 36; i++) {
+				ItemStack source = inventory.getItem(i);
+				if (source.is(required) && !((ReactorItem) required).isItemBroken(source)) {
+					setStackInSlot(target.slot(), source.split(1));
+					placed++;
+					break;
+				}
+			}
+		}
+		if (placed > 0) {
+			inventory.setChanged();
+			setChanged();
+		}
+		return placed;
+	}
 
 	public NuclearReactorBlockEntity(BlockPos pos, BlockState state) {
 		super(FTBICElectricBlocks.NUCLEAR_REACTOR, pos, state);
@@ -49,6 +92,7 @@ public class NuclearReactorBlockEntity extends GeneratorBlockEntity {
 
 	@Override
 	public AbstractContainerMenu createMenu(int id, Inventory inv) {
+		recomputeActiveColumns();
 		return new NuclearReactorMenu(id, inv, this);
 	}
 
@@ -175,6 +219,7 @@ public class NuclearReactorBlockEntity extends GeneratorBlockEntity {
 		output.putBoolean("Paused", reactor.paused);
 		output.putBoolean("AllowRedstoneControl", reactor.allowRedstoneControl);
 		output.putDouble("EnergyOutput", reactor.energyOutput);
+		if (plannedDesign != null) output.store("PlannedDesign", ReactorDesign.CODEC, plannedDesign);
 		output.putInt("Heat", reactor.heat);
 		output.putInt("ActiveColumns", reactor.activeColumns);
 		if (debugSpeed > 0) output.putInt("DebugSpeed", debugSpeed);
@@ -187,6 +232,7 @@ public class NuclearReactorBlockEntity extends GeneratorBlockEntity {
 		reactor.paused = input.getBooleanOr("Paused", true);
 		reactor.allowRedstoneControl = input.getBooleanOr("AllowRedstoneControl", false);
 		reactor.energyOutput = input.getDoubleOr("EnergyOutput", 0D);
+		plannedDesign = input.read("PlannedDesign", ReactorDesign.CODEC).filter(ReactorDesign::isValid).orElse(null);
 		reactor.heat = input.getIntOr("Heat", 0);
 		reactor.activeColumns = Math.max(3, Math.min(NuclearReactor.MAX_COLUMNS, input.getIntOr("ActiveColumns", 3)));
 		debugSpeed = input.getIntOr("DebugSpeed", 0);

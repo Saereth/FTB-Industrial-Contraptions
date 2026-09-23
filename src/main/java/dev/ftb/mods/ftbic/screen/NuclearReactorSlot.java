@@ -22,6 +22,11 @@ public class NuclearReactorSlot extends Slot {
 	}
 
 	@Override
+	public int getMaxStackSize() {
+		return 1;
+	}
+
+	@Override
 	public boolean mayPickup(Player player) {
 		return true;
 	}

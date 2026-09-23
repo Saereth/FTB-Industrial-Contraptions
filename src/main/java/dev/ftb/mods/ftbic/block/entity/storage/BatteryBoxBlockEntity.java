@@ -30,12 +30,12 @@ public class BatteryBoxBlockEntity extends GeneratorBlockEntity {
 
 	@Override
 	public boolean isValidEnergyOutputSide(Direction direction) {
-		return direction == getFacing(Direction.NORTH);
+		return direction == getFacing(Direction.NORTH) && allowsTransfer(dev.ftb.mods.ftbic.util.SideConfiguration.Resource.ENERGY, direction, false);
 	}
 
 	@Override
 	public boolean isValidEnergyInputSide(Direction direction) {
-		return direction != getFacing(Direction.NORTH);
+		return direction != getFacing(Direction.NORTH) && allowsTransfer(dev.ftb.mods.ftbic.util.SideConfiguration.Resource.ENERGY, direction, true);
 	}
 
 	@Override

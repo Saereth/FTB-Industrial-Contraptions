@@ -172,7 +172,7 @@ public class GeneratorBlockEntity extends ElectricBlockEntity {
 	}
 
 	public boolean isValidEnergyOutputSide(Direction direction) {
-		return true;
+		return allowsTransfer(dev.ftb.mods.ftbic.util.SideConfiguration.Resource.ENERGY, direction, false);
 	}
 
 	private void pushFEToNeighbours() {
