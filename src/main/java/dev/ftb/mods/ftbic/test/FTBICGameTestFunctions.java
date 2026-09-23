@@ -1128,6 +1128,31 @@ public class FTBICGameTestFunctions {
 		return player;
 	}
 
+	static void scrapBoxGivesRewardOnUse(GameTestHelper helper) {
+		ServerPlayer player = mockSurvivalPlayer(helper);
+		ItemStack boxes = new ItemStack(FTBICItems.SCRAP_BOX.item.get(), 2);
+		player.setItemInHand(InteractionHand.MAIN_HAND, boxes);
+
+		InteractionResult result = boxes.use(helper.getLevel(), player, InteractionHand.MAIN_HAND);
+		helper.assertTrue(result.consumesAction(), "Scrap Box use should succeed");
+		helper.assertValueEqual(1, boxes.getCount(), "Using a Scrap Box should consume one box");
+		boolean receivedReward = false;
+		for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
+			ItemStack item = player.getInventory().getItem(i);
+			if (!item.isEmpty() && !item.is(FTBICItems.SCRAP_BOX.item.get())) {
+				receivedReward = true;
+				break;
+			}
+		}
+		helper.assertTrue(receivedReward, "Using a Scrap Box should put a reward in the inventory");
+
+		player.getAbilities().instabuild = true;
+		InteractionResult creativeResult = boxes.use(helper.getLevel(), player, InteractionHand.MAIN_HAND);
+		helper.assertTrue(creativeResult.consumesAction(), "Creative Scrap Box use should succeed");
+		helper.assertValueEqual(1, boxes.getCount(), "Creative Scrap Box use should keep the box");
+		helper.succeed();
+	}
+
 	static void fluidCellFillsFromWaterOnUse(GameTestHelper helper) {
 		BlockPos waterPos = new BlockPos(4, 2, 4);
 		BlockPos playerPos = new BlockPos(4, 3, 4);

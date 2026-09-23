@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * Carbon and Quantum armor now render their own textures when equipped. {#12410}
 * Charge Pads now accept four rechargeable items in their UI while continuing to charge carried and worn items when stood on. ([Issue 2123](https://github.com/FTBTeam/FTB-Mods-Issues/issues/2123))
+* Scrap Boxes now give a random reward when used. Reward selection is based on [PR 56](https://github.com/FTBTeam/FTB-Industrial-Contraptions/pull/56) by @jshipley. ([Issue 2124](https://github.com/FTBTeam/FTB-Mods-Issues/issues/2124))
 
 ## [26.1.2.10]
 

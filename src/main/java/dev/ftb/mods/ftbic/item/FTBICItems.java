@@ -67,6 +67,13 @@ public interface FTBICItems {
 		return m;
 	}
 
+	static MaterialItem scrapBox() {
+		MaterialItem m = new MaterialItem("scrap_box");
+		m.item = REGISTRY.register(m.id, name -> new ScrapBoxItem(props(name)));
+		MATERIALS.add(m);
+		return m;
+	}
+
 	DeferredItem<BlockItem> RUBBER_SHEET = blockItem("rubber_sheet", FTBICBlocks.RUBBER_SHEET);
 	DeferredItem<BlockItem> REINFORCED_STONE = blockItem("reinforced_stone", FTBICBlocks.REINFORCED_STONE);
 	DeferredItem<BlockItem> REINFORCED_GLASS = blockItem("reinforced_glass", FTBICBlocks.REINFORCED_GLASS);
@@ -111,7 +118,7 @@ public interface FTBICItems {
 	MaterialItem CARBON_FIBER_MESH = material("carbon_fiber_mesh");
 	MaterialItem CARBON_PLATE = material("carbon_plate");
 	MaterialItem SCRAP = material("scrap");
-	MaterialItem SCRAP_BOX = material("scrap_box");
+	MaterialItem SCRAP_BOX = scrapBox();
 	MaterialItem ELECTRONIC_CIRCUIT = material("electronic_circuit");
 	MaterialItem ADVANCED_CIRCUIT = material("advanced_circuit");
 	MaterialItem IRIDIUM_CIRCUIT = material("iridium_circuit");
