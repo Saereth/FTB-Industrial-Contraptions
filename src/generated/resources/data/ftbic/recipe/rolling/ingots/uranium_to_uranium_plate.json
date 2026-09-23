@@ -1,0 +1,15 @@
+{
+  "type": "ftbic:rolling",
+  "inputs": [
+    {
+      "ingredient": "#c:ingots/uranium"
+    }
+  ],
+  "outputs": [
+    {
+      "item": {
+        "id": "ftbic:uranium_plate"
+      }
+    }
+  ]
+}

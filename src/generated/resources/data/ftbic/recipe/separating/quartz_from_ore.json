@@ -1,0 +1,15 @@
+{
+  "type": "ftbic:separating",
+  "inputs": [
+    {
+      "ingredient": "#c:ores/quartz"
+    }
+  ],
+  "outputs": [
+    {
+      "item": {
+        "id": "minecraft:quartz"
+      }
+    }
+  ]
+}

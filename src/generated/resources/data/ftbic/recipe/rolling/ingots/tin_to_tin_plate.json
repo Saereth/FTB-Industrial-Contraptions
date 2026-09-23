@@ -1,0 +1,15 @@
+{
+  "type": "ftbic:rolling",
+  "inputs": [
+    {
+      "ingredient": "#c:ingots/tin"
+    }
+  ],
+  "outputs": [
+    {
+      "item": {
+        "id": "ftbic:tin_plate"
+      }
+    }
+  ]
+}

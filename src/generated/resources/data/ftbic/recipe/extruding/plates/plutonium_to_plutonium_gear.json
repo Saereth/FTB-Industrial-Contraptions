@@ -1,0 +1,16 @@
+{
+  "type": "ftbic:extruding",
+  "inputs": [
+    {
+      "count": 4,
+      "ingredient": "#c:plates/plutonium"
+    }
+  ],
+  "outputs": [
+    {
+      "item": {
+        "id": "ftbic:plutonium_gear"
+      }
+    }
+  ]
+}

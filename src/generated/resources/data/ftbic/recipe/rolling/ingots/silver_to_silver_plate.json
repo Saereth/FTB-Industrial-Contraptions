@@ -1,0 +1,15 @@
+{
+  "type": "ftbic:rolling",
+  "inputs": [
+    {
+      "ingredient": "#c:ingots/silver"
+    }
+  ],
+  "outputs": [
+    {
+      "item": {
+        "id": "ftbic:silver_plate"
+      }
+    }
+  ]
+}

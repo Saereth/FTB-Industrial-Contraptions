@@ -1,6 +1,6 @@
 {
   "values": [
-    "ic:tin_stone_ore",
-    "ic:tin_deepslate_ore"
+    "ftbic:tin_stone_ore",
+    "ftbic:tin_deepslate_ore"
   ]
 }

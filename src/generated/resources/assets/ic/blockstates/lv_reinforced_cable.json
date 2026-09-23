@@ -1,9 +1,0 @@
-{
-  "multipart": [
-    {
-      "apply": {
-        "model": "ic:block/lv_reinforced_cable"
-      }
-    }
-  ]
-}

@@ -1,0 +1,16 @@
+{
+  "type": "ftbic:reprocessing",
+  "inputs": [
+    {
+      "ingredient": "#ftbic:scrappable"
+    }
+  ],
+  "outputs": [
+    {
+      "chance": 0.125,
+      "item": {
+        "id": "ftbic:scrap"
+      }
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "type": "ftbic:rolling",
+  "inputs": [
+    {
+      "ingredient": "#c:ingots/iridium"
+    }
+  ],
+  "outputs": [
+    {
+      "item": {
+        "id": "ftbic:iridium_plate"
+      }
+    }
+  ]
+}

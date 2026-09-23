@@ -1,8 +1,8 @@
 {
   "replace": false,
   "values": [
-    "ic:landmark",
-    "ic:quarry",
-    "ic:pump"
+    "ftbic:landmark",
+    "ftbic:quarry",
+    "ftbic:pump"
   ]
 }

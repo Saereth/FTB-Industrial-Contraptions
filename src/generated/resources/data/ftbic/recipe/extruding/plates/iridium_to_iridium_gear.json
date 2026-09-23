@@ -1,0 +1,16 @@
+{
+  "type": "ftbic:extruding",
+  "inputs": [
+    {
+      "count": 4,
+      "ingredient": "#c:plates/iridium"
+    }
+  ],
+  "outputs": [
+    {
+      "item": {
+        "id": "ftbic:iridium_gear"
+      }
+    }
+  ]
+}

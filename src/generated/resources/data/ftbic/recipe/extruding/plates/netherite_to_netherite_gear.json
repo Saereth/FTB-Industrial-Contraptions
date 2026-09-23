@@ -1,0 +1,16 @@
+{
+  "type": "ftbic:extruding",
+  "inputs": [
+    {
+      "count": 4,
+      "ingredient": "#c:plates/netherite"
+    }
+  ],
+  "outputs": [
+    {
+      "item": {
+        "id": "ftbic:netherite_gear"
+      }
+    }
+  ]
+}

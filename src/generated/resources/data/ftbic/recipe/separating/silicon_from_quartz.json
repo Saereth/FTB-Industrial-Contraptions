@@ -1,0 +1,16 @@
+{
+  "type": "ftbic:separating",
+  "inputs": [
+    {
+      "ingredient": "#c:gems/quartz"
+    }
+  ],
+  "outputs": [
+    {
+      "item": {
+        "count": 3,
+        "id": "ftbic:silicon_gem"
+      }
+    }
+  ]
+}

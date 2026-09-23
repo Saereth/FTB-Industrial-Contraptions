@@ -1,0 +1,16 @@
+{
+  "type": "ftbic:macerating",
+  "inputs": [
+    {
+      "ingredient": "#minecraft:logs"
+    }
+  ],
+  "outputs": [
+    {
+      "chance": 0.25,
+      "item": {
+        "id": "ftbic:sticky_resin"
+      }
+    }
+  ]
+}

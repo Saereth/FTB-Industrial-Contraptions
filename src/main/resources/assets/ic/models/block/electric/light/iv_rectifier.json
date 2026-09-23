@@ -1,7 +1,0 @@
-{
-  "parent": "ic:block/orientable_3d",
-  "textures": {
-    "side": "ic:block/electric/light/iv_rectifier_out",
-    "front": "ic:block/electric/light/iv_rectifier_in"
-  }
-}

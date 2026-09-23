@@ -1,0 +1,15 @@
+{
+  "type": "ftbic:rolling",
+  "inputs": [
+    {
+      "ingredient": "#c:ingots/electrum"
+    }
+  ],
+  "outputs": [
+    {
+      "item": {
+        "id": "ftbic:electrum_plate"
+      }
+    }
+  ]
+}

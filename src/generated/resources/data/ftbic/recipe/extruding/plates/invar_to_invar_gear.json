@@ -1,0 +1,16 @@
+{
+  "type": "ftbic:extruding",
+  "inputs": [
+    {
+      "count": 4,
+      "ingredient": "#c:plates/invar"
+    }
+  ],
+  "outputs": [
+    {
+      "item": {
+        "id": "ftbic:invar_gear"
+      }
+    }
+  ]
+}

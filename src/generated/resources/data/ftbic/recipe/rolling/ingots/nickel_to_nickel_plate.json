@@ -1,0 +1,15 @@
+{
+  "type": "ftbic:rolling",
+  "inputs": [
+    {
+      "ingredient": "#c:ingots/nickel"
+    }
+  ],
+  "outputs": [
+    {
+      "item": {
+        "id": "ftbic:nickel_plate"
+      }
+    }
+  ]
+}
