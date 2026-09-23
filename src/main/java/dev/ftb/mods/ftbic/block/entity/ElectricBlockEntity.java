@@ -5,6 +5,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.ftb.mods.ftbic.FTBICConfig;
 import dev.ftb.mods.ftbic.block.ElectricBlock;
 import dev.ftb.mods.ftbic.block.ElectricBlockInstance;
+import dev.ftb.mods.ftbic.block.NuclearReactorChamberBlock;
 import dev.ftb.mods.ftbic.screen.MachineMenu;
 import dev.ftb.mods.ftbic.util.ZapEnergyHandler;
 import dev.ftb.mods.ftbic.util.SideConfiguration;
@@ -98,7 +99,7 @@ public class ElectricBlockEntity extends BlockEntity implements ZapEnergyHandler
 			// Chamber capabilities forward the reactor's live settings.
 			for (Direction side : Direction.values()) {
 				BlockPos adjacent = worldPosition.relative(side);
-				if (level.getBlockState(adjacent).getBlock() instanceof dev.ftb.mods.ftbic.block.NuclearReactorChamberBlock) {
+				if (level.getBlockState(adjacent).getBlock() instanceof NuclearReactorChamberBlock) {
 					level.invalidateCapabilities(adjacent);
 				}
 			}
@@ -124,7 +125,7 @@ public class ElectricBlockEntity extends BlockEntity implements ZapEnergyHandler
 		if (this instanceof TransformerBlockEntity || this instanceof EnergyRectifierBlockEntity) return face == Face.FRONT ? 1 : 2;
 		if (this instanceof BatteryBoxBlockEntity) return face == Face.FRONT ? 2 : 1;
 		return (electricBlockInstance.maxEnergyInput.get() > 0 ? 1 : 0)
-				| (this instanceof GeneratorBlockEntity && electricBlockInstance.maxEnergyOutput.get() > 0 ? 2 : 0);
+				| (this instanceof GeneratorBlockEntity && getMaxOutputEnergy() > 0 ? 2 : 0);
 	}
 
 	public boolean supportsResource(Resource resource) {
@@ -152,6 +153,17 @@ public class ElectricBlockEntity extends BlockEntity implements ZapEnergyHandler
 		Mode mode = sideConfiguration.mode(resource, face);
 		// DEFAULT deliberately retains legacy FE capability behavior as well as native machine rules.
 		return mode == Mode.DEFAULT || (mode.allows(input) && (supportedTransfers(resource, face) & (input ? 1 : 2)) != 0);
+	}
+
+	@Override
+	@SuppressWarnings("deprecation")
+	public void setBlockState(BlockState state) {
+		Direction previous = getFacing(Direction.NORTH);
+		super.setBlockState(state);
+		if (level != null && !level.isClientSide() && previous != getFacing(Direction.NORTH)) {
+			level.invalidateCapabilities(worldPosition);
+			electricNetworkUpdated(level, worldPosition);
+		}
 	}
 
 	@Override

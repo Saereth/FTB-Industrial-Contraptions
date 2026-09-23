@@ -2,6 +2,7 @@ package dev.ftb.mods.ftbic.registry;
 
 import com.mojang.serialization.Codec;
 import dev.ftb.mods.ftbic.FTBIC;
+import dev.ftb.mods.ftbic.util.MachineConfiguration;
 import dev.ftb.mods.ftbic.util.ReactorDesign;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
@@ -71,6 +72,11 @@ public final class ModDataComponents {
 			DATA_COMPONENTS.registerComponentType("reactor_design", b -> b
 					.persistent(ReactorDesign.CODEC)
 					.networkSynchronized(ByteBufCodecs.fromCodec(ReactorDesign.CODEC)));
+
+	public static final DeferredHolder<DataComponentType<?>, DataComponentType<MachineConfiguration>> MACHINE_CONFIGURATION =
+			DATA_COMPONENTS.registerComponentType("machine_configuration", b -> b
+					.persistent(MachineConfiguration.CODEC)
+					.networkSynchronized(ByteBufCodecs.fromCodec(MachineConfiguration.CODEC)));
 
 	private ModDataComponents() {}
 }

@@ -34,6 +34,17 @@ public class FTBICGameTests {
 				FTBIC.id("default"),
 				new TestEnvironmentDefinition.AllOf());
 
+		reg(event, "side_configuration_cable_routes", SideConfigurationGameTests::multipleCableRoutes, env, 60);
+		reg(event, "side_configuration_full_fe", SideConfigurationGameTests::fullFeMode, env, 60);
+		reg(event, "side_configuration_itemtransfers", SideConfigurationGameTests::itemTransfers, env, 60);
+		reg(event, "side_configuration_ejector", SideConfigurationGameTests::ejector, env, 60);
+		reg(event, "side_configuration_fluidsandteleporter", SideConfigurationGameTests::fluidsAndTeleporter, env, 60);
+		reg(event, "side_configuration_nativeenergy", SideConfigurationGameTests::nativeEnergy, env, 60);
+		reg(event, "side_configuration_feandports", SideConfigurationGameTests::feAndPorts, env, 60);
+		reg(event, "side_configuration_reactorchambers", SideConfigurationGameTests::reactorChambers, env, 60);
+		reg(event, "side_configuration_persistenceandrotation", SideConfigurationGameTests::persistenceAndRotation, env, 60);
+		reg(event, "side_configuration_cardandpackets", SideConfigurationGameTests::cardAndPackets, env, 60);
+
 		reg(event, "reactor_design_fill", ReactorDesignGameTests::fillsWithoutReplacingOrLosingData, env, 40);
 		reg(event, "reactor_design_requirements", ReactorDesignGameTests::enforcesBuildRequirements, env, 40);
 		reg(event, "reactor_design_persistence", ReactorDesignGameTests::persistsBlueprintAndPreview, env, 40);

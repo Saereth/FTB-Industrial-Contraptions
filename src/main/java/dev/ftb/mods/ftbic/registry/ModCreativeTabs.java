@@ -69,6 +69,7 @@ public final class ModCreativeTabs {
 						out.accept(FTBICItems.CREATIVE_BATTERY.get());
 						out.accept(FTBICItems.FLUID_CELL.get());
 						out.accept(FTBICItems.LOCATION_CARD.get());
+						out.accept(FTBICItems.CONFIGURATION_CARD.get());
 
 						out.accept(FTBICItems.SMALL_COOLANT_CELL.get());
 						out.accept(FTBICItems.MEDIUM_COOLANT_CELL.get());

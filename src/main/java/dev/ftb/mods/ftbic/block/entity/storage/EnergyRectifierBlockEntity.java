@@ -3,6 +3,7 @@ package dev.ftb.mods.ftbic.block.entity.storage;
 import dev.ftb.mods.ftbic.FTBICConfig;
 import dev.ftb.mods.ftbic.block.ElectricBlockInstance;
 import dev.ftb.mods.ftbic.block.entity.generator.GeneratorBlockEntity;
+import dev.ftb.mods.ftbic.util.SideConfiguration;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.state.BlockState;
@@ -65,7 +66,7 @@ public class EnergyRectifierBlockEntity extends GeneratorBlockEntity {
 	public boolean isValidEnergyOutputSide(Direction direction) {
 		BlockState st = getBlockState();
 		Direction inputFace = st.getValue(BlockStateProperties.FACING);
-		return direction != inputFace && allowsTransfer(dev.ftb.mods.ftbic.util.SideConfiguration.Resource.ENERGY, direction, false);
+		return direction != inputFace && allowsTransfer(SideConfiguration.Resource.ENERGY, direction, false);
 	}
 
 	@Override

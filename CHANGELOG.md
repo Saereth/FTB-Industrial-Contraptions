@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+* I/O configuration forgetting the selected tab when reopened.
 * Reactor components and fuel rods now stack when their data matches, with reactor and planner slots limited to one item.
 * Carbon and Quantum armor now render their own textures when equipped. {#12410}
 * Charge Pads now accept four rechargeable items in their UI while continuing to charge carried and worn items when stood on. ([Issue 2123](https://github.com/FTBTeam/FTB-Mods-Issues/issues/2123))
@@ -18,6 +19,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+* Configurable machine faces for item, fluid, and energy transfers.
+* Reusable Configuration Cards for copying machine side settings.
+* GuideMe instructions for side configuration and Configuration Cards.
 * Reactor design previews and inventory autofill from planner presets or exported layouts.
 * Reusable Reactor Blueprints for copying and sharing designs.
 * GuideMe instructions for recording and applying Reactor Blueprints.
@@ -25,6 +29,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+* Refreshed machine and I/O screens with light steel panels, vanilla-style slots, and outlined progress arrows.
 * Canned Food now uses the standard item remainder behavior to return its empty can after eating.
 * Carbon and Quantum armor sets no longer have item durability or permanent armor defense. The chestplate spends zaps to absorb damage, and an empty chestplate leaves the set without protection.
 * Quantum Chestplates now support powered gliding with jump to boost and sneak to slow down. Mechanical Elytra uses a visible wing texture and shares the same flight energy handling. Adapted from [PR 55](https://github.com/FTBTeam/FTB-Industrial-Contraptions/pull/55) by @jshipley.

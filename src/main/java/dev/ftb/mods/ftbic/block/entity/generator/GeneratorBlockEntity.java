@@ -12,6 +12,7 @@ import dev.ftb.mods.ftbic.util.EnergyItemHandler;
 import dev.ftb.mods.ftbic.util.EnergyTier;
 import dev.ftb.mods.ftbic.util.FTBICCapabilities;
 import dev.ftb.mods.ftbic.util.FTBICUtils;
+import dev.ftb.mods.ftbic.util.SideConfiguration;
 import dev.ftb.mods.ftbic.util.ZapEnergyHandler;
 import dev.ftb.mods.ftbic.util.ZapFEConversion;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
@@ -172,7 +173,7 @@ public class GeneratorBlockEntity extends ElectricBlockEntity {
 	}
 
 	public boolean isValidEnergyOutputSide(Direction direction) {
-		return allowsTransfer(dev.ftb.mods.ftbic.util.SideConfiguration.Resource.ENERGY, direction, false);
+		return allowsTransfer(SideConfiguration.Resource.ENERGY, direction, false);
 	}
 
 	private void pushFEToNeighbours() {
@@ -257,7 +258,8 @@ public class GeneratorBlockEntity extends ElectricBlockEntity {
 		int maxCableLength = FTBICConfig.ENERGY.MAX_CABLE_LENGTH.get();
 
 		for (Direction direction : FTBICUtils.DIRECTIONS) {
-			if (isValidEnergyOutputSide(direction)) {
+			if (isValidEnergyOutputSide(direction) || (this instanceof NuclearReactorBlockEntity
+					&& level.getBlockState(worldPosition.relative(direction)).getBlock() instanceof NuclearReactorChamberBlock)) {
 				CachedEnergyStorageOrigin origin = new CachedEnergyStorageOrigin();
 				origin.direction = direction;
 				find(traversed, set, origin, 0, maxCableLength, worldPosition, direction);
@@ -276,13 +278,14 @@ public class GeneratorBlockEntity extends ElectricBlockEntity {
 		}
 
 		BlockPos pos = currentPos.relative(direction);
-		if (!traversed.add(pos.asLong())) {
+		if (traversed.contains(pos.asLong())) {
 			return;
 		}
 
 		BlockState state = level.getBlockState(pos);
 
 		if (state.getBlock() instanceof CableBlock cableBlock) {
+			traversed.add(pos.asLong());
 			double rate = cableBlock.tier.transferRate();
 			if (rate < origin.cableTransferRate) {
 				origin.cableTier = cableBlock.tier;
@@ -298,7 +301,9 @@ public class GeneratorBlockEntity extends ElectricBlockEntity {
 		}
 
 		if (state.getBlock() instanceof NuclearReactorChamberBlock) {
+			traversed.add(pos.asLong());
 			for (Direction dir : FTBICUtils.DIRECTIONS) {
+				if (this instanceof NuclearReactorBlockEntity && !isValidEnergyOutputSide(dir)) continue;
 				find(traversed, set, origin, distance + 1, maxCableLength, pos, dir);
 			}
 			return;
@@ -325,6 +330,8 @@ public class GeneratorBlockEntity extends ElectricBlockEntity {
 		ZapEnergyHandler zapHandler = zapCache.getCapability();
 		if (zapHandler != null && zapHandler != this) {
 			if (zapHandler.getMaxInputEnergy() > 0D && !zapHandler.isBurnt() && zapHandler.isValidEnergyInputSide(direction.getOpposite())) {
+				// A rejected face must not hide another valid route to this consumer.
+				traversed.add(pos.asLong());
 				CachedEnergyStorage s = new CachedEnergyStorage();
 				s.origin = origin;
 				s.distance = distance;
@@ -343,6 +350,7 @@ public class GeneratorBlockEntity extends ElectricBlockEntity {
 		if (feCache.getCapability() == null) {
 			return;
 		}
+		traversed.add(pos.asLong());
 		CachedEnergyStorage s = new CachedEnergyStorage();
 		s.origin = origin;
 		s.distance = distance;

@@ -56,6 +56,7 @@ import dev.ftb.mods.ftbic.util.EnergyItemHandler;
 import dev.ftb.mods.ftbic.util.FTBICCapabilities;
 import dev.ftb.mods.ftbic.util.FluidCellIngredient;
 import dev.ftb.mods.ftbic.util.ZapEnergyHandler;
+import dev.ftb.mods.ftbic.util.SidedZapHandler;
 import io.netty.channel.embedded.EmbeddedChannel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
@@ -2215,8 +2216,8 @@ public class FTBICGameTestFunctions {
 						FTBICCapabilities.ZAP_ENERGY_BLOCK, helper.absolutePos(CENTER), dir);
 				helper.assertTrue(cap != null,
 						"zap cap missing on " + inst.id + " face " + dir);
-				helper.assertTrue(cap == be,
-						"zap cap handler on " + inst.id + " should be the block entity itself");
+				helper.assertTrue(cap instanceof SidedZapHandler sided && sided.machine() == be,
+						"zap cap handler on " + inst.id + " should delegate to the correct block entity");
 			}
 			helper.setBlock(CENTER, Blocks.AIR);
 		}
@@ -2230,7 +2231,7 @@ public class FTBICGameTestFunctions {
 
 		ZapEnergyHandler cap = helper.getLevel().getCapability(
 				FTBICCapabilities.ZAP_ENERGY_BLOCK, helper.absolutePos(CENTER), null);
-		helper.assertTrue(cap == be, "null-side zap cap query should resolve to the BE");
+		helper.assertTrue(cap instanceof SidedZapHandler sided && sided.machine() == be, "null-side zap cap query should delegate to the BE");
 		helper.assertTrue(cap.getEnergyCapacity() > 0D,
 				"macerator zap capacity should be positive (got " + cap.getEnergyCapacity() + ")");
 		helper.succeed();
@@ -2270,8 +2271,8 @@ public class FTBICGameTestFunctions {
 				FTBICCapabilities.ZAP_ENERGY_BLOCK, helper.absolutePos(chamberPos), Direction.NORTH);
 		helper.assertTrue(capOnChamber != null,
 				"chamber should forward zap cap to adjacent reactor");
-		helper.assertTrue(capOnChamber == reactor,
-				"forwarded cap should resolve to the reactor BE itself");
+		helper.assertTrue(capOnChamber instanceof SidedZapHandler sided && sided.machine() == reactor && sided.side() == Direction.NORTH,
+				"forwarded cap should delegate to the reactor using the external face");
 		helper.succeed();
 	}
 
@@ -2301,13 +2302,13 @@ public class FTBICGameTestFunctions {
 				FTBICCapabilities.ZAP_ENERGY_BLOCK, helper.getLevel(),
 				helper.absolutePos(CENTER), Direction.NORTH);
 		ZapEnergyHandler first = cache.getCapability();
-		helper.assertTrue(first instanceof BasicGeneratorBlockEntity,
+		helper.assertTrue(first instanceof SidedZapHandler sided && sided.machine() instanceof BasicGeneratorBlockEntity,
 				"initial cache resolves to generator");
 
 		helper.setBlock(CENTER, FTBICElectricBlocks.MACERATOR.block.get());
 		helper.runAfterDelay(2L, () -> {
 			ZapEnergyHandler second = cache.getCapability();
-			helper.assertTrue(second instanceof MaceratorBlockEntity,
+			helper.assertTrue(second instanceof SidedZapHandler sided && sided.machine() instanceof MaceratorBlockEntity,
 					"cache should reflect replacement block (got " + second + ")");
 			helper.assertTrue(first != second, "cache should return the new BE handler, not the old one");
 			helper.succeed();

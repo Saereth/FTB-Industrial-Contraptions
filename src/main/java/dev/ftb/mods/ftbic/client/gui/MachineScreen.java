@@ -21,6 +21,14 @@ public class MachineScreen extends ElectricBlockScreen<MachineMenu> {
 	}
 
 	@Override
+	protected void drawBase(GuiGraphicsExtractor g) {
+		super.drawBase(g);
+		if (drawDefaultArrow) {
+			IndustrialGui.readout(g, leftPos + 30, topPos + 23, 116, 44);
+		}
+	}
+
+	@Override
 	protected void extractOverlays(GuiGraphicsExtractor g, int mouseX, int mouseY, float partialTick) {
 		if (this.menu.blockEntity == null) return;
 		int inputs = this.menu.blockEntity.inputItems.length;

@@ -17,6 +17,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.HashSet;
 
@@ -48,7 +49,7 @@ public record ReactorDesign(int version, int chambers, double water, List<Design
 
 	public ItemStack[] previewItems() {
 		ItemStack[] items = new ItemStack[NuclearReactor.MAX_SLOTS];
-		java.util.Arrays.fill(items, ItemStack.EMPTY);
+		Arrays.fill(items, ItemStack.EMPTY);
 		if (isValid()) {
 			for (DesignSlot slot : slots) items[slot.slot()] = new ItemStack(resolveItem(slot));
 		}

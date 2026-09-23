@@ -25,7 +25,7 @@ All machines share:
 * **Energy buffer** — shown on the right of the GUI
 * **Progress bar** — fills as the recipe ticks; default 200 ticks / recipe
 * **Upgrade slots** — install <ItemLink id="overclocker_upgrade" />, <ItemLink id="energy_storage_upgrade" />, <ItemLink id="transformer_upgrade" />, or <ItemLink id="ejector_upgrade" />
-* **Face I/O** — configurable item and energy sides from the GUI
+* **[Side Configuration](side_configuration.md)**: independent item, fluid, and energy faces from the I/O button
 
 All LV machines are built around the <ItemLink id="machine_block" /> shell plus a recipe-specific core (for example, <ItemLink id="electronic_circuit" /> plus flint and stone for the Macerator).
 

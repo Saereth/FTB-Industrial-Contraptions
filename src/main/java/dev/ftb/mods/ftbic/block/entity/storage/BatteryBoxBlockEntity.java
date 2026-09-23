@@ -5,6 +5,7 @@ import dev.ftb.mods.ftbic.block.ElectricBlockInstance;
 import dev.ftb.mods.ftbic.block.entity.generator.GeneratorBlockEntity;
 import dev.ftb.mods.ftbic.screen.BatteryBoxMenu;
 import dev.ftb.mods.ftbic.util.BatterySlotHelper;
+import dev.ftb.mods.ftbic.util.SideConfiguration;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.player.Inventory;
@@ -30,12 +31,12 @@ public class BatteryBoxBlockEntity extends GeneratorBlockEntity {
 
 	@Override
 	public boolean isValidEnergyOutputSide(Direction direction) {
-		return direction == getFacing(Direction.NORTH) && allowsTransfer(dev.ftb.mods.ftbic.util.SideConfiguration.Resource.ENERGY, direction, false);
+		return direction == getFacing(Direction.NORTH) && allowsTransfer(SideConfiguration.Resource.ENERGY, direction, false);
 	}
 
 	@Override
 	public boolean isValidEnergyInputSide(Direction direction) {
-		return direction != getFacing(Direction.NORTH) && allowsTransfer(dev.ftb.mods.ftbic.util.SideConfiguration.Resource.ENERGY, direction, true);
+		return direction != getFacing(Direction.NORTH) && allowsTransfer(SideConfiguration.Resource.ENERGY, direction, true);
 	}
 
 	@Override

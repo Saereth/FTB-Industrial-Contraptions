@@ -7,6 +7,7 @@ import dev.ftb.mods.ftbic.block.entity.generator.GeneratorBlockEntity;
 import dev.ftb.mods.ftbic.net.TeleporterListPayload;
 import dev.ftb.mods.ftbic.registry.TeleporterChunkTickets;
 import dev.ftb.mods.ftbic.screen.TeleporterMenu;
+import dev.ftb.mods.ftbic.util.SideConfiguration;
 import dev.ftb.mods.ftbic.util.TeleporterEntry;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -100,7 +101,7 @@ public class TeleporterBlockEntity extends GeneratorBlockEntity {
 
 	@Override
 	public boolean isValidEnergyInputSide(Direction direction) {
-		return allowsTransfer(dev.ftb.mods.ftbic.util.SideConfiguration.Resource.ENERGY, direction, true);
+		return allowsTransfer(SideConfiguration.Resource.ENERGY, direction, true);
 	}
 
 	@Override

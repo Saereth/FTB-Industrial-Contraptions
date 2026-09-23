@@ -12,6 +12,39 @@ public class FTBICLanguageProvider extends LanguageProvider {
 
 	@Override
 	protected void addTranslations() {
+		add("item.ftbic.configuration_card", "Configuration Card");
+		add("item.ftbic.configuration_card.copy", "Sneak-use on a machine to copy its side settings.");
+		add("item.ftbic.configuration_card.use", "Use on the same machine type to apply. Reusable.");
+		add("item.ftbic.configuration_card.contents", "Settings: %s");
+		add("item.ftbic.configuration_card.copied", "Machine side settings copied.");
+		add("item.ftbic.configuration_card.applied", "Machine side settings applied.");
+		add("item.ftbic.configuration_card.blank", "Blank card: sneak-use on a machine to copy its settings.");
+		add("item.ftbic.configuration_card.mismatch", "These settings belong to a different machine type.");
+		add("ftbic.sides.title", "Side Configuration");
+		add("ftbic.sides.button", "I/O");
+		add("ftbic.sides.reset", "Reset to Defaults");
+		add("ftbic.sides.default_hint", "* Default uses the machine's original rules.");
+		add("ftbic.sides.face_hint", "%s (%s): %s. Click to change.");
+		add("ftbic.sides.items", "Items");
+		add("ftbic.sides.fluids", "Fluids");
+		add("ftbic.sides.energy", "Energy");
+		add("ftbic.sides.default", "Default");
+		add("ftbic.sides.disabled", "Disabled");
+		add("ftbic.sides.input", "Input");
+		add("ftbic.sides.output", "Output");
+		add("ftbic.sides.both", "Both");
+		add("ftbic.sides.front", "Front");
+		add("ftbic.sides.back", "Back");
+		add("ftbic.sides.left", "Left");
+		add("ftbic.sides.right", "Right");
+		add("ftbic.sides.top", "Top");
+		add("ftbic.sides.bottom", "Bottom");
+		add("ftbic.sides.direction.north", "North");
+		add("ftbic.sides.direction.south", "South");
+		add("ftbic.sides.direction.east", "East");
+		add("ftbic.sides.direction.west", "West");
+		add("ftbic.sides.direction.up", "Up");
+		add("ftbic.sides.direction.down", "Down");
 		add("item.ftbic.reactor_blueprint", "Reactor Blueprint");
 		add("item.ftbic.reactor_blueprint.blank", "Blank: use on a Reactor Planner to copy its design.");
 		add("item.ftbic.reactor_blueprint.contents", "%s chambers, %s components");

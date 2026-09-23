@@ -6,6 +6,7 @@ import dev.ftb.mods.ftbic.block.entity.ElectricBlockEntity;
 import dev.ftb.mods.ftbic.item.FTBICItems;
 import dev.ftb.mods.ftbic.util.BatterySlotHelper;
 import dev.ftb.mods.ftbic.util.FTBICUtils;
+import dev.ftb.mods.ftbic.util.SideConfiguration;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
@@ -83,7 +84,7 @@ public class BasicMachineBlockEntity extends ElectricBlockEntity {
 			if (outputItems[i].isEmpty()) continue;
 
 			for (Direction dir : FTBICUtils.DIRECTIONS) {
-				if (!allowsTransfer(dev.ftb.mods.ftbic.util.SideConfiguration.Resource.ITEMS, dir, false)) continue;
+				if (!allowsTransfer(SideConfiguration.Resource.ITEMS, dir, false)) continue;
 				if (outputItems[i].isEmpty()) break;
 				ResourceHandler<ItemResource> handler = itemEjectCache(serverLevel, dir).getCapability();
 				if (handler == null) continue;

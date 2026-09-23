@@ -14,6 +14,7 @@ import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.ProblemReporter;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.InteractionHand;
@@ -39,7 +40,7 @@ final class ReactorDesignGameTests {
 		return new ReactorDesign(1, chambers, 0, List.of(slots));
 	}
 
-	private static ReactorDesign.DesignSlot slot(int slot, net.minecraft.world.item.Item item) {
+	private static ReactorDesign.DesignSlot slot(int slot, Item item) {
 		return new ReactorDesign.DesignSlot(slot, BuiltInRegistries.ITEM.getKey(item));
 	}
 

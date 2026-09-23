@@ -4,6 +4,8 @@ import dev.ftb.mods.ftbic.FTBIC;
 import dev.ftb.mods.ftbic.screen.ElectricBlockMenu;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -21,6 +23,7 @@ import dev.ftb.mods.ftbic.screen.BatterySlot;
 import dev.ftb.mods.ftbic.screen.PickaxeSlot;
 import dev.ftb.mods.ftbic.screen.UpgradeSlot;
 import dev.ftb.mods.ftbic.util.FTBICUtils;
+import dev.ftb.mods.ftbic.util.SideConfiguration;
 
 public class ElectricBlockScreen<T extends ElectricBlockMenu> extends AbstractContainerScreen<T> {
 	public static final Identifier BASE_TEXTURE = FTBIC.id("textures/gui/base.png");
@@ -43,6 +46,16 @@ public class ElectricBlockScreen<T extends ElectricBlockMenu> extends AbstractCo
 	protected void init() {
 		super.init();
 		this.titleLabelX = 8;
+		if (menu.blockEntity != null) {
+			boolean supported = false;
+			for (var resource : SideConfiguration.Resource.values()) supported |= menu.blockEntity.supportsResource(resource);
+			if (supported) {
+				addRenderableWidget(Button.builder(Component.translatable("ftbic.sides.button"),
+						b -> minecraft.pushGuiLayer(new SideConfigurationScreen(menu)))
+						.bounds(Math.max(0, leftPos - 26), topPos, 24, 20)
+						.tooltip(Tooltip.create(Component.translatable("ftbic.sides.title"))).build(IndustrialButton::new));
+			}
+		}
 	}
 
 	@Override

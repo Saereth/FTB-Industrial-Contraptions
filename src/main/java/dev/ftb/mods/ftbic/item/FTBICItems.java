@@ -168,6 +168,7 @@ public interface FTBICItems {
 	DeferredItem<Item> FLUID_CELL = REGISTRY.register("fluid_cell", name -> new FluidCellItem(props(name)));
 
 	DeferredItem<Item> LOCATION_CARD = REGISTRY.register("location_card", name -> new LocationCardItem(props(name)));
+	DeferredItem<Item> CONFIGURATION_CARD = REGISTRY.register("configuration_card", name -> new ConfigurationCardItem(props(name)));
 	DeferredItem<Item> REACTOR_BLUEPRINT = REGISTRY.register("reactor_blueprint", name -> new ReactorBlueprintItem(props(name)));
 
 	// Reactor components

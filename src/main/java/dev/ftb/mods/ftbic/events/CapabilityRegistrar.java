@@ -35,6 +35,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.capabilities.BlockCapability;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
+import org.jetbrains.annotations.Nullable;
 
 @EventBusSubscriber(modid = FTBIC.MOD_ID)
 public final class CapabilityRegistrar {
@@ -122,7 +123,7 @@ public final class CapabilityRegistrar {
 				FTBICBlocks.NUCLEAR_REACTOR_CHAMBER.get());
 	}
 
-	private static <T> T forwardChamber(BlockCapability<T, Direction> cap, Level level, BlockPos chamberPos, @org.jetbrains.annotations.Nullable Direction side) {
+	private static <T> T forwardChamber(BlockCapability<T, Direction> cap, Level level, BlockPos chamberPos, @Nullable Direction side) {
 		for (Direction dir : Direction.values()) {
 			BlockPos neighbor = chamberPos.relative(dir);
 			if (level.getBlockEntity(neighbor) instanceof NuclearReactorBlockEntity) {

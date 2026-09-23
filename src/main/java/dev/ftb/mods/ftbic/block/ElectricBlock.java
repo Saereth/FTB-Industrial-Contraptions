@@ -4,6 +4,7 @@ import dev.ftb.mods.ftbic.block.entity.ElectricBlockEntity;
 import dev.ftb.mods.ftbic.block.entity.generator.NuclearReactorBlockEntity;
 import dev.ftb.mods.ftbic.block.entity.machine.ReactorSimulatorBlockEntity;
 import dev.ftb.mods.ftbic.block.entity.machine.MachineBlockEntity;
+import dev.ftb.mods.ftbic.item.ConfigurationCardItem;
 import dev.ftb.mods.ftbic.item.FTBICItems;
 import dev.ftb.mods.ftbic.item.ReactorBlueprintItem;
 import net.minecraft.core.BlockPos;
@@ -179,6 +180,9 @@ public class ElectricBlock extends Block implements EntityBlock, SprayPaintable 
 
 	@Override
 	protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+		if (stack.getItem() instanceof ConfigurationCardItem) {
+			return stack.getItem().useOn(new UseOnContext(player, hand, hit));
+		}
 		if (stack.getItem() instanceof ReactorBlueprintItem
 				&& (level.getBlockEntity(pos) instanceof NuclearReactorBlockEntity
 				|| level.getBlockEntity(pos) instanceof ReactorSimulatorBlockEntity)) {
