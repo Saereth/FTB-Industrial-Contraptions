@@ -1,7 +1,6 @@
 package dev.ftb.mods.ftbic.item;
 
 import dev.ftb.mods.ftbic.block.entity.ElectricBlockEntity;
-import dev.ftb.mods.ftbic.block.entity.machine.MachineBlockEntity;
 import dev.ftb.mods.ftbic.block.entity.machine.BatchFeederBlockEntity;
 import dev.ftb.mods.ftbic.registry.ModDataComponents;
 import dev.ftb.mods.ftbic.util.MachineConfiguration;
@@ -36,7 +35,7 @@ public class ConfigurationCardItem extends Item {
 		String message;
 		if (player.isShiftKeyDown()) {
 			card.set(ModDataComponents.MACHINE_CONFIGURATION.get(), new MachineConfiguration(type, machine.getSideConfiguration(),
-					machine instanceof MachineBlockEntity processor ? processor.getInputLocks() : List.of(),
+					machine.getInputLocks(),
 					machine instanceof BatchFeederBlockEntity feeder ? feeder.getBatch() : List.of(),
 					machine instanceof BatchFeederBlockEntity feeder ? SimpleFluidContent.copyOf(feeder.getBatchFluid()) : SimpleFluidContent.EMPTY));
 			player.getInventory().setChanged();
@@ -47,7 +46,7 @@ public class ConfigurationCardItem extends Item {
 			else if (!saved.machine().equals(type)) message = "mismatch";
 			else {
 				machine.setSideConfiguration(saved.sides());
-				if (machine instanceof MachineBlockEntity processor) processor.setInputLocks(saved.inputLocks());
+				machine.setInputLocks(saved.inputLocks());
 				if (machine instanceof BatchFeederBlockEntity feeder) {
 					feeder.setBatch(saved.batch());
 					feeder.setBatchFluid(saved.batchFluid().copy());

@@ -14,6 +14,7 @@ import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.input.MouseButtonInfo;
 import net.minecraft.network.chat.Component;
+import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.world.entity.player.Inventory;
 import org.lwjgl.glfw.GLFW;
 
@@ -88,6 +89,9 @@ public class BatchFeederScreen extends ElectricBlockScreen<BatchFeederMenu> {
 				.bounds(leftPos + 126, topPos + 95, 42, 18).build(IndustrialButton::new));
 		applyAmount.active = fluidAmount.active;
 	}
+
+	public Rect2i getBatchItemArea(int slot) { return new Rect2i(leftPos + 125, topPos + 35 + slot * 18, 18, 18); }
+	public Rect2i getBatchFluidArea() { return new Rect2i(leftPos + 151, topPos + 35, 18, 54); }
 
 	private void sendFluidAction(int action, int amount) {
 		FTBICNet.sendToServer(new BatchFluidPayload(menu.containerId, action, amount));

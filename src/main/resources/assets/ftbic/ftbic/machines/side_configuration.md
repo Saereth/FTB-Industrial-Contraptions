@@ -51,13 +51,17 @@ Reactor chambers share their reactor's settings, using the outward face being ac
 
 ## Input Slot Locks
 
-Recipe-processing machines have an **L** button below **I/O**. Use it to assign ghost items to their input slots:
+Electric machines with ordinary item input slots have an **L** button below **I/O**. Use it to assign ghost items to their input slots:
 
 * Pick up an item on your cursor before opening **L**, then click an input row to assign it. The item is not consumed.
 * With an empty cursor, clicking copies that input slot's existing item.
 * Right-click or Shift-click a row to unlock it.
 
-A locked slot only accepts its assigned item with matching data components. It remembers that assignment when processing empties the slot; a faded ghost item and cyan marker show the lock. Existing contents are not removed when you change a lock, and you can still take them out manually. The locks persist after reloading the world.
+You can also **drag an item from JEI directly onto a machine input slot**, or onto a row in the **L** panel. This creates a ghost filter even if you do not own the item; it never adds items to the inventory. Output and auxiliary battery, pickaxe, and upgrade slots are not targets. This also works on the Powered Crafting Table's nine inputs, generators, pumps, charging slots, and Antimatter Constructor.
+
+The **Iron Furnace** accepts JEI ghosts on its input and fuel slots. With an empty cursor, right-click an empty ghost to clear it, or Shift-right-click a filled locked slot. These filters also restrict hopper insertion.
+
+A locked slot only accepts its assigned item with matching data components. It remembers that assignment when processing empties the slot; a faded ghost item and cyan marker show the lock. Existing contents are not removed when you change a lock, and you can still take them out manually. The locks persist after reloading the world. Reactor layouts use their separate design controls.
 
 This is useful for an Alloy Smelter: reserve one input for copper and another for tin. Use a [Batch Feeder](batch_feeder.md) when you also need exact ingredient quantities.
 
@@ -67,7 +71,7 @@ This is useful for an Alloy Smelter: reserve one input for copper and another fo
 
 <RecipeFor id="ftbic:configuration_card" />
 
-* **Sneak+Use** on a machine copies its side settings, input locks, and Batch Feeder pattern (where supported) onto the card, overwriting any previous settings.
+* **Sneak+Use** on an electric machine or Batch Feeder copies its side settings, input locks, and Batch Feeder pattern (where supported) onto the card, overwriting any previous settings.
 * **Use** on another machine of the **same type** applies those settings.
 * The tooltip identifies the saved machine type. Applying settings keeps the card reusable.
 

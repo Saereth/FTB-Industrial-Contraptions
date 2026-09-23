@@ -113,14 +113,13 @@ public abstract class ElectricBlockMenu extends AbstractContainerMenu {
 		}
 	}
 
-	protected static class InputSlot extends Slot {
-		public InputSlot(Container container, int index, int x, int y) {
+	protected static class FilteredInputSlot extends Slot {
+		public FilteredInputSlot(Container container, int index, int x, int y) {
 			super(container, index, x, y);
 		}
 
 		@Override
 		public boolean mayPlace(ItemStack stack) {
-			if (stack.getItem() instanceof UpgradeItem) return false;
 			return container.canPlaceItem(getContainerSlot(), stack);
 		}
 
@@ -128,6 +127,13 @@ public abstract class ElectricBlockMenu extends AbstractContainerMenu {
 		public int getMaxStackSize(ItemStack stack) {
 			// Vanilla's shift-click merge path checks capacity without calling mayPlace.
 			return mayPlace(stack) ? super.getMaxStackSize(stack) : 0;
+		}
+	}
+
+	protected static class InputSlot extends FilteredInputSlot {
+		public InputSlot(Container container, int index, int x, int y) { super(container, index, x, y); }
+		@Override public boolean mayPlace(ItemStack stack) {
+			return !(stack.getItem() instanceof UpgradeItem) && super.mayPlace(stack);
 		}
 	}
 

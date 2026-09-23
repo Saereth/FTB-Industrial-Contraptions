@@ -44,6 +44,11 @@ public class ElectricBlockScreen<T extends ElectricBlockMenu> extends AbstractCo
 		super.init();
 		this.titleLabelX = 8;
 		if (menu.blockEntity != null) {
+			if (menu.blockEntity.supportsInputLocks()) {
+				addRenderableWidget(Button.builder(Component.literal("L"), b -> minecraft.pushGuiLayer(new InputLockScreen(menu, menu.blockEntity)))
+						.bounds(Math.max(0, leftPos - 26), topPos + 22, 24, 20)
+						.tooltip(Tooltip.create(Component.translatable("ftbic.locks.title"))).build(IndustrialButton::new));
+			}
 			boolean supported = false;
 			for (var resource : SideConfiguration.Resource.values()) supported |= menu.blockEntity.supportsResource(resource);
 			if (supported) {
@@ -55,11 +60,29 @@ public class ElectricBlockScreen<T extends ElectricBlockMenu> extends AbstractCo
 		}
 	}
 
+	private void drawInputLocks(GuiGraphicsExtractor g) {
+		var machine = menu.blockEntity;
+		if (machine != null && machine.supportsInputLocks()) {
+			for (int i = 0; i < machine.inputItems.length; i++) {
+				var lock = machine.getInputLock(i);
+				if (lock.isEmpty()) continue;
+				var slot = menu.slots.get(i);
+				int x = leftPos + slot.x, y = topPos + slot.y;
+				if (!slot.hasItem()) {
+					g.item(lock, x, y);
+					g.fill(x, y, x + 16, y + 16, 0x998B8B8B);
+				}
+				g.fill(x, y + 16, x + 16, y + 17, IndustrialGui.CYAN);
+			}
+		}
+	}
+
 	@Override
 	public void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
 		drawBase(graphics);
 		drawDefaultBars(graphics);
 		extractOverlays(graphics, mouseX, mouseY, partialTick);
+		drawInputLocks(graphics);
 		super.extractContents(graphics, mouseX, mouseY, partialTick);
 		extractDefaultTooltips(graphics, mouseX, mouseY);
 		extractOverlayTooltips(graphics, mouseX, mouseY);
@@ -70,6 +93,16 @@ public class ElectricBlockScreen<T extends ElectricBlockMenu> extends AbstractCo
 
 	protected void extractOverlayTooltips(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
 		extractMachineSlotTooltips(graphics, mouseX, mouseY);
+		var machine = menu.blockEntity;
+		if (machine != null && machine.supportsInputLocks()) {
+			for (int i = 0; i < machine.inputItems.length; i++) {
+				var slot = menu.slots.get(i);
+				var lock = machine.getInputLock(i);
+				if (!slot.hasItem() && !lock.isEmpty() && isIn(mouseX, mouseY, leftPos + slot.x, topPos + slot.y, 16, 16)) {
+					graphics.setTooltipForNextFrame(Component.translatable("ftbic.locks.locked", lock.getHoverName()), mouseX, mouseY);
+				}
+			}
+		}
 	}
 
 	protected void extractMachineSlotTooltips(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {

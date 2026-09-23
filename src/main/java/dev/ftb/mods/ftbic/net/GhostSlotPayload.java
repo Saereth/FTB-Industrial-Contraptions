@@ -2,7 +2,6 @@ package dev.ftb.mods.ftbic.net;
 
 import dev.ftb.mods.ftbic.FTBIC;
 import dev.ftb.mods.ftbic.block.entity.machine.BatchFeederBlockEntity;
-import dev.ftb.mods.ftbic.block.entity.machine.MachineBlockEntity;
 import dev.ftb.mods.ftbic.screen.ElectricBlockMenu;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
@@ -31,11 +30,11 @@ public record GhostSlotPayload(int containerId, int slot, int action) implements
 		if (machine.getLevel() != player.level() || player.level().getBlockEntity(pos) != machine
 				|| player.distanceToSqr(pos.getCenter()) > 64 || !player.level().mayInteract(player, pos)
 				|| payload.slot < 0 || payload.action < 0 || payload.action > 3) return false;
-		if (machine instanceof MachineBlockEntity processor) {
-			if (payload.slot >= processor.inputItems.length || payload.action > 1) return false;
-			ItemStack assignment = menu.getCarried().isEmpty() ? processor.inputItems[payload.slot] : menu.getCarried();
+		if (machine.supportsInputLocks()) {
+			if (payload.slot >= machine.inputItems.length || payload.action > 1) return false;
+			ItemStack assignment = menu.getCarried().isEmpty() ? machine.inputItems[payload.slot] : menu.getCarried();
 			if (payload.action == 0 && assignment.isEmpty()) return false;
-			processor.setInputLock(payload.slot, payload.action == 1 ? ItemStack.EMPTY : assignment);
+			machine.setInputLock(payload.slot, payload.action == 1 ? ItemStack.EMPTY : assignment);
 			return true;
 		}
 		if (machine instanceof BatchFeederBlockEntity feeder) {

@@ -5,6 +5,16 @@ import dev.ftb.mods.ftbic.block.FTBICBlocks;
 import dev.ftb.mods.ftbic.block.FTBICElectricBlocks;
 import dev.ftb.mods.ftbic.block.entity.machine.AntimatterConstructorBlockEntity;
 import dev.ftb.mods.ftbic.client.gui.ReactorSimulatorScreen;
+import dev.ftb.mods.ftbic.client.gui.MachineScreen;
+import dev.ftb.mods.ftbic.client.gui.BasicGeneratorScreen;
+import dev.ftb.mods.ftbic.client.gui.GeothermalGeneratorScreen;
+import dev.ftb.mods.ftbic.client.gui.AntimatterConstructorScreen;
+import dev.ftb.mods.ftbic.client.gui.PoweredCraftingTableScreen;
+import dev.ftb.mods.ftbic.client.gui.PumpScreen;
+import dev.ftb.mods.ftbic.client.gui.BatteryBoxScreen;
+import dev.ftb.mods.ftbic.client.gui.BatchFeederScreen;
+import dev.ftb.mods.ftbic.client.gui.InputLockScreen;
+import dev.ftb.mods.ftbic.client.gui.IronFurnaceScreen;
 import dev.ftb.mods.ftbic.item.FTBICItems;
 import dev.ftb.mods.ftbic.item.FluidCellItem;
 import dev.ftb.mods.ftbic.recipe.AntimatterBoostRecipe;
@@ -189,6 +199,17 @@ public class FTBICJEIPlugin implements IModPlugin {
 
 	@Override
 	public void registerGuiHandlers(IGuiHandlerRegistration r) {
+		r.addGhostIngredientHandler(IronFurnaceScreen.class, new IronFurnaceGhostIngredientHandler());
+		r.addGhostIngredientHandler(MachineScreen.class, new MachineGhostIngredientHandler<>());
+		r.addGhostIngredientHandler(BasicGeneratorScreen.class, new MachineGhostIngredientHandler<>());
+		r.addGhostIngredientHandler(GeothermalGeneratorScreen.class, new MachineGhostIngredientHandler<>());
+		r.addGhostIngredientHandler(AntimatterConstructorScreen.class, new MachineGhostIngredientHandler<>());
+		r.addGhostIngredientHandler(PoweredCraftingTableScreen.class, new MachineGhostIngredientHandler<>());
+		r.addGhostIngredientHandler(PumpScreen.class, new MachineGhostIngredientHandler<>());
+		r.addGhostIngredientHandler(BatteryBoxScreen.class, new MachineGhostIngredientHandler<>());
+		r.addGhostIngredientHandler(BatchFeederScreen.class, new MachineGhostIngredientHandler<>());
+		r.addGhostIngredientHandler(InputLockScreen.class, new InputLockGhostIngredientHandler());
+		r.addGuiScreenHandler(InputLockScreen.class, InputLockGhostIngredientHandler::properties);
 		r.addGuiContainerHandler(ReactorSimulatorScreen.class,
 				new IGuiContainerHandler<>() {
 					@Override

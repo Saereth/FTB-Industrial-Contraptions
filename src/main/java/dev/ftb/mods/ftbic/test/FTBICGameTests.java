@@ -35,6 +35,7 @@ public class FTBICGameTests {
 				new TestEnvironmentDefinition.AllOf());
 
 		reg(event, "centrifuge_fluid_processing", CentrifugeFluidGameTests::processing, env, 60);
+		reg(event, "batch_feeder_jei_ghosts", BatchFeederGameTests::ghostIngredients, env, 60);
 		reg(event, "batch_feeder_locks", BatchFeederGameTests::locks, env, 60);
 		reg(event, "batch_feeder_atomic_delivery", BatchFeederGameTests::atomicDelivery, env, 60);
 		reg(event, "batch_feeder_machine_controls", BatchFeederGameTests::machineAndControls, env, 60);

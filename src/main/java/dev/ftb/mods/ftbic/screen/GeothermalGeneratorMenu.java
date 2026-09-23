@@ -6,7 +6,6 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.DataSlot;
-import net.minecraft.world.inventory.Slot;
 
 public class GeothermalGeneratorMenu extends ElectricBlockMenu {
 	public final DataSlot fluidScaled = DataSlot.standalone();
@@ -30,7 +29,7 @@ public class GeothermalGeneratorMenu extends ElectricBlockMenu {
 		ElectricBlockEntityContainer container = new ElectricBlockEntityContainer(blockEntity);
 		int inputs = blockEntity.inputItems.length;
 		int outputs = blockEntity.outputItems.length;
-		if (inputs > 0) addSlot(new Slot(container, 0, 62, 17));
+		if (inputs > 0) addSlot(new FilteredInputSlot(container, 0, 62, 17));
 		if (outputs > 0) addSlot(new OutputSlot(container, inputs, 62, 53));
 		machineSlotCount = inputs + outputs;
 	}

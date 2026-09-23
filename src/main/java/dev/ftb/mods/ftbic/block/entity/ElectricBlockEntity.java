@@ -7,6 +7,7 @@ import dev.ftb.mods.ftbic.block.ElectricBlock;
 import dev.ftb.mods.ftbic.block.ElectricBlockInstance;
 import dev.ftb.mods.ftbic.block.NuclearReactorChamberBlock;
 import dev.ftb.mods.ftbic.screen.MachineMenu;
+import dev.ftb.mods.ftbic.util.GhostItem;
 import dev.ftb.mods.ftbic.util.ZapEnergyHandler;
 import dev.ftb.mods.ftbic.util.SideConfiguration;
 import dev.ftb.mods.ftbic.util.SideConfiguration.Resource;
@@ -14,6 +15,7 @@ import dev.ftb.mods.ftbic.util.SideConfiguration.Face;
 import dev.ftb.mods.ftbic.util.SideConfiguration.Mode;
 import dev.ftb.mods.ftbic.block.entity.generator.GeneratorBlockEntity;
 import dev.ftb.mods.ftbic.block.entity.generator.GeothermalGeneratorBlockEntity;
+import dev.ftb.mods.ftbic.block.entity.machine.BatchFeederBlockEntity;
 import dev.ftb.mods.ftbic.block.entity.machine.PumpBlockEntity;
 import dev.ftb.mods.ftbic.block.entity.machine.ReactorSimulatorBlockEntity;
 import dev.ftb.mods.ftbic.block.entity.machine.TeleporterBlockEntity;
@@ -51,6 +53,8 @@ import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -87,6 +91,41 @@ public class ElectricBlockEntity extends BlockEntity implements ZapEnergyHandler
 	public double energyCapacity;
 	public double maxInputEnergy;
 	public boolean autoEject;
+	private List<GhostItem> inputLocks = List.of();
+
+	public List<GhostItem> getInputLocks() {
+		return inputLocks;
+	}
+
+	public ItemStack getInputLock(int slot) {
+		for (GhostItem lock : inputLocks) if (lock.slot() == slot) return lock.item().create();
+		return ItemStack.EMPTY;
+	}
+
+	public void setInputLock(int slot, ItemStack stack) {
+		if (!supportsInputLocks() || slot < 0 || slot >= inputItems.length) return;
+		var locks = new ArrayList<>(inputLocks);
+		locks.removeIf(lock -> lock.slot() == slot);
+		if (!stack.isEmpty()) locks.add(GhostItem.of(slot, stack, 1));
+		setInputLocks(locks);
+	}
+
+	public void setInputLocks(List<GhostItem> locks) {
+		var normalized = new ArrayList<GhostItem>();
+		for (GhostItem lock : locks) {
+			if (!supportsInputLocks() || lock.slot() < 0 || lock.slot() >= inputItems.length) continue;
+			normalized.removeIf(existing -> existing.slot() == lock.slot());
+			normalized.add(GhostItem.of(lock.slot(), lock.item().create(), 1));
+		}
+		inputLocks = List.copyOf(normalized);
+		setChanged();
+		if (level != null && !level.isClientSide()) level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);
+	}
+
+	public boolean supportsInputLocks() {
+		return inputItems.length > 0 && inputItems.length <= 9 && !(this instanceof BatchFeederBlockEntity);
+	}
+
 	private SideConfiguration sideConfiguration = SideConfiguration.DEFAULT;
 
 	public SideConfiguration getSideConfiguration() { return sideConfiguration; }
@@ -213,7 +252,8 @@ public class ElectricBlockEntity extends BlockEntity implements ZapEnergyHandler
 	}
 
 	public boolean isItemValid(int slot, ItemStack stack) {
-		return slot >= 0 && slot < inputItems.length;
+		ItemStack lock = getInputLock(slot);
+		return slot >= 0 && slot < inputItems.length && (lock.isEmpty() || stack.isEmpty() || ItemStack.isSameItemSameComponents(lock, stack));
 	}
 
 	public boolean isSlotExtractable(int slot) {
@@ -224,6 +264,7 @@ public class ElectricBlockEntity extends BlockEntity implements ZapEnergyHandler
 	protected void saveAdditional(ValueOutput output) {
 		super.saveAdditional(output);
 		output.putDouble("Energy", energy);
+		if (supportsInputLocks()) output.store("InputLocks", GhostItem.LIST_CODEC, inputLocks);
 		output.store("SideConfiguration", SideConfiguration.CODEC, sideConfiguration);
 		if (burnt) {
 			output.putBoolean("Burnt", true);
@@ -249,6 +290,7 @@ public class ElectricBlockEntity extends BlockEntity implements ZapEnergyHandler
 		energy = input.getDoubleOr("Energy", 0D);
 		sideConfiguration = input.read("SideConfiguration", SideConfiguration.CODEC).orElse(SideConfiguration.DEFAULT);
 		burnt = input.getBooleanOr("Burnt", false);
+		inputLocks = supportsInputLocks() ? input.read("InputLocks", GhostItem.LIST_CODEC).orElse(List.of()) : List.of();
 		placerId = input.read("PlacerId", UUIDUtil.CODEC).orElse(Util.NIL_UUID);
 		placerName = input.getStringOr("PlacerName", "");
 		if (getSlotCount() > 0) {

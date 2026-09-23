@@ -1,6 +1,10 @@
 package dev.ftb.mods.ftbic.client.gui;
 
 import dev.ftb.mods.ftbic.integration.jei.ClientRecipeCache;
+import dev.ftb.mods.ftbic.net.FTBICNet;
+import dev.ftb.mods.ftbic.net.SetGhostIngredientPayload;
+import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.fluids.FluidStack;
 import dev.ftb.mods.ftbic.screen.IronFurnaceMenu;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -39,6 +43,19 @@ public class IronFurnaceScreen extends AbstractContainerScreen<IronFurnaceMenu> 
 			int h = Mth.ceil(menu.getLitProgress() * 13F) + 1;
 			g.blitSprite(RenderPipelines.GUI_TEXTURED, LIT_PROGRESS_SPRITE, 14, 14, 0, 14 - h, xo + 56, yo + 36 + 14 - h, 14, h);
 		}
+		if (menu.blockEntity != null) {
+			for (int slot = 0; slot < 2; slot++) {
+				var ghost = menu.blockEntity.getInputLock(slot);
+				if (ghost.isEmpty()) continue;
+				var input = menu.slots.get(slot);
+				int x = leftPos + input.x, y = topPos + input.y;
+				if (!input.hasItem()) {
+					g.item(ghost, x, y);
+					g.fill(x, y, x + 16, y + 16, 0x998B8B8B);
+				}
+				g.fill(x, y + 16, x + 16, y + 17, IndustrialGui.CYAN);
+			}
+		}
 		int w = Mth.ceil(menu.getBurnProgress() * 24F);
 		g.blitSprite(RenderPipelines.GUI_TEXTURED, BURN_PROGRESS_SPRITE, 24, 16, 0, 0, xo + 79, yo + 34, w, 16);
 	}
@@ -46,6 +63,15 @@ public class IronFurnaceScreen extends AbstractContainerScreen<IronFurnaceMenu> 
 	@Override
 	public void extractRenderState(GuiGraphicsExtractor g, int mouseX, int mouseY, float partialTick) {
 		super.extractRenderState(g, mouseX, mouseY, partialTick);
+		if (menu.blockEntity != null) {
+			for (int slot = 0; slot < 2; slot++) {
+				var ghost = menu.blockEntity.getInputLock(slot);
+				var input = menu.slots.get(slot);
+				if (!ghost.isEmpty() && !input.hasItem() && ElectricBlockScreen.isIn(mouseX, mouseY, leftPos + input.x, topPos + input.y, 16, 16)) {
+					g.setTooltipForNextFrame(Component.translatable("ftbic.locks.furnace_locked", ghost.getHoverName()), mouseX, mouseY);
+				}
+			}
+		}
 		if (isInArrow(mouseX, mouseY)) {
 			int pct = Math.round(menu.getBurnProgress() * 100F);
 			g.setTooltipForNextFrame(Component.translatable("ftbic.gui.iron_furnace.progress", pct), mouseX, mouseY);
@@ -56,6 +82,16 @@ public class IronFurnaceScreen extends AbstractContainerScreen<IronFurnaceMenu> 
 	public boolean mouseClicked(MouseButtonEvent event, boolean dragging) {
 		int mx = (int) event.x();
 		int my = (int) event.y();
+		if (event.button() == 1 && menu.blockEntity != null && menu.getCarried().isEmpty()) {
+			for (int slot = 0; slot < 2; slot++) {
+				var input = menu.slots.get(slot);
+				if ((!input.hasItem() || event.hasShiftDown()) && !menu.blockEntity.getInputLock(slot).isEmpty()
+						&& ElectricBlockScreen.isIn(mx, my, leftPos + input.x, topPos + input.y, 16, 16)) {
+					FTBICNet.sendToServer(new SetGhostIngredientPayload(menu.containerId, slot, ItemStack.EMPTY, FluidStack.EMPTY));
+					return true;
+				}
+			}
+		}
 		if (isInArrow(mx, my)) {
 			ClientRecipeCache.showRecipesForTypes(List.of(RecipeType.SMELTING));
 			return true;

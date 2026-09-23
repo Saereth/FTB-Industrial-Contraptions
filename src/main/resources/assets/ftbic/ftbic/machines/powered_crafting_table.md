@@ -26,3 +26,5 @@ item_ids:
 **Stats:** LV tier, 1,200 zap buffer, 1 zap per craft.
 
 Set up against an output hopper to pipe components in and crafted items out. Works with any shaped or shapeless vanilla or modded recipe.
+
+Drag items from **JEI** onto the crafting grid to assign [input slot filters](side_configuration.md), or use the **L** panel. These ghosts keep each ingredient assigned after crafting consumes the real items. A Configuration Card copies the filters to another Powered Crafting Table; real ingredients must still be supplied.

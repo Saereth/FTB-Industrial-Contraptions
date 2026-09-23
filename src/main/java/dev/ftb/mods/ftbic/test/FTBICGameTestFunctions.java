@@ -2214,6 +2214,10 @@ public class FTBICGameTestFunctions {
 			for (Direction dir : Direction.values()) {
 				ZapEnergyHandler cap = helper.getLevel().getCapability(
 						FTBICCapabilities.ZAP_ENERGY_BLOCK, helper.absolutePos(CENTER), dir);
+				if (inst == FTBICElectricBlocks.BATCH_FEEDER) {
+					helper.assertTrue(cap == null, "unpowered batch feeder has no zap connection on " + dir);
+					continue;
+				}
 				helper.assertTrue(cap != null,
 						"zap cap missing on " + inst.id + " face " + dir);
 				helper.assertTrue(cap instanceof SidedZapHandler sided && sided.machine() == be,

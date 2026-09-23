@@ -23,6 +23,8 @@ The Batch Feeder sends complete ingredient sets to the inventory directly in fro
 3. With an empty cursor, left-click a ghost slot to increase its count or right-click to decrease it. Shift-click clears that entry. Each entry is limited to one normal stack of that item, up to 64.
 4. Fill the buffer manually, or insert ingredients through any face except the front using pipes or hoppers. Input sides can be disabled using **I/O**.
 
+You can also drag items from **JEI** onto the three ghost slots. This copies the displayed item and count without creating real items.
+
 For bronze, configure **3 copper ingots** and **1 tin ingot**, and leave the third entry empty. The feeder waits until both are available and the destination accepts all four items.
 
 ## Configure the fluid
@@ -36,13 +38,15 @@ The tall tank on the **right**, beside the three item settings, is the ghost flu
 3. Type the exact amount in **Fluid mB**, then press **Set** or **Enter**. Any amount from **1 to 16,000 mB** is supported. Typing alone does not change the batch.
 4. Right-click or Shift-click the ghost tank to clear the fluid ingredient.
 
+You can also drag a **JEI fluid ingredient**, filled bucket, or fluid cell onto the ghost tank. Use **Fluid mB** to adjust the amount afterward.
+
 For a fluid-only batch, leave all three item settings empty. For example, configure **1,000 mB lava** to feed a centrifuge. For a mixed batch, the destination must accept both the items and fluid through the connected face.
 
 ## Transfer rules
 
 The feeder attempts one batch every **8 ticks**. If any ingredient is missing, or the destination cannot accept the complete batch, **no items move**. Matching includes item and fluid data components. Duplicate entries count toward the same total, so an ingredient is never counted twice from the buffer.
 
-A redstone signal pauses feeding. Disabling **Front → Items** in the I/O panel also stops delivery. Configure the receiving machine's connected face to accept each required resource.
+A redstone signal pauses feeding. Disabling **Front → Items** or **Front → Fluids** stops batches that contain that resource. Configure the receiving machine's connected face to accept each required resource.
 
 Pipes cannot extract loose items or fluid from the buffers; automatic delivery always goes through the complete-batch operation. You can remove items manually and drain the fluid buffer with a container. If you use an intermediate chest, any later transfers out of that chest are controlled by your pipes or hoppers.
 

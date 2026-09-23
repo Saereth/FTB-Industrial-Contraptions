@@ -18,7 +18,7 @@ public class ChargePadBlockEntity extends ElectricBlockEntityRef {
 
 	@Override
 	public boolean isItemValid(int slot, ItemStack stack) {
-		return slot >= 0 && slot < inputItems.length
+		return super.isItemValid(slot, stack)
 				&& stack.getItem() instanceof EnergyItemHandler handler
 				&& handler.canInsertEnergy() && !handler.isCreativeEnergyItem();
 	}

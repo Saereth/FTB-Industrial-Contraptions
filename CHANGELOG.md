@@ -23,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 * Persistent input-slot locks, copied by Configuration Cards.
+* JEI ghost dragging for machine input filters and Batch Feeder item and fluid settings.
 * Unpowered Batch Feeder for delivering complete item and fluid batches to adjacent machines.
 * Centrifuge fluid inputs and outputs, with three item outputs on the Advanced Centrifuge.
 * Advanced Centrifuge lava processing: one bucket yields two tin nuggets, one copper nugget, and a 25% chance of a gold nugget. Tin nuggets craft to and from ingots.

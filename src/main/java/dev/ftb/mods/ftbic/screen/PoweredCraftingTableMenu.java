@@ -4,7 +4,6 @@ import dev.ftb.mods.ftbic.block.entity.ElectricBlockEntity;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 
@@ -33,10 +32,10 @@ public class PoweredCraftingTableMenu extends ElectricBlockMenu {
 
 		for (int i = 0; i < Math.min(9, inputs); i++) {
 			int row = i / 3, col = i % 3;
-			addSlot(new Slot(container, i, 30 + col * 18, 17 + row * 18));
+			addSlot(new FilteredInputSlot(container, i, 30 + col * 18, 17 + row * 18));
 		}
 		for (int i = 9; i < inputs; i++) {
-			addSlot(new Slot(container, i, -1000, -1000));
+			addSlot(new FilteredInputSlot(container, i, -1000, -1000));
 		}
 
 		for (int i = 0; i < outputs; i++) {
@@ -67,7 +66,7 @@ public class PoweredCraftingTableMenu extends ElectricBlockMenu {
 
 			for (int j = 0; j < inv.getContainerSize(); j++) {
 				ItemStack candidate = inv.getItem(j);
-				if (candidate.isEmpty() || !ing.test(candidate)) continue;
+				if (candidate.isEmpty() || !ing.test(candidate) || !blockEntity.isItemValid(i, candidate)) continue;
 				ItemStack one = candidate.copyWithCount(1);
 				candidate.shrink(1);
 				if (candidate.isEmpty()) inv.setItem(j, ItemStack.EMPTY);

@@ -2,6 +2,9 @@ package dev.ftb.mods.ftbic.test;
 
 import com.mojang.authlib.GameProfile;
 import dev.ftb.mods.ftbic.block.FTBICElectricBlocks;
+import dev.ftb.mods.ftbic.block.FTBICBlocks;
+import dev.ftb.mods.ftbic.block.entity.ElectricBlockEntity;
+import dev.ftb.mods.ftbic.block.entity.IronFurnaceBlockEntity;
 import dev.ftb.mods.ftbic.block.entity.machine.BatchFeederBlockEntity;
 import dev.ftb.mods.ftbic.block.entity.machine.CentrifugeBlockEntity;
 import dev.ftb.mods.ftbic.block.entity.generator.GeothermalGeneratorBlockEntity;
@@ -11,10 +14,14 @@ import dev.ftb.mods.ftbic.material.Material;
 import dev.ftb.mods.ftbic.material.MaterialComponent;
 import dev.ftb.mods.ftbic.material.MaterialEntries;
 import dev.ftb.mods.ftbic.net.GhostSlotPayload;
+import dev.ftb.mods.ftbic.net.SetGhostIngredientPayload;
 import dev.ftb.mods.ftbic.net.BatchFluidPayload;
 import dev.ftb.mods.ftbic.registry.ModDataComponents;
 import dev.ftb.mods.ftbic.screen.BatchFeederMenu;
 import dev.ftb.mods.ftbic.screen.MachineMenu;
+import dev.ftb.mods.ftbic.screen.ElectricBlockMenu;
+import dev.ftb.mods.ftbic.screen.IronFurnaceMenu;
+import net.minecraft.world.inventory.SimpleContainerData;
 import dev.ftb.mods.ftbic.util.FTBICCapabilities;
 import dev.ftb.mods.ftbic.util.MachineConfiguration;
 import dev.ftb.mods.ftbic.util.SideConfiguration;
@@ -337,4 +344,70 @@ final class BatchFeederGameTests {
 		} finally { player.discard(); }
 		h.succeed();
 	}
+	static void ghostIngredients(GameTestHelper h) {
+		var cookie = CommonListenerCookie.createInitial(new GameProfile(UUID.randomUUID(), "ghost-test"), false);
+		var player = new ServerPlayer(h.getLevel().getServer(), h.getLevel(), cookie.gameProfile(), cookie.clientInformation());
+		try {
+			ItemStack ghost = new ItemStack(Items.IRON_INGOT, 64);
+			ghost.set(DataComponents.CUSTOM_NAME, Component.literal("Ghost iron"));
+			for (var type : FTBICElectricBlocks.ALL) {
+				h.setBlock(POS, type.block.get());
+				var machine = h.getBlockEntity(POS, ElectricBlockEntity.class);
+				if (!machine.supportsInputLocks()) continue;
+				player.setPos(machine.getBlockPos().getCenter());
+				var menu = (ElectricBlockMenu) machine.createMenu(20, player.getInventory());
+				player.containerMenu = menu;
+				int slot = machine.inputItems.length - 1;
+				h.assertTrue(SetGhostIngredientPayload.apply(player, new SetGhostIngredientPayload(20, slot, ghost, FluidStack.EMPTY)), "JEI ghost accepted by " + type.id);
+				h.assertValueEqual(1, machine.getInputLock(slot).getCount(), "Input lock count normalized for " + type.id);
+				h.assertTrue(ItemStack.isSameItemSameComponents(ghost, machine.getInputLock(slot)), "Ghost components preserved for " + type.id);
+				h.assertTrue(machine.inputItems[slot].isEmpty() && menu.getCarried().isEmpty(), "No item created for " + type.id);
+				h.assertFalse(menu.slots.get(slot).mayPlace(new ItemStack(Items.GOLD_INGOT)), "Manual insertion respects ghost in " + type.id);
+				var handler = h.getLevel().getCapability(Capabilities.Item.BLOCK, machine.getBlockPos(), Direction.UP);
+				try (var tx = Transaction.openRoot()) {
+					h.assertValueEqual(0, handler.insert(slot, ItemResource.of(Items.GOLD_INGOT), 1, tx), "Automation respects ghost in " + type.id);
+				}
+				h.assertFalse(SetGhostIngredientPayload.apply(player, new SetGhostIngredientPayload(20, machine.inputItems.length, ghost, FluidStack.EMPTY)), "Outputs and equipment are not ghost targets");
+				var saved = machine.saveCustomOnly(h.getLevel().registryAccess());
+				machine.setInputLocks(List.of());
+				machine.loadCustomOnly(TagValueInput.create(ProblemReporter.DISCARDING, h.getLevel().registryAccess(), saved));
+				h.assertTrue(ItemStack.isSameItemSameComponents(ghost, machine.getInputLock(slot)), "Utility input lock persists for " + type.id);
+			}
+			var feeder = feeder(h);
+			var menu = new BatchFeederMenu(21, player.getInventory(), feeder);
+			player.containerMenu = menu;
+			h.assertTrue(SetGhostIngredientPayload.apply(player, new SetGhostIngredientPayload(21, 0, ghost, FluidStack.EMPTY)), "JEI sets batch item");
+			h.assertValueEqual(64, feeder.getBatchItem(0).getCount(), "Feeder keeps ghost quantity");
+			h.assertTrue(SetGhostIngredientPayload.apply(player, new SetGhostIngredientPayload(21, 3, ItemStack.EMPTY, new FluidStack(Fluids.WATER, 250))), "JEI sets batch fluid");
+			h.assertValueEqual(250, feeder.getBatchFluid().getAmount(), "JEI fluid amount retained");
+			h.assertTrue(feeder.getBufferFluid().isEmpty() && feeder.inputItems[0].isEmpty(), "JEI creates no buffered resources");
+			h.assertFalse(SetGhostIngredientPayload.apply(player, new SetGhostIngredientPayload(21, 0, ghost, new FluidStack(Fluids.WATER, 250))), "Mixed packet rejected");
+			h.assertFalse(SetGhostIngredientPayload.apply(player, new SetGhostIngredientPayload(99, 0, ghost, FluidStack.EMPTY)), "Wrong ghost menu rejected");
+			h.assertFalse(SetGhostIngredientPayload.apply(player, new SetGhostIngredientPayload(21, -1, ghost, FluidStack.EMPTY)), "Negative ghost slot rejected");
+			h.assertFalse(SetGhostIngredientPayload.apply(player, new SetGhostIngredientPayload(21, 9, ghost, FluidStack.EMPTY)), "Feeder buffer cannot be a ghost target");
+			player.setPos(feeder.getBlockPos().getCenter().add(20, 0, 0));
+			h.assertFalse(SetGhostIngredientPayload.apply(player, new SetGhostIngredientPayload(21, 0, ghost, FluidStack.EMPTY)), "Distant ghost packet rejected");
+			h.setBlock(POS, FTBICBlocks.IRON_FURNACE.get());
+			var furnace = h.getBlockEntity(POS, IronFurnaceBlockEntity.class);
+			player.setPos(furnace.getBlockPos().getCenter());
+			var furnaceMenu = new IronFurnaceMenu(22, player.getInventory(), furnace, new SimpleContainerData(4));
+			player.containerMenu = furnaceMenu;
+			h.assertTrue(SetGhostIngredientPayload.apply(player, new SetGhostIngredientPayload(22, 0, ghost, FluidStack.EMPTY)), "Iron Furnace input accepts ghost");
+			h.assertFalse(furnaceMenu.slots.get(0).mayPlace(new ItemStack(Items.GOLD_INGOT)), "Iron Furnace manual input respects ghost");
+			h.assertTrue(SetGhostIngredientPayload.apply(player, new SetGhostIngredientPayload(22, 1, new ItemStack(Items.COAL), FluidStack.EMPTY)), "Iron Furnace fuel accepts ghost");
+			h.assertFalse(furnace.canPlaceItem(1, new ItemStack(Items.CHARCOAL)), "Hopper fuel respects ghost");
+			h.assertFalse(furnaceMenu.slots.get(1).mayPlace(new ItemStack(Items.CHARCOAL)), "Manual fuel respects ghost");
+			h.assertTrue(furnaceMenu.slots.get(1).mayPlace(new ItemStack(Items.COAL)), "Matching fuel still accepted");
+			h.assertFalse(SetGhostIngredientPayload.apply(player, new SetGhostIngredientPayload(22, 2, ghost, FluidStack.EMPTY)), "Furnace output rejects ghost");
+			h.assertTrue(furnace.getItem(0).isEmpty() && furnace.getItem(1).isEmpty(), "Iron Furnace ghosts are not real items");
+			var saved = furnace.saveCustomOnly(h.getLevel().registryAccess());
+			furnace.setInputLock(0, ItemStack.EMPTY);
+			furnace.loadCustomOnly(TagValueInput.create(ProblemReporter.DISCARDING, h.getLevel().registryAccess(), saved));
+			h.assertTrue(ItemStack.isSameItemSameComponents(ghost, furnace.getInputLock(0)), "Furnace ghost persists");
+			h.assertTrue(furnace.getUpdateTag(h.getLevel().registryAccess()).contains("InputLocks"), "Furnace ghost syncs to client");
+			h.assertTrue(SetGhostIngredientPayload.apply(player, new SetGhostIngredientPayload(22, 0, ItemStack.EMPTY, FluidStack.EMPTY)), "Furnace ghost can be cleared");
+		} finally { player.discard(); }
+		h.succeed();
+	}
+
 }

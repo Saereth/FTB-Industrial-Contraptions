@@ -5,7 +5,6 @@ import dev.ftb.mods.ftbic.block.entity.generator.BasicGeneratorBlockEntity;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.DataSlot;
-import net.minecraft.world.inventory.Slot;
 
 public class BasicGeneratorMenu extends ElectricBlockMenu {
 	public final DataSlot fuelBar = DataSlot.standalone();
@@ -31,7 +30,7 @@ public class BasicGeneratorMenu extends ElectricBlockMenu {
 		}
 		ElectricBlockEntityContainer container = new ElectricBlockEntityContainer(blockEntity);
 		int inputs = blockEntity.inputItems.length;
-		if (inputs > 0) addSlot(new Slot(container, 0, 62, 44));
+		if (inputs > 0) addSlot(new FilteredInputSlot(container, 0, 62, 44));
 		machineSlotCount = inputs;
 	}
 
