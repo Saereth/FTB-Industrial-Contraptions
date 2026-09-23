@@ -49,6 +49,7 @@ import dev.ftb.mods.ftbic.item.FluidCellItem;
 import dev.ftb.mods.ftbic.events.LootBoxItemHandler;
 import dev.ftb.mods.ftbic.events.EnergyArmorDamageHandler;
 import dev.ftb.mods.ftbic.events.PlayerGliderHandler;
+import dev.ftb.mods.ftbic.events.QuantumFlightHandler;
 import dev.ftb.mods.ftbic.item.EnergyArmorItem;
 import dev.ftb.mods.ftbic.registry.ModDataComponents;
 import dev.ftb.mods.ftbic.util.EnergyItemHandler;
@@ -1150,6 +1151,52 @@ public class FTBICGameTestFunctions {
 				"Quantum flight should use the remaining energy");
 		PlayerGliderHandler.onPlayerTick(new PlayerTickEvent.Post(player));
 		helper.assertFalse(player.isFallFlying(), "Quantum flight should stop when the chestplate is empty");
+		helper.succeed();
+	}
+
+	static void quantumHoverFlightNeedsPower(GameTestHelper helper) {
+		ServerPlayer player = mockSurvivalPlayer(helper);
+		player.getAbilities().mayfly = false;
+		player.getAbilities().flying = false;
+		ItemStack chest = new ItemStack(FTBICItems.QUANTUM_CHESTPLATE.get());
+		EnergyArmorItem armor = (EnergyArmorItem) chest.getItem();
+		double flightCost = FTBICConfig.EQUIPMENT.ARMOR_FLIGHT_ENERGY.get();
+		armor.setEnergy(chest, flightCost * 2D);
+		player.setItemSlot(EquipmentSlot.CHEST, chest);
+
+		QuantumFlightHandler.onPlayerTick(new PlayerTickEvent.Post(player));
+		helper.assertTrue(player.getAbilities().mayfly, "Charged Quantum chestplate should grant hovering flight");
+		player.getAbilities().mayfly = false;
+		QuantumFlightHandler.onPlayerTick(new PlayerTickEvent.Post(player));
+		helper.assertTrue(player.getAbilities().mayfly, "Charged chestplate should restore a reset flight ability");
+		player.getAbilities().flying = true;
+		QuantumFlightHandler.onPlayerTick(new PlayerTickEvent.Post(player));
+		helper.assertValueEqual(flightCost, armor.getEnergy(chest), "Hovering should consume flight energy");
+		QuantumFlightHandler.onPlayerTick(new PlayerTickEvent.Post(player));
+		helper.assertValueEqual(0D, armor.getEnergy(chest), "Hovering should use the remaining energy");
+		helper.assertFalse(player.getAbilities().mayfly, "Empty chestplate should revoke hovering flight");
+		helper.assertFalse(player.getAbilities().flying, "Player should stop flying when power runs out");
+
+		armor.setEnergy(chest, flightCost);
+		QuantumFlightHandler.onPlayerTick(new PlayerTickEvent.Post(player));
+		helper.assertTrue(player.getAbilities().mayfly, "Recharged chestplate should restore hovering flight");
+		player.setItemSlot(EquipmentSlot.CHEST, ItemStack.EMPTY);
+		QuantumFlightHandler.onPlayerTick(new PlayerTickEvent.Post(player));
+		helper.assertFalse(player.getAbilities().mayfly, "Removing the chestplate should revoke flight");
+		helper.succeed();
+	}
+
+	static void quantumHoverPreservesOtherFlight(GameTestHelper helper) {
+		ServerPlayer player = mockSurvivalPlayer(helper);
+		player.getAbilities().mayfly = true;
+		ItemStack chest = new ItemStack(FTBICItems.QUANTUM_CHESTPLATE.get());
+		EnergyArmorItem armor = (EnergyArmorItem) chest.getItem();
+		armor.setEnergy(chest, FTBICConfig.EQUIPMENT.ARMOR_FLIGHT_ENERGY.get());
+		player.setItemSlot(EquipmentSlot.CHEST, chest);
+		QuantumFlightHandler.onPlayerTick(new PlayerTickEvent.Post(player));
+		player.setItemSlot(EquipmentSlot.CHEST, ItemStack.EMPTY);
+		QuantumFlightHandler.onPlayerTick(new PlayerTickEvent.Post(player));
+		helper.assertTrue(player.getAbilities().mayfly, "Removing Quantum armor must preserve another flight grant");
 		helper.succeed();
 	}
 

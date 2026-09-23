@@ -34,7 +34,7 @@ item_ids:
   ### <Color id="aqua">Quantum Chestplate</Color>
 </Row>
 
-Holds the full set's energy. **Enables gliding** with 5 zaps spent per tick. Hold jump to boost or sneak to slow down, spending additional zaps while either control is active.
+Holds the full set's energy. Double tap jump to hover and fly while charged. Hovering spends 5 zaps per tick. The chestplate also supports gliding; hold jump to boost or sneak to slow down while gliding.
 
 <RecipeFor id="quantum_chestplate" />
 
@@ -59,6 +59,6 @@ Holds the full set's energy. **Enables gliding** with 5 zaps spent per tick. Hol
   ## <Color id="gold">Tips</Color>
 </Column>
 
-* The chestplate consumes 5 zaps per tick while gliding. Boosting and braking use additional energy.
+* The chestplate consumes 5 zaps per tick while hovering or gliding. Boosting and braking during a glide use additional energy.
 * Damage absorption uses only zaps. The pieces never lose durability and provide no protection when the chestplate is empty.
 * Place a <ItemLink id="charge_pad" /> over an <ItemLink id="ev_battery_box" /> so stepping on it recharges the whole set instantly.

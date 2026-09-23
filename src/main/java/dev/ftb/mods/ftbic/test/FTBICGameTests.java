@@ -105,6 +105,8 @@ public class FTBICGameTests {
 		reg(event, "carbon_armor_needs_power_for_protection", FTBICGameTestFunctions::carbonArmorNeedsPowerForProtection, env, 100);
 		reg(event, "quantum_armor_needs_power_for_protection", FTBICGameTestFunctions::quantumArmorNeedsPowerForProtection, env, 100);
 		reg(event, "quantum_glider_stops_without_power", FTBICGameTestFunctions::quantumGliderStopsWithoutPower, env, 100);
+		reg(event, "quantum_hover_flight_needs_power", FTBICGameTestFunctions::quantumHoverFlightNeedsPower, env, 100);
+		reg(event, "quantum_hover_preserves_other_flight", FTBICGameTestFunctions::quantumHoverPreservesOtherFlight, env, 100);
 
 		reg(event, "rechargeable_battery_accepts_and_holds_energy", FTBICGameTestFunctions::rechargeableBatteryAcceptsAndHoldsEnergy, env, 100);
 		reg(event, "rechargeable_battery_clears_component_at_zero", FTBICGameTestFunctions::rechargeableBatteryClearsComponentAtZero, env, 100);
