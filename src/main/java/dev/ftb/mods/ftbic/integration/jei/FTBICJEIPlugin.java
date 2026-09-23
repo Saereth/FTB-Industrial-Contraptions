@@ -14,6 +14,7 @@ import dev.ftb.mods.ftbic.client.gui.PumpScreen;
 import dev.ftb.mods.ftbic.client.gui.BatteryBoxScreen;
 import dev.ftb.mods.ftbic.client.gui.BatchFeederScreen;
 import dev.ftb.mods.ftbic.client.gui.InputLockScreen;
+import dev.ftb.mods.ftbic.client.gui.QuarryFilterScreen;
 import dev.ftb.mods.ftbic.client.gui.IronFurnaceScreen;
 import dev.ftb.mods.ftbic.item.FTBICItems;
 import dev.ftb.mods.ftbic.item.FluidCellItem;
@@ -210,6 +211,8 @@ public class FTBICJEIPlugin implements IModPlugin {
 		r.addGhostIngredientHandler(BatchFeederScreen.class, new MachineGhostIngredientHandler<>());
 		r.addGhostIngredientHandler(InputLockScreen.class, new InputLockGhostIngredientHandler());
 		r.addGuiScreenHandler(InputLockScreen.class, InputLockGhostIngredientHandler::properties);
+		r.addGhostIngredientHandler(QuarryFilterScreen.class, new QuarryFilterGhostIngredientHandler());
+		r.addGuiScreenHandler(QuarryFilterScreen.class, QuarryFilterGhostIngredientHandler::properties);
 		r.addGuiContainerHandler(ReactorSimulatorScreen.class,
 				new IGuiContainerHandler<>() {
 					@Override

@@ -2,7 +2,9 @@ package dev.ftb.mods.ftbic.block.entity.machine;
 
 import dev.ftb.mods.ftbic.FTBICConfig;
 import dev.ftb.mods.ftbic.block.FTBICElectricBlocks;
+import dev.ftb.mods.ftbic.item.FTBICItems;
 import dev.ftb.mods.ftbic.screen.QuarryMenu;
+import dev.ftb.mods.ftbic.util.QuarryFilter;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.ItemTags;
@@ -24,6 +26,26 @@ import java.util.List;
 
 public class QuarryBlockEntity extends DiggingBaseBlockEntity {
 	public ItemStack pickaxeStack = ItemStack.EMPTY;
+	private QuarryFilter filter = QuarryFilter.DEFAULT;
+
+	public QuarryFilter getFilter() { return filter; }
+
+	public void setFilter(QuarryFilter value) {
+		filter = value;
+		skippedBlocks = 0;
+		setChanged();
+		if (level != null && !level.isClientSide()) level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);
+	}
+
+	public boolean hasFilterUpgrade() {
+		return upgradeInventory.countUpgrades(FTBICItems.QUARRY_FILTER_UPGRADE.get()) > 0;
+	}
+
+	@Override protected boolean skipEmptyTargetsWithoutEnergy() { return hasFilterUpgrade(); }
+
+	@Override public boolean isValidBlock(BlockState state, BlockPos pos) {
+		return super.isValidBlock(state, pos) && (!hasFilterUpgrade() || filter.matches(state));
+	}
 
 	public QuarryBlockEntity(BlockPos pos, BlockState state) {
 		super(FTBICElectricBlocks.QUARRY, pos, state);
@@ -56,12 +78,14 @@ public class QuarryBlockEntity extends DiggingBaseBlockEntity {
 		if (!pickaxeStack.isEmpty()) {
 			output.store("Pickaxe", ItemStack.CODEC, pickaxeStack);
 		}
+		output.store("QuarryFilter", QuarryFilter.CODEC, filter);
 	}
 
 	@Override
 	protected void loadAdditional(ValueInput input) {
 		super.loadAdditional(input);
 		pickaxeStack = input.read("Pickaxe", ItemStack.CODEC).orElse(ItemStack.EMPTY);
+		filter = input.read("QuarryFilter", QuarryFilter.CODEC).orElse(QuarryFilter.DEFAULT);
 		if (!pickaxeStack.isEmpty()) {
 			initProperties();
 			upgradesChanged();

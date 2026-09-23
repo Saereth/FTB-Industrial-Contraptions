@@ -207,6 +207,7 @@ public interface FTBICItems {
 	DeferredItem<Item> ENERGY_STORAGE_UPGRADE = REGISTRY.register("energy_storage_upgrade", name -> new UpgradeItem(props(name), 8));
 	DeferredItem<Item> TRANSFORMER_UPGRADE = REGISTRY.register("transformer_upgrade", name -> new UpgradeItem(props(name), 4));
 	DeferredItem<Item> PARALLEL_PROCESSING_UPGRADE = REGISTRY.register("parallel_processing_upgrade", name -> new ParallelProcessingUpgradeItem(props(name)));
+	DeferredItem<Item> QUARRY_FILTER_UPGRADE = REGISTRY.register("quarry_filter_upgrade", name -> new UpgradeItem(props(name), 32));
 	DeferredItem<Item> EJECTOR_UPGRADE = REGISTRY.register("ejector_upgrade", name -> new UpgradeItem(props(name), 1));
 
 	DeferredItem<Item> MECHANICAL_ELYTRA = REGISTRY.register("mechanical_elytra", name ->

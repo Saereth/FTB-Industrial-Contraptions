@@ -2,6 +2,8 @@ package dev.ftb.mods.ftbic.item;
 
 import dev.ftb.mods.ftbic.block.entity.ElectricBlockEntity;
 import dev.ftb.mods.ftbic.block.entity.machine.BatchFeederBlockEntity;
+import dev.ftb.mods.ftbic.block.entity.machine.QuarryBlockEntity;
+import dev.ftb.mods.ftbic.util.QuarryFilter;
 import dev.ftb.mods.ftbic.registry.ModDataComponents;
 import dev.ftb.mods.ftbic.util.MachineConfiguration;
 import dev.ftb.mods.ftbic.util.SideConfiguration;
@@ -37,7 +39,8 @@ public class ConfigurationCardItem extends Item {
 			card.set(ModDataComponents.MACHINE_CONFIGURATION.get(), new MachineConfiguration(type, machine.getSideConfiguration(),
 					machine.getInputLocks(),
 					machine instanceof BatchFeederBlockEntity feeder ? feeder.getBatch() : List.of(),
-					machine instanceof BatchFeederBlockEntity feeder ? SimpleFluidContent.copyOf(feeder.getBatchFluid()) : SimpleFluidContent.EMPTY));
+					machine instanceof BatchFeederBlockEntity feeder ? SimpleFluidContent.copyOf(feeder.getBatchFluid()) : SimpleFluidContent.EMPTY,
+					machine instanceof QuarryBlockEntity quarry ? quarry.getFilter() : QuarryFilter.DEFAULT));
 			player.getInventory().setChanged();
 			message = "copied";
 		} else {
@@ -47,6 +50,7 @@ public class ConfigurationCardItem extends Item {
 			else {
 				machine.setSideConfiguration(saved.sides());
 				machine.setInputLocks(saved.inputLocks());
+				if (machine instanceof QuarryBlockEntity quarry) quarry.setFilter(saved.quarryFilter());
 				if (machine instanceof BatchFeederBlockEntity feeder) {
 					feeder.setBatch(saved.batch());
 					feeder.setBatchFluid(saved.batchFluid().copy());

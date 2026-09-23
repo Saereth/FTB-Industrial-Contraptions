@@ -36,7 +36,9 @@ public class UpgradeInventory {
 	}
 
 	public boolean isItemValid(int slot, ItemStack stack) {
-		return stack.getItem() instanceof UpgradeItem && (!stack.is(FTBICItems.PARALLEL_PROCESSING_UPGRADE.get())
+		return stack.getItem() instanceof UpgradeItem
+				&& (!stack.is(FTBICItems.QUARRY_FILTER_UPGRADE.get()) || entity instanceof QuarryBlockEntity)
+				&& (!stack.is(FTBICItems.PARALLEL_PROCESSING_UPGRADE.get())
 				|| entity instanceof MachineBlockEntity machine && machine.supportsParallelProcessing());
 	}
 
@@ -46,6 +48,12 @@ public class UpgradeInventory {
 
 	public int getSlotLimit(int slot, ItemStack stack) {
 		if (!isItemValid(slot, stack)) return 0;
+		if (stack.is(FTBICItems.QUARRY_FILTER_UPGRADE.get())) {
+			for (int i = 0; i < stacks.size(); i++) {
+				if (i != slot && stacks.get(i).is(stack.getItem())) return 0;
+			}
+			return 1;
+		}
 		if (!stack.is(FTBICItems.PARALLEL_PROCESSING_UPGRADE.get())) return limit;
 		int elsewhere = 0;
 		for (int i = 0; i < stacks.size(); i++) {

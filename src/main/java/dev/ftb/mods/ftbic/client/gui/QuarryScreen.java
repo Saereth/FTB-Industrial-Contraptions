@@ -1,6 +1,9 @@
 package dev.ftb.mods.ftbic.client.gui;
 
 import dev.ftb.mods.ftbic.screen.QuarryMenu;
+import dev.ftb.mods.ftbic.block.entity.machine.QuarryBlockEntity;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.input.MouseButtonEvent;
@@ -14,6 +17,15 @@ public class QuarryScreen extends ElectricBlockScreen<QuarryMenu> {
 		energyX = 135;
 		energyY = 15;
 		drawDefaultArrow = false;
+	}
+
+	@Override protected void init() {
+		super.init();
+		if (menu.blockEntity instanceof QuarryBlockEntity quarry) {
+			addRenderableWidget(Button.builder(Component.literal("F"), b -> minecraft.pushGuiLayer(new QuarryFilterScreen(menu, quarry)))
+					.bounds(Math.max(0, leftPos - 26), topPos + 44, 24, 20)
+					.tooltip(Tooltip.create(Component.translatable("ftbic.quarry_filter.title"))).build(IndustrialButton::new));
+		}
 	}
 
 	@Override

@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+* Quarry Filter Upgrades add block and tag whitelist/blacklist rules, ore-only mining, free skipping of unmatched columns, JEI ghost targets, and Configuration Card support.
 * Parallel Processing Upgrades let advanced processors run up to four copies of a recipe per cycle, with energy use per operation and support for centrifuge fluids. Includes a running-operation counter and GuideMe instructions.
 * Persistent input-slot locks, copied by Configuration Cards.
 * JEI ghost dragging for machine input filters and Batch Feeder item and fluid settings.

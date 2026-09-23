@@ -156,13 +156,40 @@ public class DiggingBaseBlockEntity extends BasicMachineBlockEntity {
 			return;
 		}
 
-		if (energy < energyUse) return;
-		energy -= energyUse;
-		active = true;
-
 		int miningTicks = Math.max((int) (diggingMineTicks / progressSpeed), 1);
 		int moveTicks = Math.max((int) (diggingMoveTicks / progressSpeed), 1);
 		int totalTicks = miningTicks + moveTicks;
+		if (skipEmptyTargetsWithoutEnergy() && tick % totalTicks == 0) {
+			int interiorW = sizeX - 2;
+			int interiorD = sizeZ - 2;
+			long area = (long) interiorW * interiorD;
+			if (area <= 0) return;
+			int scanned = 0;
+			boolean found = false;
+			while (scanned++ < 32) {
+				long column = tick / totalTicks % area;
+				int row = (int) (column / interiorW);
+				int col = row % 2 == 0 ? (int) (column % interiorW) : interiorW - 1 - (int) (column % interiorW);
+				int x = worldPosition.getX() + offsetX + 1 + col;
+				int z = worldPosition.getZ() + offsetZ + 1 + row;
+				if (findMinableY(x, z) != INVALID_Y) {
+					skippedBlocks = 0;
+					found = true;
+					break;
+				}
+				tick += totalTicks;
+				if (++skippedBlocks >= area) {
+					paused = true;
+					skippedBlocks = 0;
+					break;
+				}
+			}
+			setChanged();
+			if (!found) return;
+		}
+		if (energy < energyUse) return;
+		energy -= energyUse;
+		active = true;
 
 		if ((tick % totalTicks) == totalTicks - 1) {
 			int interiorW = sizeX - 2;
@@ -261,6 +288,8 @@ public class DiggingBaseBlockEntity extends BasicMachineBlockEntity {
 		}
 		return stack;
 	}
+
+	protected boolean skipEmptyTargetsWithoutEnergy() { return false; }
 
 	private int findMinableY(int x, int z) {
 		if (level == null) return INVALID_Y;

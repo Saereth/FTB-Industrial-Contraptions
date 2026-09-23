@@ -2,6 +2,10 @@ package dev.ftb.mods.ftbic.net;
 
 import dev.ftb.mods.ftbic.FTBIC;
 import dev.ftb.mods.ftbic.block.entity.machine.BatchFeederBlockEntity;
+import dev.ftb.mods.ftbic.block.entity.machine.QuarryBlockEntity;
+import dev.ftb.mods.ftbic.screen.QuarryMenu;
+import dev.ftb.mods.ftbic.util.QuarryFilter;
+import net.minecraft.world.item.BlockItem;
 import dev.ftb.mods.ftbic.screen.ElectricBlockMenu;
 import dev.ftb.mods.ftbic.screen.IronFurnaceMenu;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -46,6 +50,12 @@ public record SetGhostIngredientPayload(int containerId, int slot, ItemStack ite
 		var pos = machine.getBlockPos();
 		if (machine.getLevel() != player.level() || player.level().getBlockEntity(pos) != machine
 				|| player.distanceToSqr(pos.getCenter()) > 64 || !player.level().mayInteract(player, pos)) return false;
+		if (machine instanceof QuarryBlockEntity quarry && menu instanceof QuarryMenu) {
+			if (payload.slot < QuarryFilter.BLOCK_SLOTS || payload.slot >= QuarryFilter.BLOCK_SLOTS * 2
+					|| !(payload.item.getItem() instanceof BlockItem) || !payload.fluid.isEmpty()) return false;
+			quarry.setFilter(quarry.getFilter().withBlock(payload.slot - QuarryFilter.BLOCK_SLOTS, payload.item));
+			return true;
+		}
 		if (machine instanceof BatchFeederBlockEntity feeder) {
 			if (payload.slot == BatchFeederBlockEntity.PATTERN_SIZE && payload.item.isEmpty() && !payload.fluid.isEmpty()) {
 				feeder.setBatchFluid(payload.fluid);

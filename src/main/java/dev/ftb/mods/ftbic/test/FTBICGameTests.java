@@ -126,6 +126,10 @@ public class FTBICGameTests {
 		reg(event, "burnt_cable_state_retains_cable_shape", FTBICGameTestFunctions::burntCableStateRetainsCableShape, env, 100);
 		reg(event, "network_distributes_to_multiple_machines", FTBICGameTestFunctions::networkDistributesToMultipleMachines, env, 200);
 		reg(event, "network_rebuild_on_cable_removal", FTBICGameTestFunctions::networkRebuildOnCableRemoval, env, 200);
+		reg(event, "quarry_filter_selection", QuarryFilterGameTests::selection, env, 100);
+		reg(event, "quarry_filter_free_skip", QuarryFilterGameTests::freeSkipAndDepth, env, 100);
+		reg(event, "quarry_filter_no_target", QuarryFilterGameTests::noTargetAndUpgrade, env, 100);
+		reg(event, "quarry_filter_packets_card", QuarryFilterGameTests::packetsAndCard, env, 100);
 		reg(event, "quarry_paused_without_energy", FTBICGameTestFunctions::quarryPausedWithoutEnergy, env, 200);
 		reg(event, "quarry_redstone_pause_flag_sets_on_signal", FTBICGameTestFunctions::quarryRedstonePauseFlagSetsOnSignal, env, 100);
 		reg(event, "pump_extracts_adjacent_water", FTBICGameTestFunctions::pumpExtractsAdjacentWater, env, 200);

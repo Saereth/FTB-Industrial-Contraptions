@@ -17,6 +17,7 @@ public final class FTBICNet {
 		var registrar = event.registrar(FTBIC.MOD_ID);
 		registrar.playToServer(SetGhostIngredientPayload.TYPE, SetGhostIngredientPayload.STREAM_CODEC, SetGhostIngredientPayload::handleOnServer);
 		registrar.playToServer(BatchFluidPayload.TYPE, BatchFluidPayload.STREAM_CODEC, BatchFluidPayload::handleOnServer);
+		registrar.playToServer(QuarryFilterPayload.TYPE, QuarryFilterPayload.STREAM_CODEC, QuarryFilterPayload::handleOnServer);
 		registrar.playToServer(GhostSlotPayload.TYPE, GhostSlotPayload.STREAM_CODEC, GhostSlotPayload::handleOnServer);
 		registrar.playToServer(SideConfigurationPayload.TYPE, SideConfigurationPayload.STREAM_CODEC, SideConfigurationPayload::handleOnServer);
 		registrar.playToServer(ReactorDesignPayload.TYPE, ReactorDesignPayload.STREAM_CODEC, ReactorDesignPayload::handleOnServer);
