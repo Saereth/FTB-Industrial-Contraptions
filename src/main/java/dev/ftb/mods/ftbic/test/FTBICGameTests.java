@@ -35,6 +35,12 @@ public class FTBICGameTests {
 				new TestEnvironmentDefinition.AllOf());
 
 		reg(event, "centrifuge_fluid_processing", CentrifugeFluidGameTests::processing, env, 60);
+		reg(event, "batch_feeder_locks", BatchFeederGameTests::locks, env, 60);
+		reg(event, "batch_feeder_atomic_delivery", BatchFeederGameTests::atomicDelivery, env, 60);
+		reg(event, "batch_feeder_machine_controls", BatchFeederGameTests::machineAndControls, env, 60);
+		reg(event, "batch_feeder_mixed_fluids", BatchFeederGameTests::mixedFluids, env, 60);
+		reg(event, "batch_feeder_fluid_buffer", BatchFeederGameTests::fluidBuffer, env, 60);
+		reg(event, "batch_feeder_packets_cards", BatchFeederGameTests::packetsAndCards, env, 60);
 		reg(event, "centrifuge_fluid_output_blocking", CentrifugeFluidGameTests::outputBlocking, env, 60);
 		reg(event, "centrifuge_fluid_fluid_only_cache", CentrifugeFluidGameTests::fluidOnlyAndCache, env, 60);
 		reg(event, "centrifuge_fluid_automation_persistence", CentrifugeFluidGameTests::automationAndPersistence, env, 60);

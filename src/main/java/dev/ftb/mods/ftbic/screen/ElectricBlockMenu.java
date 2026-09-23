@@ -121,7 +121,13 @@ public abstract class ElectricBlockMenu extends AbstractContainerMenu {
 		@Override
 		public boolean mayPlace(ItemStack stack) {
 			if (stack.getItem() instanceof UpgradeItem) return false;
-			return super.mayPlace(stack);
+			return container.canPlaceItem(getContainerSlot(), stack);
+		}
+
+		@Override
+		public int getMaxStackSize(ItemStack stack) {
+			// Vanilla's shift-click merge path checks capacity without calling mayPlace.
+			return mayPlace(stack) ? super.getMaxStackSize(stack) : 0;
 		}
 	}
 

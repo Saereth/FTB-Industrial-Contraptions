@@ -3,9 +3,12 @@ package dev.ftb.mods.ftbic.client.gui;
 import dev.ftb.mods.ftbic.block.entity.machine.BasicMachineBlockEntity;
 import dev.ftb.mods.ftbic.block.entity.machine.ChargePadBlockEntity;
 import dev.ftb.mods.ftbic.block.entity.machine.CentrifugeBlockEntity;
+import dev.ftb.mods.ftbic.block.entity.machine.MachineBlockEntity;
 import dev.ftb.mods.ftbic.integration.jei.ClientRecipeCache;
 import dev.ftb.mods.ftbic.screen.MachineMenu;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
@@ -21,6 +24,16 @@ public class MachineScreen extends ElectricBlockScreen<MachineMenu> {
 		energyX = 8;
 		energyY = 27;
 		if (menu.blockEntity instanceof ChargePadBlockEntity) drawDefaultArrow = false;
+	}
+
+	@Override
+	protected void init() {
+		super.init();
+		if (menu.blockEntity instanceof MachineBlockEntity machine) {
+			addRenderableWidget(Button.builder(Component.literal("L"), b -> minecraft.pushGuiLayer(new InputLockScreen(menu, machine)))
+					.bounds(Math.max(0, leftPos - 26), topPos + 22, 24, 20)
+					.tooltip(Tooltip.create(Component.translatable("ftbic.locks.title"))).build(IndustrialButton::new));
+		}
 	}
 
 	@Override
@@ -72,11 +85,33 @@ public class MachineScreen extends ElectricBlockScreen<MachineMenu> {
 				drawSlot(g, leftPos + 151, topPos + 7 + i * 18);
 			}
 		}
+		if (menu.blockEntity instanceof MachineBlockEntity machine) {
+			for (int i = 0; i < machine.inputItems.length; i++) {
+				var lock = machine.getInputLock(i);
+				if (lock.isEmpty()) continue;
+				var slot = menu.slots.get(i);
+				int x = leftPos + slot.x, y = topPos + slot.y;
+				if (!slot.hasItem()) {
+					g.item(lock, x, y);
+					g.fill(x, y, x + 16, y + 16, 0x998B8B8B);
+				}
+				g.fill(x, y + 16, x + 16, y + 17, IndustrialGui.CYAN);
+			}
+		}
 	}
 
 	@Override
 	protected void extractOverlayTooltips(GuiGraphicsExtractor g, int mouseX, int mouseY) {
 		super.extractOverlayTooltips(g, mouseX, mouseY);
+		if (menu.blockEntity instanceof MachineBlockEntity machine) {
+			for (int i = 0; i < machine.inputItems.length; i++) {
+				var slot = menu.slots.get(i);
+				var lock = machine.getInputLock(i);
+				if (!slot.hasItem() && !lock.isEmpty() && isIn(mouseX, mouseY, leftPos + slot.x, topPos + slot.y, 16, 16)) {
+					g.setTooltipForNextFrame(Component.translatable("ftbic.locks.locked", lock.getHoverName()), mouseX, mouseY);
+				}
+			}
+		}
 		if (menu.blockEntity instanceof CentrifugeBlockEntity machine) {
 			centrifugeTankTooltip(g, mouseX, mouseY, 30, "ftbic.gui.centrifuge.input_tank", machine.getInputFluid());
 			centrifugeTankTooltip(g, mouseX, mouseY, 130, "ftbic.gui.centrifuge.output_tank", machine.getOutputFluid());

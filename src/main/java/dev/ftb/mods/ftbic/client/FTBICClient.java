@@ -7,6 +7,7 @@ import dev.ftb.mods.ftbic.client.gui.BatteryBoxScreen;
 import dev.ftb.mods.ftbic.client.gui.GeothermalGeneratorScreen;
 import dev.ftb.mods.ftbic.client.gui.IronFurnaceScreen;
 import dev.ftb.mods.ftbic.client.gui.MachineScreen;
+import dev.ftb.mods.ftbic.client.gui.BatchFeederScreen;
 import dev.ftb.mods.ftbic.client.gui.NuclearReactorScreen;
 import dev.ftb.mods.ftbic.client.gui.PoweredCraftingTableScreen;
 import dev.ftb.mods.ftbic.client.gui.PumpScreen;
@@ -45,6 +46,7 @@ public final class FTBICClient {
 	@SubscribeEvent
 	public static void registerMenuScreens(RegisterMenuScreensEvent event) {
 		event.register(FTBICMenus.MACHINE.get(), MachineScreen::new);
+		event.register(FTBICMenus.BATCH_FEEDER.get(), BatchFeederScreen::new);
 		event.register(FTBICMenus.BASIC_GENERATOR.get(), BasicGeneratorScreen::new);
 		event.register(FTBICMenus.GEOTHERMAL_GENERATOR.get(), GeothermalGeneratorScreen::new);
 		event.register(FTBICMenus.SOLAR_PANEL.get(), SolarPanelScreen::new);

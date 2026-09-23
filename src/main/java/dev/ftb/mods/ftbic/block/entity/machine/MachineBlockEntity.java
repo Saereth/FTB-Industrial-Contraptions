@@ -6,6 +6,7 @@ import dev.ftb.mods.ftbic.recipe.FTBICRecipes;
 import dev.ftb.mods.ftbic.recipe.MachineRecipe;
 import dev.ftb.mods.ftbic.recipe.MachineRecipeType;
 import dev.ftb.mods.ftbic.util.IngredientWithCount;
+import dev.ftb.mods.ftbic.util.GhostItem;
 import dev.ftb.mods.ftbic.util.StackWithChance;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -29,6 +30,43 @@ public class MachineBlockEntity extends BasicMachineBlockEntity {
 	public int progress;
 	public int maxProgress;
 	public boolean starving;
+	private List<GhostItem> inputLocks = List.of();
+
+	public List<GhostItem> getInputLocks() {
+		return inputLocks;
+	}
+
+	public ItemStack getInputLock(int slot) {
+		for (GhostItem lock : inputLocks) if (lock.slot() == slot) return lock.item().create();
+		return ItemStack.EMPTY;
+	}
+
+	public void setInputLock(int slot, ItemStack stack) {
+		if (slot < 0 || slot >= inputItems.length) return;
+		var locks = new ArrayList<>(inputLocks);
+		locks.removeIf(lock -> lock.slot() == slot);
+		if (!stack.isEmpty()) locks.add(GhostItem.of(slot, stack, 1));
+		setInputLocks(locks);
+	}
+
+	public void setInputLocks(List<GhostItem> locks) {
+		var normalized = new ArrayList<GhostItem>();
+		for (GhostItem lock : locks) {
+			if (lock.slot() < 0 || lock.slot() >= inputItems.length) continue;
+			normalized.removeIf(existing -> existing.slot() == lock.slot());
+			normalized.add(GhostItem.of(lock.slot(), lock.item().create(), 1));
+		}
+		inputLocks = List.copyOf(normalized);
+		setChanged();
+		if (level != null && !level.isClientSide()) level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);
+	}
+
+	@Override
+	public boolean isItemValid(int slot, ItemStack stack) {
+		if (!super.isItemValid(slot, stack)) return false;
+		ItemStack lock = getInputLock(slot);
+		return lock.isEmpty() || stack.isEmpty() || ItemStack.isSameItemSameComponents(lock, stack);
+	}
 
 	@Nullable
 	private MachineRecipe cachedRecipe;
@@ -70,6 +108,7 @@ public class MachineBlockEntity extends BasicMachineBlockEntity {
 		if (progress > 0) output.putInt("Progress", progress);
 		if (maxProgress > 0) output.putInt("MaxProgress", maxProgress);
 		if (starving) output.putBoolean("Starving", true);
+		output.store("InputLocks", GhostItem.LIST_CODEC, inputLocks);
 	}
 
 	@Override
@@ -78,6 +117,7 @@ public class MachineBlockEntity extends BasicMachineBlockEntity {
 		progress = input.getIntOr("Progress", 0);
 		maxProgress = input.getIntOr("MaxProgress", 0);
 		starving = input.getBooleanOr("Starving", false);
+		inputLocks = input.read("InputLocks", GhostItem.LIST_CODEC).orElse(List.of());
 	}
 
 	private void setStarving(boolean s) {

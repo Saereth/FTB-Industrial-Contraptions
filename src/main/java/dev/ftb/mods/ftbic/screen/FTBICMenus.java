@@ -17,6 +17,7 @@ public interface FTBICMenus {
 	}
 
 	DeferredHolder<MenuType<?>, MenuType<MachineMenu>> MACHINE = register("machine", MachineMenu::new);
+	DeferredHolder<MenuType<?>, MenuType<BatchFeederMenu>> BATCH_FEEDER = register("batch_feeder", BatchFeederMenu::new);
 	DeferredHolder<MenuType<?>, MenuType<BasicGeneratorMenu>> BASIC_GENERATOR = register("basic_generator", BasicGeneratorMenu::new);
 	DeferredHolder<MenuType<?>, MenuType<GeothermalGeneratorMenu>> GEOTHERMAL_GENERATOR = register("geothermal_generator", GeothermalGeneratorMenu::new);
 	DeferredHolder<MenuType<?>, MenuType<SolarPanelMenu>> SOLAR_PANEL = register("solar_panel", SolarPanelMenu::new);

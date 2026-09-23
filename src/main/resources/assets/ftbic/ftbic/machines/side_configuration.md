@@ -49,14 +49,26 @@ A pump offers fluid output; a geothermal generator offers fluid input. On telepo
 
 Reactor chambers share their reactor's settings, using the outward face being accessed. A top-face setting applies to the top of the reactor and the top of each attached chamber. Reactor component slots still hold one item each. The Reactor Planner has no physical resource I/O to configure.
 
+## Input Slot Locks
+
+Recipe-processing machines have an **L** button below **I/O**. Use it to assign ghost items to their input slots:
+
+* Pick up an item on your cursor before opening **L**, then click an input row to assign it. The item is not consumed.
+* With an empty cursor, clicking copies that input slot's existing item.
+* Right-click or Shift-click a row to unlock it.
+
+A locked slot only accepts its assigned item with matching data components. It remembers that assignment when processing empties the slot; a faded ghost item and cyan marker show the lock. Existing contents are not removed when you change a lock, and you can still take them out manually. The locks persist after reloading the world.
+
+This is useful for an Alloy Smelter: reserve one input for copper and another for tin. Use a [Batch Feeder](batch_feeder.md) when you also need exact ingredient quantities.
+
 ## Configuration Card
 
 <ItemImage id="ftbic:configuration_card" scale="2" />
 
 <RecipeFor id="ftbic:configuration_card" />
 
-* **Sneak+Use** on a machine copies its side settings onto the card, overwriting any previous settings.
+* **Sneak+Use** on a machine copies its side settings, input locks, and Batch Feeder pattern (where supported) onto the card, overwriting any previous settings.
 * **Use** on another machine of the **same type** applies those settings.
 * The tooltip identifies the saved machine type. Applying settings keeps the card reusable.
 
-The card copies face settings for all supported resource types. It does not move inventory contents, energy, upgrades, or reactor layouts. Use a [Reactor Blueprint](../nuclear/blueprint.md) for reactor designs.
+Applying a card replaces the target's supported settings, including clearing locks or batch entries that were empty on the source. It does not move inventory contents, energy, upgrades, or reactor layouts. Use a [Reactor Blueprint](../nuclear/blueprint.md) for reactor designs.

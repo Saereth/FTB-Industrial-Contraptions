@@ -88,6 +88,10 @@ public interface FTBICElectricBlocks {
 
 	// Machines //
 
+	ElectricBlockInstance BATCH_FEEDER = register("batch_feeder", BatchFeederBlockEntity::new)
+			.cantBeActive()
+			.io(9, 0);
+
 	ElectricBlockInstance POWERED_FURNACE = register("powered_furnace", PoweredFurnaceBlockEntity::new)
 			.canBurn()
 			.energyCapacity(FTBICConfig.MACHINES.POWERED_FURNACE_CAPACITY)

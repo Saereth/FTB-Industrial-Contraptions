@@ -1,6 +1,7 @@
 package dev.ftb.mods.ftbic.events;
 
 import dev.ftb.mods.ftbic.FTBIC;
+import dev.ftb.mods.ftbic.block.entity.machine.BatchFeederBlockEntity;
 import dev.ftb.mods.ftbic.block.entity.machine.CentrifugeBlockEntity;
 import dev.ftb.mods.ftbic.FTBICConfig;
 import dev.ftb.mods.ftbic.block.ElectricBlockInstance;
@@ -50,11 +51,19 @@ public final class CapabilityRegistrar {
 			BlockEntityType<ElectricBlockEntity> type =
 					(BlockEntityType<ElectricBlockEntity>) (Object) instance.blockEntity.get();
 
-			event.registerBlockEntity(FTBICCapabilities.ZAP_ENERGY_BLOCK, type, (be, side) -> new SidedZapHandler(be, side));
+			if (instance != FTBICElectricBlocks.BATCH_FEEDER) {
+				event.registerBlockEntity(FTBICCapabilities.ZAP_ENERGY_BLOCK, type, (be, side) -> new SidedZapHandler(be, side));
+			}
 
 			if (instance != FTBICElectricBlocks.TELEPORTER && instance != FTBICElectricBlocks.REACTOR_SIMULATOR) {
 				event.registerBlockEntity(Capabilities.Item.BLOCK, type,
 						(be, side) -> new SidedResourceHandler<>(be, side, SideConfiguration.Resource.ITEMS, new ElectricBlockResourceHandler(be)));
+			}
+
+			if (instance == FTBICElectricBlocks.BATCH_FEEDER) {
+				event.registerBlockEntity(Capabilities.Fluid.BLOCK, type,
+						(be, side) -> new SidedResourceHandler<>(be, side, SideConfiguration.Resource.FLUIDS,
+								((BatchFeederBlockEntity) be).fluidHandler));
 			}
 
 			if (instance == FTBICElectricBlocks.CENTRIFUGE || instance == FTBICElectricBlocks.ADVANCED_CENTRIFUGE) {

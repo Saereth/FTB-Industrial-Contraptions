@@ -135,7 +135,7 @@ public class FTBICRecipeProvider extends RecipeProvider {
 		}
 		for (String m : MACERATE_ORES) {
 			String dust = oreDustName(m);
-			macerate("ores/" + m + "_to_dust", commonTag("ores/" + m), ftbicStack(dust, 2));
+			macerate("ores/" + m + "_to_dust", commonTag("ores/" + oreTagName(m)), ftbicStack(dust, 2));
 		}
 		for (String m : MACERATE_RAW) {
 			ItemStackTemplate dust = ftbicStack(m + "_dust", 1);
@@ -790,6 +790,10 @@ public class FTBICRecipeProvider extends RecipeProvider {
 	}
 
 
+	private static String oreTagName(String oreName) {
+		return "lapis_lazuli".equals(oreName) ? "lapis" : oreName;
+	}
+
 	private static String oreDustName(String oreName) {
 		return switch (oreName) {
 			case "apatite", "fluorite", "monazite", "niter", "salt", "sulfur",
@@ -893,6 +897,9 @@ public class FTBICRecipeProvider extends RecipeProvider {
 		shaped("powered_crafting_table", ftbicStack("powered_crafting_table", 1), new String[] {"PCP", "PMP", "PTP"}, 'P', tag(ItemTags.PLANKS), 'C', i("ftbic:electronic_circuit"), 'M', i("ftbic:machine_block"), 'T', i("minecraft:crafting_table"));
 		shaped("nuggets/enderium_to_enderium_ingot", ftbicStack("enderium_ingot", 1), new String[] {"XXX", "XXX", "XXX"}, 'X', commonOrTag("c:nuggets/enderium"));
 		shaped("nuggets/tin_to_tin_ingot", ftbicStack("tin_ingot", 1), new String[] {"XXX", "XXX", "XXX"}, 'X', commonOrTag("c:nuggets/tin"));
+		shaped("batch_feeder", ftbicStack("batch_feeder", 1), new String[] {"PHP", "CMC", "PWP"},
+				'P', commonOrTag("c:plates/iron"), 'H', i("minecraft:hopper"), 'C', i("ftbic:electronic_circuit"),
+				'M', i("ftbic:machine_block"), 'W', i("ftbic:lv_cable"));
 		shaped("nuke", ftbicStack("nuke", 1), new String[] {"UCU", "TMT", "UCU"}, 'T', i("minecraft:tnt"), 'U', i("ftbic:quad_uranium_fuel_rod"), 'M', i("ftbic:advanced_machine_block"), 'C', i("ftbic:advanced_circuit"));
 		shaped("overclocked_heat_vent", ftbicStack("overclocked_heat_vent", 1), new String[] {"P", "V", "P"}, 'P', commonOrTag("c:plates/enderium"), 'V', i("ftbic:reactor_heat_vent"));
 		shaped("overclocker_upgrade", ftbicStack("overclocker_upgrade", 1), new String[] {"UUU", "WCW"}, 'U', i("ftbic:small_coolant_cell"), 'W', i("ftbic:lv_cable"), 'C', i("ftbic:electronic_circuit"));
