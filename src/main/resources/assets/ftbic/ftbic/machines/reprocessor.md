@@ -36,6 +36,6 @@ item_ids:
   ### <Color id="aqua">Scrap Box</Color>
 </Row>
 
-9 scrap compress into a Scrap Box. Use it to receive one random item, ranging from common materials to rare iridium dust.
+9 scrap compress into a Scrap Box. Use it to drop one random item, ranging from common materials to rare iridium dust. Crouch while using a stack to open every box at once.
 
 <RecipeFor id="scrap_box" />

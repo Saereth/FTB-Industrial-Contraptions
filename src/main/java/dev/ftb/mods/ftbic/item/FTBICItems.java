@@ -11,6 +11,7 @@ import dev.ftb.mods.ftbic.item.reactor.HeatExchangerItem;
 import dev.ftb.mods.ftbic.item.reactor.HeatVentItem;
 import dev.ftb.mods.ftbic.item.reactor.NeutronReflectorItem;
 import dev.ftb.mods.ftbic.item.reactor.ReactorPlatingItem;
+import dev.ftb.mods.ftbic.registry.ModDataComponents;
 import dev.ftb.mods.ftbic.util.EnergyArmorMaterial;
 import dev.ftb.mods.ftbic.util.EnergyTier;
 import net.minecraft.core.component.DataComponents;
@@ -69,7 +70,8 @@ public interface FTBICItems {
 
 	static MaterialItem scrapBox() {
 		MaterialItem m = new MaterialItem("scrap_box");
-		m.item = REGISTRY.register(m.id, name -> new ScrapBoxItem(props(name)));
+		m.item = REGISTRY.register(m.id, name -> new Item(props(name)
+				.component(ModDataComponents.LOOT_BOX.get(), FTBIC.id("gameplay/scrap_box"))));
 		MATERIALS.add(m);
 		return m;
 	}

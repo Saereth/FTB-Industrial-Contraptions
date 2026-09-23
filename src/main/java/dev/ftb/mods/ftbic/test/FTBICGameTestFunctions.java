@@ -18,6 +18,7 @@ import dev.ftb.mods.ftbic.item.reactor.NuclearReactor;
 import dev.ftb.mods.ftbic.util.NuclearExplosion;
 import dev.ftb.mods.ftbic.util.ReactorDesign;
 import dev.ftb.mods.ftbic.FTBICConfig;
+import dev.ftb.mods.ftbic.FTBIC;
 import dev.ftb.mods.ftbic.block.entity.storage.BatteryBoxBlockEntity;
 import dev.ftb.mods.ftbic.block.entity.storage.EnergyRectifierBlockEntity;
 import dev.ftb.mods.ftbic.block.entity.storage.LVBatteryBoxBlockEntity;
@@ -45,6 +46,7 @@ import dev.ftb.mods.ftbic.block.entity.machine.PoweredFurnaceBlockEntity;
 import com.mojang.authlib.GameProfile;
 import dev.ftb.mods.ftbic.item.FTBICItems;
 import dev.ftb.mods.ftbic.item.FluidCellItem;
+import dev.ftb.mods.ftbic.events.LootBoxItemHandler;
 import dev.ftb.mods.ftbic.registry.ModDataComponents;
 import dev.ftb.mods.ftbic.util.EnergyItemHandler;
 import dev.ftb.mods.ftbic.util.FTBICCapabilities;
@@ -71,6 +73,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -89,6 +92,7 @@ import net.neoforged.neoforge.transfer.energy.EnergyHandler;
 import net.neoforged.neoforge.transfer.fluid.FluidResource;
 import net.neoforged.neoforge.transfer.item.ItemResource;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 
 import java.util.UUID;
 
@@ -1130,26 +1134,91 @@ public class FTBICGameTestFunctions {
 
 	static void scrapBoxGivesRewardOnUse(GameTestHelper helper) {
 		ServerPlayer player = mockSurvivalPlayer(helper);
+		movePlayerToTestCenter(helper, player);
 		ItemStack boxes = new ItemStack(FTBICItems.SCRAP_BOX.item.get(), 2);
 		player.setItemInHand(InteractionHand.MAIN_HAND, boxes);
 
-		InteractionResult result = boxes.use(helper.getLevel(), player, InteractionHand.MAIN_HAND);
-		helper.assertTrue(result.consumesAction(), "Scrap Box use should succeed");
+		PlayerInteractEvent.RightClickItem use = new PlayerInteractEvent.RightClickItem(player, InteractionHand.MAIN_HAND);
+		LootBoxItemHandler.onUse(use);
+		helper.assertTrue(use.isCanceled() && use.getCancellationResult().consumesAction(),
+				"Scrap Box use should succeed");
 		helper.assertValueEqual(1, boxes.getCount(), "Using a Scrap Box should consume one box");
-		boolean receivedReward = false;
+		helper.runAfterDelay(1, () -> {
+			helper.assertValueEqual(1, droppedItemsNear(player), "Using a Scrap Box should drop one reward");
+			player.getAbilities().instabuild = true;
+			PlayerInteractEvent.RightClickItem creativeUse = new PlayerInteractEvent.RightClickItem(player, InteractionHand.MAIN_HAND);
+			LootBoxItemHandler.onUse(creativeUse);
+			helper.assertTrue(creativeUse.isCanceled(), "Creative Scrap Box use should succeed");
+			helper.assertValueEqual(1, boxes.getCount(), "Creative Scrap Box use should keep the box");
+			helper.runAfterDelay(1, () -> {
+				helper.assertValueEqual(2, droppedItemsNear(player), "Creative Scrap Box use should still drop a reward");
+				helper.succeed();
+			});
+		});
+	}
+
+	static void componentLootBoxOpensWholeStackWhenCrouching(GameTestHelper helper) {
+		ServerPlayer player = mockSurvivalPlayer(helper);
+		movePlayerToTestCenter(helper, player);
+		ItemStack boxes = new ItemStack(Items.BRICK, 3);
+		boxes.set(ModDataComponents.LOOT_BOX.get(), FTBIC.id("gameplay/scrap_box"));
+		player.setItemInHand(InteractionHand.MAIN_HAND, boxes);
+		player.setShiftKeyDown(true);
+
+		PlayerInteractEvent.RightClickItem use = new PlayerInteractEvent.RightClickItem(player, InteractionHand.MAIN_HAND);
+		LootBoxItemHandler.onUse(use);
+		helper.assertTrue(use.isCanceled(), "An item with the loot box component should open");
+		helper.assertValueEqual(0, boxes.getCount(), "Crouching should consume every loot box in the stack");
+		helper.runAfterDelay(1, () -> {
+			helper.assertValueEqual(3, droppedItemsNear(player), "Each loot box should roll one reward");
+			helper.succeed();
+		});
+	}
+
+	static void lootBoxIgnoresMissingTable(GameTestHelper helper) {
+		ServerPlayer player = mockSurvivalPlayer(helper);
+		movePlayerToTestCenter(helper, player);
+		ItemStack box = new ItemStack(Items.BRICK);
+		box.set(ModDataComponents.LOOT_BOX.get(), FTBIC.id("missing_loot_box_table"));
+		player.setItemInHand(InteractionHand.MAIN_HAND, box);
+
+		PlayerInteractEvent.RightClickItem use = new PlayerInteractEvent.RightClickItem(player, InteractionHand.MAIN_HAND);
+		LootBoxItemHandler.onUse(use);
+		helper.assertFalse(use.isCanceled(), "Missing loot table should leave the item usable");
+		helper.assertValueEqual(1, box.getCount(), "Missing loot table should not consume the item");
+		helper.assertValueEqual(0, droppedItemsNear(player), "Missing loot table should not drop rewards");
+		helper.succeed();
+	}
+
+	private static int droppedItemsNear(ServerPlayer player) {
+		return player.level().getEntitiesOfClass(ItemEntity.class,
+				player.getBoundingBox().inflate(4D)).size();
+	}
+
+	private static void movePlayerToTestCenter(GameTestHelper helper, ServerPlayer player) {
+		BlockPos pos = helper.absolutePos(CENTER);
+		player.snapTo(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, 0F, 0F);
+	}
+
+	static void cannedFoodReturnsEmptyCan(GameTestHelper helper) {
+		ServerPlayer player = mockSurvivalPlayer(helper);
+		ItemStack oneCan = new ItemStack(FTBICItems.CANNED_FOOD.get());
+		ItemStack result = oneCan.finishUsingItem(helper.getLevel(), player);
+		helper.assertTrue(result.is(FTBICItems.EMPTY_CAN.item.get()),
+				"Eating the last canned food should leave an empty can");
+		helper.assertValueEqual(1, result.getCount(), "Eating one canned food should return one can");
+
+		ItemStack twoCans = new ItemStack(FTBICItems.CANNED_FOOD.get(), 2);
+		ItemStack remaining = twoCans.finishUsingItem(helper.getLevel(), player);
+		helper.assertValueEqual(1, remaining.getCount(), "Eating from a stack should consume one canned food");
+		boolean hasEmptyCan = false;
 		for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
-			ItemStack item = player.getInventory().getItem(i);
-			if (!item.isEmpty() && !item.is(FTBICItems.SCRAP_BOX.item.get())) {
-				receivedReward = true;
+			if (player.getInventory().getItem(i).is(FTBICItems.EMPTY_CAN.item.get())) {
+				hasEmptyCan = true;
 				break;
 			}
 		}
-		helper.assertTrue(receivedReward, "Using a Scrap Box should put a reward in the inventory");
-
-		player.getAbilities().instabuild = true;
-		InteractionResult creativeResult = boxes.use(helper.getLevel(), player, InteractionHand.MAIN_HAND);
-		helper.assertTrue(creativeResult.consumesAction(), "Creative Scrap Box use should succeed");
-		helper.assertValueEqual(1, boxes.getCount(), "Creative Scrap Box use should keep the box");
+		helper.assertTrue(hasEmptyCan, "Eating from a stack should return an empty can to inventory");
 		helper.succeed();
 	}
 

@@ -40,6 +40,7 @@ Stamped from tin plates. The container for every canned recipe.
 </Row>
 
 Takes any food item plus an empty can. Canned variants stack larger and preserve the full nutrition of the original.
+Eating canned food returns an empty can.
 
 <Row>
   <ItemImage id="light_spray_paint_can" />
