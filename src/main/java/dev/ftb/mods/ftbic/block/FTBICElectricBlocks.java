@@ -185,7 +185,7 @@ public interface FTBICElectricBlocks {
 			.energyCapacity(FTBICConfig.MACHINES.ADVANCED_CENTRIFUGE_CAPACITY)
 			.maxEnergyInput(FTBICConfig.ENERGY.MV_TRANSFER_RATE)
 			.energyUsage(FTBICConfig.MACHINES.ADVANCED_CENTRIFUGE_USE)
-			.io(1, 2);
+			.io(1, 3);
 
 	ElectricBlockInstance ADVANCED_COMPRESSOR = register("advanced_compressor", AdvancedCompressorBlockEntity::new)
 			.wip()

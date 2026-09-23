@@ -1,6 +1,7 @@
 package dev.ftb.mods.ftbic.integration.guideme;
 
 import dev.ftb.mods.ftbic.FTBICConfig;
+import dev.ftb.mods.ftbic.block.entity.machine.CentrifugeBlockEntity;
 import dev.ftb.mods.ftbic.block.ElectricBlockInstance;
 import dev.ftb.mods.ftbic.block.FTBICElectricBlocks;
 import dev.ftb.mods.ftbic.recipe.AntimatterBoostRecipe;
@@ -15,6 +16,7 @@ import guideme.document.block.LytParagraph;
 import guideme.document.block.LytSlotGrid;
 import guideme.document.block.recipes.LytStandardRecipeBox;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeHolder;
@@ -22,6 +24,7 @@ import net.minecraft.world.item.crafting.RecipeType;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class FTBICGuideRecipeTypes implements RecipeTypeMappingSupplier {
 	@Override
@@ -61,6 +64,7 @@ public class FTBICGuideRecipeTypes implements RecipeTypeMappingSupplier {
 	private LytStandardRecipeBox<MachineRecipe> buildMachineBox(MachineRecipeType type,
 			ElectricBlockInstance machine, RecipeHolder<MachineRecipe> holder) {
 		MachineRecipe recipe = holder.value();
+		if (type == FTBICRecipes.SEPARATING && recipe.outputs.size() > 2) machine = FTBICElectricBlocks.ADVANCED_CENTRIFUGE;
 
 		List<Ingredient> inputIngredients = new ArrayList<>();
 		for (IngredientWithCount in : recipe.inputs) {
@@ -106,6 +110,16 @@ public class FTBICGuideRecipeTypes implements RecipeTypeMappingSupplier {
 			}
 			builder.addBottom(paragraph(String.format("%.0f%% chance: %s",
 					out.chance() * 100D, stack.getHoverName().getString())));
+		}
+
+		for (var input : recipe.inputFluids) {
+			String names = input.ingredient().fluids().stream()
+					.map(fluid -> fluid.value().getFluidType().getDescription().getString())
+					.collect(Collectors.joining(" / "));
+			builder.addBottom(paragraph(Component.translatable("ftbic.gui.centrifuge.input_tank", names, input.amount(), CentrifugeBlockEntity.TANK_CAPACITY).getString()));
+		}
+		for (var output : recipe.outputFluids) {
+			builder.addBottom(paragraph(Component.translatable("ftbic.gui.centrifuge.output_tank", output.getHoverName(), output.getAmount(), CentrifugeBlockEntity.TANK_CAPACITY).getString()));
 		}
 
 		return builder.build(holder);

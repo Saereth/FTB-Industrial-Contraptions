@@ -20,11 +20,19 @@ public class FTBICLanguageProvider extends LanguageProvider {
 		add("item.ftbic.configuration_card.applied", "Machine side settings applied.");
 		add("item.ftbic.configuration_card.blank", "Blank card: sneak-use on a machine to copy its settings.");
 		add("item.ftbic.configuration_card.mismatch", "These settings belong to a different machine type.");
+		add("ftbic.gui.centrifuge.input_tank", "Fluid input: %s (%s / %s mB)");
+		add("ftbic.gui.centrifuge.output_tank", "Fluid output: %s (%s / %s mB)");
+		add("ftbic.jei.advanced_centrifuge_required", "Advanced Centrifuge only");
 		add("ftbic.sides.title", "Side Configuration");
 		add("ftbic.sides.button", "I/O");
 		add("ftbic.sides.reset", "Reset to Defaults");
 		add("ftbic.sides.default_hint", "* Default uses the machine's original rules.");
-		add("ftbic.sides.face_hint", "%s (%s): %s. Click to change.");
+		add("ftbic.sides.face_hint", "%s (%s): %s");
+		add("ftbic.sides.reset_hint", "Restore every face and resource to Default.");
+		add("ftbic.sides.cycle_hint", "Left-click: next | Right-click: previous");
+		add("ftbic.sides.shift_hint", "Shift-click: reset this face");
+		add("ftbic.sides.modes", "Face modes");
+		add("ftbic.sides.front_view", "Viewed from front");
 		add("ftbic.sides.items", "Items");
 		add("ftbic.sides.fluids", "Fluids");
 		add("ftbic.sides.energy", "Energy");
@@ -56,6 +64,8 @@ public class FTBICLanguageProvider extends LanguageProvider {
 		add("ftbic.reactor.design.title", "Reactor Design");
 		add("ftbic.reactor.design.load", "Load Preset");
 		add("ftbic.reactor.design.paste", "Paste Design");
+		add("ftbic.reactor.design.load_short", "Load");
+		add("ftbic.reactor.design.paste_short", "Paste");
 		add("ftbic.reactor.design.build", "Build from Inventory");
 		add("ftbic.reactor.design.blueprint", "Write Blueprint");
 		add("ftbic.reactor.design.clear", "Clear");
@@ -66,6 +76,7 @@ public class FTBICLanguageProvider extends LanguageProvider {
 		add("ftbic.reactor.design.remaining", "Missing: %s  Conflicts: %s");
 		add("ftbic.reactor.design.materials", "Materials still needed");
 		add("ftbic.reactor.design.count", "%s available / %s needed");
+		add("ftbic.reactor.design.count_short", "Have %s / Need %s");
 		add("ftbic.reactor.design.expected", "Design requires: %s");
 		add("ftbic.reactor.design.unexpected", "Design requires this slot to be empty.");
 		add("ftbic.reactor.design.build_hint", "Fill empty slots from your inventory. Remove red-marked conflicts manually. Components keep their heat and wear.");

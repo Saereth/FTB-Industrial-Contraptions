@@ -10,9 +10,16 @@ item_ids:
 
 # <Color id="gold">Side Configuration</Color>
 
-Use the **I/O** button beside a machine's screen to choose which faces can transfer resources. Select **Items**, **Fluids**, or **Energy**, then click a face to cycle through its available modes. Only resource types supported by that machine appear.
+Use the **I/O** button beside a machine's screen to choose which faces can transfer resources. Select **Items**, **Fluids**, or **Energy**. Only resource types supported by that machine appear, and the panel remembers your last selected tab during the current game session.
 
-Faces are relative to the machine: **Front**, **Back**, **Left**, **Right**, **Top**, and **Bottom**. The tooltip shows the world direction too. Rotating a machine rotates its settings. Machines without a facing use north as their front.
+The colored squares form a view from **in front of the machine**: **Front** is in the center, **Top** above it, **Bottom** below it, and **Left** and **Right** on either side. **Back** is the separate square at the lower left. Each square shows its face name and mode symbol; the legend explains the colors.
+
+* **Left-click** a face to cycle forward through its available modes.
+* **Right-click** to cycle backward.
+* **Shift-click** to restore just that face to **Default** for the selected resource.
+* Hover a face to see its full name, world direction, and current mode.
+
+You can also use Tab to focus a face and Enter or Space to cycle forward; Shift+Enter or Shift+Space resets it. Rotating a machine rotates its settings. Machines without a facing use north as their front.
 
 ## Modes
 

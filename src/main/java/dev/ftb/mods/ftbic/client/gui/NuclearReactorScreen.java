@@ -37,6 +37,7 @@ public class NuclearReactorScreen extends ElectricBlockScreen<NuclearReactorMenu
 	private static final int HOTBAR_Y = INVENTORY_Y + 54;
 	private static final int PANEL_X = 180;
 	private static final int PANEL_W = 140;
+	private static final int MATERIAL_TEXT_W = PANEL_W - 28;
 	private final Inventory inventory;
 	private List<ReactorPresetLibrary.Preset> presets = List.of();
 	private int selectedPreset;
@@ -105,7 +106,16 @@ public class NuclearReactorScreen extends ElectricBlockScreen<NuclearReactorMenu
 		g.fill(x, y, x + width, y + 14, 0xFF444444);
 		g.fill(x + 1, y + 1, x + width - 1, y + 13,
 				enabled && isIn(mx, my, x, y, width, 14) ? 0xFFBCE0FF : 0xFFE0E0E0);
-		g.centeredText(font, text, x + width / 2, y + 3, enabled ? 0xFF202020 : 0xFF888888);
+		String label = fitLabel(text, width - 4);
+		if (font.width(text) > width - 4) {
+			if (isIn(mx, my, x, y, width, 14)) g.setTooltipForNextFrame(text, mx, my);
+		}
+		g.text(font, label, x + (width - font.width(label)) / 2, y + 3, enabled ? IndustrialGui.TEXT : IndustrialGui.MUTED, false);
+	}
+
+	private String fitLabel(Component text, int width) {
+		String label = text.getString();
+		return font.width(label) <= width ? label : font.plainSubstrByWidth(label, width - font.width("...")) + "...";
 	}
 
 	private boolean canBuild() {
@@ -125,9 +135,13 @@ public class NuclearReactorScreen extends ElectricBlockScreen<NuclearReactorMenu
 		designButton(g, 4, 20, 14, Component.literal("<"), mx, my, presets.size() > 1);
 		designButton(g, 122, 20, 14, Component.literal(">"), mx, my, presets.size() > 1);
 		String name = presets.isEmpty() ? "-" : presets.get(selectedPreset).name();
-		g.centeredText(font, font.plainSubstrByWidth(name, 98), x + PANEL_W / 2, topPos + 23, 0xFF303030);
-		designButton(g, 4, 37, 64, Component.translatable("ftbic.reactor.design.load"), mx, my, !presets.isEmpty());
-		designButton(g, 72, 37, 64, Component.translatable("ftbic.reactor.design.paste"), mx, my, true);
+		String presetLabel = fitLabel(Component.literal(name), 98);
+		g.text(font, presetLabel, x + (PANEL_W - font.width(presetLabel)) / 2, topPos + 23, IndustrialGui.TEXT, false);
+		if (font.width(name) > 98 && isIn(mx, my, x + 20, topPos + 20, 100, 14)) {
+			g.setTooltipForNextFrame(Component.literal(name), mx, my);
+		}
+		designButton(g, 4, 37, 64, Component.translatable("ftbic.reactor.design.load_short"), mx, my, !presets.isEmpty());
+		designButton(g, 72, 37, 64, Component.translatable("ftbic.reactor.design.paste_short"), mx, my, true);
 		designButton(g, 4, 54, 132, Component.translatable("ftbic.reactor.design.build"), mx, my, canBuild());
 		designButton(g, 4, 71, 94, Component.translatable("ftbic.reactor.design.blueprint"), mx, my, current != null);
 		designButton(g, 102, 71, 34, Component.translatable("ftbic.reactor.design.clear"), mx, my, current != null);
@@ -177,14 +191,15 @@ public class NuclearReactorScreen extends ElectricBlockScreen<NuclearReactorMenu
 			int y = topPos + 143 + row * 19;
 			g.item(new ItemStack(material.item()), x + 4, y);
 			int needed = material.required() - material.installed();
-			g.text(font, font.plainSubstrByWidth(new ItemStack(material.item()).getHoverName().getString(), 110),
+			g.text(font, fitLabel(new ItemStack(material.item()).getHoverName(), MATERIAL_TEXT_W),
 					x + 24, y, 0xFF303030, false);
-			g.text(font, Component.translatable("ftbic.reactor.design.count", material.available(), needed),
+			g.text(font, fitLabel(Component.translatable("ftbic.reactor.design.count_short", material.available(), needed), MATERIAL_TEXT_W),
 					x + 24, y + 9, material.available() >= needed ? 0xFF267026 : 0xFFAA2020, false);
 		}
 		designButton(g, 4, 202, 14, Component.literal("<"), mx, my, pages > 1);
 		designButton(g, 122, 202, 14, Component.literal(">"), mx, my, pages > 1);
-		g.centeredText(font, (materialPage + 1) + " / " + pages, x + 70, topPos + 205, 0xFF303030);
+		String pageLabel = (materialPage + 1) + " / " + pages;
+		g.text(font, pageLabel, x + (PANEL_W - font.width(pageLabel)) / 2, topPos + 205, IndustrialGui.TEXT, false);
 	}
 
 	@Override
@@ -239,6 +254,12 @@ public class NuclearReactorScreen extends ElectricBlockScreen<NuclearReactorMenu
 
 	@Override
 	protected void extractOverlayTooltips(GuiGraphicsExtractor g, int mouseX, int mouseY) {
+		if (isIn(mouseX, mouseY, leftPos + PANEL_X + 4, topPos + 37, 64, 14)) {
+			g.setTooltipForNextFrame(Component.translatable("ftbic.reactor.design.load"), mouseX, mouseY);
+		}
+		if (isIn(mouseX, mouseY, leftPos + PANEL_X + 72, topPos + 37, 64, 14)) {
+			g.setTooltipForNextFrame(Component.translatable("ftbic.reactor.design.paste"), mouseX, mouseY);
+		}
 		if (isIn(mouseX, mouseY, leftPos + PANEL_X + 4, topPos + 54, 132, 14)) {
 			g.setTooltipForNextFrame(Component.translatable(canBuild()
 					? "ftbic.reactor.design.build_hint" : "ftbic.reactor.design.build_requirements"), mouseX, mouseY);
@@ -256,7 +277,9 @@ public class NuclearReactorScreen extends ElectricBlockScreen<NuclearReactorMenu
 		for (int row = 0; row < 3; row++) {
 			int index = materialPage * 3 + row;
 			if (index < entries.size() && isIn(mouseX, mouseY, leftPos + PANEL_X + 4, topPos + 143 + row * 19, 132, 18)) {
-				g.setTooltipForNextFrame(new ItemStack(entries.get(index).item()).getHoverName(), mouseX, mouseY);
+				Material material = entries.get(index);
+				g.setTooltipForNextFrame(new ItemStack(material.item()).getHoverName().copy().append("\n")
+						.append(Component.translatable("ftbic.reactor.design.count", material.available(), material.required() - material.installed())), mouseX, mouseY);
 			}
 		}
 		for (int i = 0; i < ghosts.length; i++) {

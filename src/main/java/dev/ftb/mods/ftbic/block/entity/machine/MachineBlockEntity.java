@@ -49,6 +49,21 @@ public class MachineBlockEntity extends BasicMachineBlockEntity {
 		super.setStackInSlot(slot, stack);
 	}
 
+	protected void markRecipeDirty() {
+		recipeDirty = true;
+	}
+
+	protected boolean matchesFluidInputs(MachineRecipe recipe) {
+		return recipe.inputFluids.isEmpty() && recipe.outputFluids.isEmpty();
+	}
+
+	protected boolean canFitFluidOutputs(MachineRecipe recipe) {
+		return recipe.outputFluids.isEmpty();
+	}
+
+	protected void processFluids(MachineRecipe recipe) {
+	}
+
 	@Override
 	protected void saveAdditional(ValueOutput output) {
 		super.saveAdditional(output);
@@ -81,7 +96,7 @@ public class MachineBlockEntity extends BasicMachineBlockEntity {
 		if (level == null || !(level instanceof ServerLevel server)) {
 			return null;
 		}
-		if (cachedRecipe != null && recipeMatchesInputs(cachedRecipe)) {
+		if (!recipeDirty && cachedRecipe != null && recipeMatchesInputs(cachedRecipe)) {
 			return cachedRecipe;
 		}
 		// Only scan the full recipe map when inputs actually changed — otherwise an idle machine
@@ -96,9 +111,10 @@ public class MachineBlockEntity extends BasicMachineBlockEntity {
 				candidates.add(mr);
 			}
 		}
-		candidates.sort((a, b) -> Integer.compare(b.inputs.size(), a.inputs.size()));
+		candidates.sort((a, b) -> Integer.compare(b.inputs.size() + b.inputFluids.size(), a.inputs.size() + a.inputFluids.size()));
 		for (MachineRecipe mr : candidates) {
 			if (recipeMatchesInputs(mr)) {
+				if (cachedRecipe != null && cachedRecipe != mr) progress = 0;
 				cachedRecipe = mr;
 				updateMaxProgress();
 				return mr;
@@ -153,7 +169,7 @@ public class MachineBlockEntity extends BasicMachineBlockEntity {
 	}
 
 	private boolean recipeMatchesInputs(MachineRecipe mr) {
-		if (mr.inputs.isEmpty() || inputItems.length == 0) {
+		if ((mr.inputs.isEmpty() && mr.inputFluids.isEmpty()) || !matchesFluidInputs(mr)) {
 			return false;
 		}
 		boolean[] used = new boolean[inputItems.length];
@@ -222,7 +238,7 @@ public class MachineBlockEntity extends BasicMachineBlockEntity {
 			return;
 		}
 
-		if (!canFitOutputs(recipe)) {
+		if (!canFitOutputs(recipe) || !canFitFluidOutputs(recipe)) {
 			active = false;
 			setStarving(false);
 			return;
@@ -236,6 +252,7 @@ public class MachineBlockEntity extends BasicMachineBlockEntity {
 		if (progress >= maxProgress) {
 			consumeInputs(recipe);
 			produceOutputs(recipe);
+			processFluids(recipe);
 			progress = 0;
 			cachedRecipe = null;
 			recipeDirty = true;
@@ -273,8 +290,9 @@ public class MachineBlockEntity extends BasicMachineBlockEntity {
 			for (int i = 0; i < outputItems.length && !toAdd.isEmpty(); i++) {
 				ItemStack existing = outputItems[i];
 				if (existing.isEmpty()) {
-					outputItems[i] = toAdd;
-					toAdd = ItemStack.EMPTY;
+					int move = Math.min(toAdd.getCount(), toAdd.getMaxStackSize());
+					outputItems[i] = toAdd.copyWithCount(move);
+					toAdd.shrink(move);
 				} else if (ItemStack.isSameItemSameComponents(existing, toAdd)) {
 					int room = existing.getMaxStackSize() - existing.getCount();
 					int move = Math.min(room, toAdd.getCount());

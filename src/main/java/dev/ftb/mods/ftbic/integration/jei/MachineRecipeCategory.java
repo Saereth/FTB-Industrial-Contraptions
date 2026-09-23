@@ -2,6 +2,8 @@ package dev.ftb.mods.ftbic.integration.jei;
 
 import dev.ftb.mods.ftbic.FTBICConfig;
 import dev.ftb.mods.ftbic.block.ElectricBlockInstance;
+import dev.ftb.mods.ftbic.block.FTBICElectricBlocks;
+import dev.ftb.mods.ftbic.recipe.FTBICRecipes;
 import dev.ftb.mods.ftbic.recipe.MachineRecipe;
 import dev.ftb.mods.ftbic.recipe.MachineRecipeType;
 import dev.ftb.mods.ftbic.util.FTBICUtils;
@@ -36,6 +38,7 @@ public class MachineRecipeCategory extends AbstractRecipeCategory<RecipeHolder<M
 	private final int inputXEnd;
 	private final int arrowX;
 	private final int outputX;
+	private final boolean separating;
 
 	public MachineRecipeCategory(MachineRecipeType type, ElectricBlockInstance machine, IGuiHelper helper) {
 		this(type, machine, helper, 2);
@@ -45,8 +48,9 @@ public class MachineRecipeCategory extends AbstractRecipeCategory<RecipeHolder<M
 		super(jeiRecipeType(type),
 				Component.translatable("block.ftbic." + machine.id),
 				helper.createDrawableItemStack(new ItemStack(machine.item.get())),
-				widthFor(maxInputs),
-				HEIGHT);
+				widthFor(maxInputs) + (type == FTBICRecipes.SEPARATING ? 18 : 0),
+				type == FTBICRecipes.SEPARATING ? 64 : HEIGHT);
+		this.separating = type == FTBICRecipes.SEPARATING;
 		this.machine = machine;
 		this.maxInputs = Math.max(1, maxInputs);
 		this.inputXEnd = 22 + Math.max(0, this.maxInputs - 2) * 18;
@@ -66,6 +70,16 @@ public class MachineRecipeCategory extends AbstractRecipeCategory<RecipeHolder<M
 	@Override
 	public void setRecipe(IRecipeLayoutBuilder builder, RecipeHolder<MachineRecipe> holder, IFocusGroup focuses) {
 		MachineRecipe recipe = holder.value();
+		if (separating) {
+			for (var input : recipe.inputFluids) {
+				var slot = builder.addInputSlot(inputXEnd, 28).setStandardSlotBackground().setFluidRenderer(input.amount(), false, 16, 16);
+				for (var fluid : input.ingredient().fluids()) slot.add(fluid.value(), input.amount());
+			}
+			for (var output : recipe.outputFluids) {
+				builder.addOutputSlot(outputX, 28).setStandardSlotBackground().setFluidRenderer(output.getAmount(), false, 16, 16)
+						.add(output.getFluid(), output.getAmount(), output.getComponentsPatch());
+			}
+		}
 
 		int inputCount = Math.min(maxInputs, recipe.inputs.size());
 		int idx = 0;
@@ -114,6 +128,10 @@ public class MachineRecipeCategory extends AbstractRecipeCategory<RecipeHolder<M
 	@Override
 	public void createRecipeExtras(IRecipeExtrasBuilder builder, RecipeHolder<MachineRecipe> holder, IFocusGroup focuses) {
 		builder.addAnimatedRecipeArrow(50).setPosition(arrowX, ARROW_Y);
+		if (separating && holder.value().outputs.size() > 2) {
+			builder.addText(Component.translatable("ftbic.jei.advanced_centrifuge_required"), getWidth(), 12)
+					.setPosition(0, 50).setColor(0xFF404040);
+		}
 	}
 
 	@Override
@@ -123,7 +141,7 @@ public class MachineRecipeCategory extends AbstractRecipeCategory<RecipeHolder<M
 		if (mouseX >= hitX0 && mouseX < hitX1 && mouseY >= SLOT_Y && mouseY < SLOT_Y + 18) {
 			double baseTicks = FTBICConfig.MACHINES.MACHINE_RECIPE_BASE_TICKS.get();
 			double ticks = recipe.value().processingTime * baseTicks;
-			double energyPerTick = machine.energyUsage.get();
+			double energyPerTick = (separating && recipe.value().outputs.size() > 2 ? FTBICElectricBlocks.ADVANCED_CENTRIFUGE : machine).energyUsage.get();
 			long zaps = Math.round(ticks * energyPerTick);
 			double seconds = ticks / 20.0D;
 			tooltip.add(Component.translatable("ftbic.jei.recipe_time_energy", FTBICUtils.fmtDouble(seconds, 1), FTBICUtils.fmtInt(zaps)));

@@ -38,11 +38,19 @@ class IndustrialButton extends Button {
 
 	@Override
 	protected void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+		extractBackground(graphics);
+		extractLabel(graphics);
+	}
+
+	protected void extractBackground(GuiGraphicsExtractor graphics) {
 		Identifier sprite = !active ? DISABLED : selected ? SELECTED : isHoveredOrFocused() ? HIGHLIGHTED : NORMAL;
 		graphics.blitSprite(RenderPipelines.GUI_TEXTURED, sprite, getX(), getY(), getWidth(), getHeight());
 		if (selected && isFocused()) {
 			graphics.fill(getX() + 4, getY() + getHeight() - 4, getX() + getWidth() - 4, getY() + getHeight() - 3, IndustrialGui.CYAN);
 		}
+	}
+
+	private void extractLabel(GuiGraphicsExtractor graphics) {
 		int color = !active ? IndustrialGui.MUTED : selected ? IndustrialGui.CYAN : IndustrialGui.TEXT;
 		if (hasDetail) {
 			var font = Minecraft.getInstance().font;

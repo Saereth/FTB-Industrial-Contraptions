@@ -10,14 +10,11 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.data.AtlasIds;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
-import net.minecraft.world.level.material.Fluid;
-import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.fluids.FluidStack;
 import dev.ftb.mods.ftbic.screen.BatterySlot;
 import dev.ftb.mods.ftbic.screen.PickaxeSlot;
@@ -224,28 +221,16 @@ public class ElectricBlockScreen<T extends ElectricBlockMenu> extends AbstractCo
 		// Backing
 		g.blit(RenderPipelines.GUI_TEXTURED, BASE_TEXTURE, x, y, 49F, 167F, 18, 54, 256, 256);
 
-		// Fluid sprite (blitted in 16-px tall chunks from the bottom up). NeoForge 26.1.1.11
-		// removed the IClientFluidTypeExtensions#getStillTexture API; since FTBIC tanks only
-		// accept water or lava (PumpBlockEntity / GeothermalGeneratorBlockEntity), the vanilla
-		// atlas keys are stable and we resolve them directly. If a future fluid is accepted
-		// here, extend {@link #stillTextureFor} to cover it.
 		if (!fluid.isEmpty() && capacity > 0) {
-			Identifier still = stillTextureFor(fluid.getFluid());
-			if (still != null) {
-				TextureAtlasSprite sprite = Minecraft.getInstance()
-						.getAtlasManager().getAtlasOrThrow(AtlasIds.BLOCKS)
-						.getSprite(still);
-				double frac = Math.min(1D, fluid.getAmount() / (double) capacity);
-				int h = Mth.ceil(frac * 52);
-				int rowsLeft = h;
-				int curY = y + 53;
-				while (rowsLeft > 0) {
-					int chunk = Math.min(16, rowsLeft);
-					curY -= chunk;
-					g.blitSprite(RenderPipelines.GUI_TEXTURED, sprite, x + 1, curY, 16, chunk);
-					rowsLeft -= chunk;
-				}
+			var model = Minecraft.getInstance().getModelManager().getFluidStateModelSet().get(fluid.getFluid().defaultFluidState());
+			TextureAtlasSprite sprite = model.stillMaterial().sprite();
+			int tint = model.fluidTintSource() == null ? -1 : model.fluidTintSource().colorAsStack(fluid);
+			int height = Mth.ceil(Math.min(1D, fluid.getAmount() / (double) capacity) * 52);
+			g.enableScissor(x + 1, y + 53 - height, x + 17, y + 53);
+			for (int bottom = y + 53; bottom > y + 53 - height; bottom -= 16) {
+				g.blitSprite(RenderPipelines.GUI_TEXTURED, sprite, x + 1, bottom - 16, 16, 16, tint);
 			}
+			g.disableScissor();
 		}
 
 		// Foreground glass overlay
@@ -309,9 +294,4 @@ public class ElectricBlockScreen<T extends ElectricBlockMenu> extends AbstractCo
 		return mx >= x && mx < x + w && my >= y && my < y + h;
 	}
 
-	private static Identifier stillTextureFor(Fluid fluid) {
-		if (fluid == Fluids.WATER || fluid == Fluids.FLOWING_WATER) return Identifier.parse("minecraft:block/water_still");
-		if (fluid == Fluids.LAVA || fluid == Fluids.FLOWING_LAVA) return Identifier.parse("minecraft:block/lava_still");
-		return null;
-	}
 }

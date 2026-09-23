@@ -1,6 +1,7 @@
 package dev.ftb.mods.ftbic.events;
 
 import dev.ftb.mods.ftbic.FTBIC;
+import dev.ftb.mods.ftbic.block.entity.machine.CentrifugeBlockEntity;
 import dev.ftb.mods.ftbic.FTBICConfig;
 import dev.ftb.mods.ftbic.block.ElectricBlockInstance;
 import dev.ftb.mods.ftbic.block.FTBICBlocks;
@@ -54,6 +55,12 @@ public final class CapabilityRegistrar {
 			if (instance != FTBICElectricBlocks.TELEPORTER && instance != FTBICElectricBlocks.REACTOR_SIMULATOR) {
 				event.registerBlockEntity(Capabilities.Item.BLOCK, type,
 						(be, side) -> new SidedResourceHandler<>(be, side, SideConfiguration.Resource.ITEMS, new ElectricBlockResourceHandler(be)));
+			}
+
+			if (instance == FTBICElectricBlocks.CENTRIFUGE || instance == FTBICElectricBlocks.ADVANCED_CENTRIFUGE) {
+				event.registerBlockEntity(Capabilities.Fluid.BLOCK, type,
+						(be, side) -> new SidedResourceHandler<>(be, side, SideConfiguration.Resource.FLUIDS,
+								((CentrifugeBlockEntity) be).fluidHandler));
 			}
 
 			if (fullFE && instance.feCapMode != ElectricBlockInstance.FECapMode.INSERT_ONLY) {

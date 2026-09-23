@@ -34,6 +34,13 @@ public class FTBICGameTests {
 				FTBIC.id("default"),
 				new TestEnvironmentDefinition.AllOf());
 
+		reg(event, "centrifuge_fluid_processing", CentrifugeFluidGameTests::processing, env, 60);
+		reg(event, "centrifuge_fluid_output_blocking", CentrifugeFluidGameTests::outputBlocking, env, 60);
+		reg(event, "centrifuge_fluid_fluid_only_cache", CentrifugeFluidGameTests::fluidOnlyAndCache, env, 60);
+		reg(event, "centrifuge_fluid_automation_persistence", CentrifugeFluidGameTests::automationAndPersistence, env, 60);
+		reg(event, "centrifuge_fluid_containers_slots", CentrifugeFluidGameTests::containersAndSlots, env, 60);
+		reg(event, "centrifuge_fluid_block_interaction", CentrifugeFluidGameTests::blockInteraction, env, 60);
+
 		reg(event, "side_configuration_cable_routes", SideConfigurationGameTests::multipleCableRoutes, env, 60);
 		reg(event, "side_configuration_full_fe", SideConfigurationGameTests::fullFeMode, env, 60);
 		reg(event, "side_configuration_itemtransfers", SideConfigurationGameTests::itemTransfers, env, 60);

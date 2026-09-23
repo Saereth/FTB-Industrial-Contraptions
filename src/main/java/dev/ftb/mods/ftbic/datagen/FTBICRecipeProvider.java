@@ -4,6 +4,7 @@ import dev.ftb.mods.ftbic.FTBIC;
 import dev.ftb.mods.ftbic.item.FTBICItems;
 import dev.ftb.mods.ftbic.material.Material;
 import dev.ftb.mods.ftbic.material.MaterialComponent;
+import dev.ftb.mods.ftbic.material.MaterialEntries;
 import dev.ftb.mods.ftbic.recipe.AntimatterBoostRecipe;
 import dev.ftb.mods.ftbic.recipe.BasicGeneratorFuelRecipe;
 import dev.ftb.mods.ftbic.recipe.FTBICRecipes;
@@ -44,6 +45,7 @@ import net.minecraft.world.item.crafting.SmokingRecipe;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.common.crafting.CompoundIngredient;
+import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -317,6 +319,18 @@ public class FTBICRecipeProvider extends RecipeProvider {
 
 
 	private void separatingRecipes() {
+		output.accept(recipeKey("separating/lava_to_nuggets"), new MachineRecipe(
+				FTBICRecipes.SEPARATING,
+				List.of(),
+				List.of(SizedFluidIngredient.of(Fluids.LAVA, 1000)),
+				List.of(
+						out(MaterialEntries.get(Material.TIN, MaterialComponent.NUGGET).item().get(), 2, 1D),
+						out(Items.COPPER_NUGGET, 1, 1D),
+						out(Items.GOLD_NUGGET, 1, 0.25D)),
+				List.of(),
+				1D,
+				false), null);
+
 		Item silicon = BuiltInRegistries.ITEM.getValue(FTBIC.id("silicon_gem"));
 		separate("flint", commonTag("gravels"), 1, Arrays.asList(out(Items.FLINT, 1, 1D)));
 		separate("silicon_from_quartz", commonTag("gems/quartz"), 1, Arrays.asList(out(silicon, 3, 1D)));
@@ -878,6 +892,7 @@ public class FTBICRecipeProvider extends RecipeProvider {
 		shaped("nuclear_reactor_chamber", ftbicStack("nuclear_reactor_chamber", 3), new String[] {"HPH", "PMP", "HPH"}, 'M', i("ftbic:advanced_machine_block"), 'P', i("ftbic:dense_copper_plate"), 'H', i("ftbic:reactor_plating"));
 		shaped("powered_crafting_table", ftbicStack("powered_crafting_table", 1), new String[] {"PCP", "PMP", "PTP"}, 'P', tag(ItemTags.PLANKS), 'C', i("ftbic:electronic_circuit"), 'M', i("ftbic:machine_block"), 'T', i("minecraft:crafting_table"));
 		shaped("nuggets/enderium_to_enderium_ingot", ftbicStack("enderium_ingot", 1), new String[] {"XXX", "XXX", "XXX"}, 'X', commonOrTag("c:nuggets/enderium"));
+		shaped("nuggets/tin_to_tin_ingot", ftbicStack("tin_ingot", 1), new String[] {"XXX", "XXX", "XXX"}, 'X', commonOrTag("c:nuggets/tin"));
 		shaped("nuke", ftbicStack("nuke", 1), new String[] {"UCU", "TMT", "UCU"}, 'T', i("minecraft:tnt"), 'U', i("ftbic:quad_uranium_fuel_rod"), 'M', i("ftbic:advanced_machine_block"), 'C', i("ftbic:advanced_circuit"));
 		shaped("overclocked_heat_vent", ftbicStack("overclocked_heat_vent", 1), new String[] {"P", "V", "P"}, 'P', commonOrTag("c:plates/enderium"), 'V', i("ftbic:reactor_heat_vent"));
 		shaped("overclocker_upgrade", ftbicStack("overclocker_upgrade", 1), new String[] {"UUU", "WCW"}, 'U', i("ftbic:small_coolant_cell"), 'W', i("ftbic:lv_cable"), 'C', i("ftbic:electronic_circuit"));
@@ -913,6 +928,7 @@ public class FTBICRecipeProvider extends RecipeProvider {
 		shapeless("electrum_dust", ftbicStack("electrum_dust", 2), commonOrTag("c:dusts/gold"), commonOrTag("c:dusts/silver"));
 		shapeless("enderium_block_to_enderium_ingot", ftbicStack("enderium_ingot", 9), commonOrTag("c:storage_blocks/enderium"));
 		shapeless("enderium_ingot_to_enderium_nugget", ftbicStack("enderium_nugget", 9), commonOrTag("c:ingots/enderium"));
+		shapeless("tin_ingot_to_tin_nugget", ftbicStack("tin_nugget", 9), commonOrTag("c:ingots/tin"));
 		shapeless("energy_crystal", ftbicStack("energy_crystal", 1), commonOrTag("c:dusts/redstone"), commonOrTag("c:dusts/glowstone"), commonOrTag("c:dusts/redstone"), commonOrTag("c:silicon"), commonOrTag("c:gems/diamond"), commonOrTag("c:silicon"), commonOrTag("c:dusts/redstone"), commonOrTag("c:dusts/glowstone"), commonOrTag("c:dusts/redstone"));
 		shapeless("ev_battery", ftbicStack("ev_battery", 1), i("ftbic:hv_battery"), i("ftbic:iridium_alloy"));
 		shapeless("ev_cable", ftbicStack("ev_cable", 1), commonOrTag("c:wires/enderium"), i("ftbic:rubber"));

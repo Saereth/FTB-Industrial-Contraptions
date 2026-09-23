@@ -63,7 +63,7 @@ public enum Material {
 			MaterialComponent.GEAR, MaterialComponent.WIRE)),
 	TIN(Tool.STONE, components(MaterialComponent.STONE_ORE, MaterialComponent.DEEPSLATE_ORE,
 			MaterialComponent.BLOCK, MaterialComponent.RAW_BLOCK, MaterialComponent.RAW_ORE,
-			MaterialComponent.INGOT, MaterialComponent.DUST, MaterialComponent.PLATE,
+			MaterialComponent.INGOT, MaterialComponent.NUGGET, MaterialComponent.DUST, MaterialComponent.PLATE,
 			MaterialComponent.ROD, MaterialComponent.GEAR, MaterialComponent.WIRE)),
 	URANIUM(Tool.IRON, components(MaterialComponent.STONE_ORE, MaterialComponent.DEEPSLATE_ORE,
 			MaterialComponent.BLOCK, MaterialComponent.RAW_BLOCK, MaterialComponent.RAW_ORE,

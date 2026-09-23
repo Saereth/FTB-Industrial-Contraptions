@@ -2,6 +2,7 @@ package dev.ftb.mods.ftbic.screen;
 
 import dev.ftb.mods.ftbic.block.entity.ElectricBlockEntity;
 import dev.ftb.mods.ftbic.block.entity.machine.MachineBlockEntity;
+import dev.ftb.mods.ftbic.block.entity.machine.CentrifugeBlockEntity;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.crafting.RecipeType;
@@ -19,9 +20,23 @@ public class MachineMenu extends ElectricBlockMenu {
 
 	@Override
 	protected void addMachineSlots(Inventory playerInv) {
-		super.addMachineSlots(playerInv);
+		if (blockEntity instanceof CentrifugeBlockEntity) {
+			var container = new ElectricBlockEntityContainer(blockEntity);
+			addSlot(new InputSlot(container, 0, 60, 35));
+			int outputs = blockEntity.outputItems.length;
+			for (int i = 0; i < outputs; i++) {
+				addSlot(new OutputSlot(container, 1 + i, 108, centrifugeOutputY(outputs, i)));
+			}
+			machineSlotCount = 1 + outputs;
+		} else {
+			super.addMachineSlots(playerInv);
+		}
 		addBatterySlot(8, 53);
 		addUpgradeSlots(152);
+	}
+
+	public static int centrifugeOutputY(int outputs, int slot) {
+		return 35 - (outputs - 1) * 9 + slot * 18;
 	}
 
 	public RecipeType<?> getJeiRecipeType() {
