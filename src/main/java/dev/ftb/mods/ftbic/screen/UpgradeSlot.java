@@ -16,6 +16,9 @@ public class UpgradeSlot extends Slot {
 
 	@Override
 	public int getMaxStackSize(ItemStack stack) {
-		return Math.min(stack.getMaxStackSize(), container.getMaxStackSize());
+		if (!mayPlace(stack)) return 0;
+		int limit = container instanceof UpgradeInventoryContainer upgrades
+				? upgrades.getSlotLimit(getContainerSlot(), stack) : container.getMaxStackSize();
+		return Math.min(stack.getMaxStackSize(), limit);
 	}
 }

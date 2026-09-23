@@ -99,6 +99,7 @@ public final class ModCreativeTabs {
 						out.accept(FTBICItems.DARK_SPRAY_PAINT_CAN.get());
 						out.accept(FTBICItems.LIGHT_SPRAY_PAINT_CAN.get());
 						out.accept(FTBICItems.OVERCLOCKER_UPGRADE.get());
+						out.accept(FTBICItems.PARALLEL_PROCESSING_UPGRADE.get());
 						out.accept(FTBICItems.ENERGY_STORAGE_UPGRADE.get());
 						out.accept(FTBICItems.TRANSFORMER_UPGRADE.get());
 						out.accept(FTBICItems.EJECTOR_UPGRADE.get());

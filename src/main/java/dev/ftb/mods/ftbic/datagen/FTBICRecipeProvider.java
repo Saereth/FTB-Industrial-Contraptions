@@ -843,6 +843,7 @@ public class FTBICRecipeProvider extends RecipeProvider {
 		shaped("compressor", ftbicStack("compressor", 1), new String[] {"S S", "SMS", "SCS"}, 'S', commonOrTag("c:stones"), 'M', i("ftbic:machine_block"), 'C', i("ftbic:electronic_circuit"));
 		shaped("copper_coil", ftbicStack("copper_coil", 1), new String[] {"WWW", "WRW", "WWW"}, 'W', commonOrTag("c:wires/copper"), 'R', commonOrTag("c:rods/iron"));
 		shaped("dual_uranium_fuel_rod", ftbicStack("dual_uranium_fuel_rod", 1), new String[] {"RMR"}, 'R', i("ftbic:uranium_fuel_rod"), 'M', i("ftbic:dense_copper_plate"));
+		shaped("parallel_processing_upgrade", ftbicStack("parallel_processing_upgrade", 1), new String[] {"ACA", "WCW", "ACA"}, 'A', i("ftbic:advanced_alloy"), 'C', i("ftbic:advanced_circuit"), 'W', i("ftbic:hv_cable"));
 		shaped("ejector_upgrade", ftbicStack("ejector_upgrade", 1), new String[] {"T T", " P ", "T T"}, 'P', i("minecraft:piston"), 'T', commonOrTag("c:ingots/tin"));
 		shaped("electric_furnace", ftbicStack("powered_furnace", 1), new String[] {" C ", "RFR"}, 'C', i("ftbic:electronic_circuit"), 'R', commonOrTag("c:dusts/redstone"), 'F', i("ftbic:iron_furnace"));
 		shaped("empty_can", ftbicStack("empty_can", 10), new String[] {"T T", "TTT"}, 'T', commonOrTag("c:ingots/tin"));

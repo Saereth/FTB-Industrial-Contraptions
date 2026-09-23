@@ -232,6 +232,11 @@ public class FTBICLanguageProvider extends LanguageProvider {
 		add("item.ftbic.dark_spray_paint_can", "Spray Paint Can (Dark)");
 		add("item.ftbic.dense_copper_plate", "Dense Copper Plate");
 		add("item.ftbic.dual_uranium_fuel_rod", "Dual Uranium Fuel Rod");
+		add("item.ftbic.parallel_processing_upgrade", "Parallel Processing Upgrade");
+		add("item.ftbic.parallel_processing_upgrade.description", "Advanced processors: +1 operation per upgrade (maximum 3 upgrades).");
+		add("item.ftbic.parallel_processing_upgrade.energy", "Runs copies of one recipe together; each operation uses full energy.");
+		add("ftbic.gui.machine.parallel", "%s/%s");
+		add("ftbic.gui.machine.parallel_tooltip", "Parallel operations: %s running / %s maximum");
 		add("item.ftbic.ejector_upgrade", "Ejector Upgrade");
 		add("item.ftbic.electronic_circuit", "Electronic Circuit");
 		add("item.ftbic.empty_can", "Empty Can");

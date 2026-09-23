@@ -51,6 +51,10 @@ public class MachineScreen extends ElectricBlockScreen<MachineMenu> {
 			drawSlot(g, leftPos + inputXStart + col * 18, topPos + yStart - 1 + row * 18);
 		}
 
+		if (menu.parallelCapacity.get() > 1) {
+			g.centeredText(font, Component.translatable("ftbic.gui.machine.parallel", menu.runningOperations.get(), menu.parallelCapacity.get()),
+					leftPos + 92, topPos + 55, 0xFF294C53);
+		}
 		boolean centrifuge = menu.blockEntity instanceof CentrifugeBlockEntity;
 		int outputCols = centrifuge ? 1 : Math.max(1, Math.min(2, outputs));
 		int outputRows = Math.max(1, (int) Math.ceil(outputs / (double) outputCols));
@@ -82,6 +86,9 @@ public class MachineScreen extends ElectricBlockScreen<MachineMenu> {
 		if (menu.blockEntity instanceof CentrifugeBlockEntity machine) {
 			centrifugeTankTooltip(g, mouseX, mouseY, 30, "ftbic.gui.centrifuge.input_tank", machine.getInputFluid());
 			centrifugeTankTooltip(g, mouseX, mouseY, 130, "ftbic.gui.centrifuge.output_tank", machine.getOutputFluid());
+		}
+		if (menu.parallelCapacity.get() > 1 && isIn(mouseX, mouseY, leftPos + 80, topPos + 54, 24, 10)) {
+			g.setTooltipForNextFrame(Component.translatable("ftbic.gui.machine.parallel_tooltip", menu.runningOperations.get(), menu.parallelCapacity.get()), mouseX, mouseY);
 		}
 		if (drawDefaultArrow && isIn(mouseX, mouseY, leftPos + 80, topPos + 34, 24, 17)) {
 			int pct = Math.round(this.menu.getProgressFraction() * 100F);

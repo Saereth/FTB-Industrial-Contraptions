@@ -34,6 +34,12 @@ public class FTBICGameTests {
 				FTBIC.id("default"),
 				new TestEnvironmentDefinition.AllOf());
 
+		reg(event, "parallel_changed_inputs", ParallelProcessingGameTests::changedInputs, env, 60);
+		reg(event, "parallel_processing", ParallelProcessingGameTests::processing, env, 60);
+		reg(event, "parallel_fluid_limits", ParallelProcessingGameTests::fluidsAndLimits, env, 60);
+		reg(event, "parallel_chance_outputs", ParallelProcessingGameTests::chanceOutputs, env, 60);
+		reg(event, "parallel_progress_reload", ParallelProcessingGameTests::progressAndReload, env, 60);
+		reg(event, "parallel_power_compatibility", ParallelProcessingGameTests::powerAndCompatibility, env, 60);
 		reg(event, "centrifuge_fluid_processing", CentrifugeFluidGameTests::processing, env, 60);
 		reg(event, "batch_feeder_jei_ghosts", BatchFeederGameTests::ghostIngredients, env, 60);
 		reg(event, "batch_feeder_locks", BatchFeederGameTests::locks, env, 60);

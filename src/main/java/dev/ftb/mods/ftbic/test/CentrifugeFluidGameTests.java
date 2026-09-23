@@ -68,7 +68,7 @@ final class CentrifugeFluidGameTests {
 	}
 
 	/** Install a fixture only during this synchronous test; restore before any world tick or other test. */
-	private static void withRecipes(GameTestHelper h, List<MachineRecipe> recipes, Runnable action) {
+	static void withRecipes(GameTestHelper h, List<MachineRecipe> recipes, Runnable action) {
 		try {
 			RecipeManager manager = h.getLevel().getServer().getRecipeManager();
 			Field field = RecipeManager.class.getDeclaredField("recipes");

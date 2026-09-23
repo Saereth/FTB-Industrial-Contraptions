@@ -62,7 +62,7 @@ public class UpgradeInventoryContainer implements Container {
 
 	@Override
 	public void setChanged() {
-		inv.entity.setChanged();
+		inv.onContentsChanged(0);
 	}
 
 	@Override
@@ -82,6 +82,8 @@ public class UpgradeInventoryContainer implements Container {
 	public int getMaxStackSize() {
 		return inv.limit;
 	}
+
+	public int getSlotLimit(int slot, ItemStack stack) { return inv.getSlotLimit(slot, stack); }
 
 	@Override
 	public boolean canPlaceItem(int slot, ItemStack stack) {

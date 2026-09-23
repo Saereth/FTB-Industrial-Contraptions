@@ -50,17 +50,18 @@ public class CentrifugeBlockEntity extends MachineBlockEntity {
 	}
 
 	@Override
-	protected boolean matchesFluidInputs(MachineRecipe recipe) {
+	protected boolean matchesFluidInputs(MachineRecipe recipe, int operations) {
 		if (recipe.inputFluids.size() > 1 || recipe.outputFluids.size() > 1 || recipe.outputs.size() > outputItems.length) return false;
-		return recipe.inputFluids.isEmpty() || recipe.inputFluids.getFirst().test(inputFluid);
+		return recipe.inputFluids.isEmpty() || (recipe.inputFluids.getFirst().test(inputFluid)
+				&& inputFluid.getAmount() >= (long) recipe.inputFluids.getFirst().amount() * operations);
 	}
 
 	@Override
-	protected boolean canFitFluidOutputs(MachineRecipe recipe) {
+	protected boolean canFitFluidOutputs(MachineRecipe recipe, int operations) {
 		if (recipe.outputFluids.isEmpty()) return true;
 		FluidStack result = recipe.outputFluids.getFirst();
 		return (outputFluid.isEmpty() || FluidStack.isSameFluidSameComponents(outputFluid, result))
-				&& result.getAmount() <= TANK_CAPACITY - outputFluid.getAmount();
+				&& (long) result.getAmount() * operations <= TANK_CAPACITY - outputFluid.getAmount();
 	}
 
 	@Override

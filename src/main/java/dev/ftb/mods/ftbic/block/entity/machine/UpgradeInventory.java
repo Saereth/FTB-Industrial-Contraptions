@@ -3,6 +3,7 @@ package dev.ftb.mods.ftbic.block.entity.machine;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.ftb.mods.ftbic.block.entity.ElectricBlockEntity;
+import dev.ftb.mods.ftbic.item.FTBICItems;
 import dev.ftb.mods.ftbic.item.UpgradeItem;
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.item.Item;
@@ -35,14 +36,25 @@ public class UpgradeInventory {
 	}
 
 	public boolean isItemValid(int slot, ItemStack stack) {
-		return stack.getItem() instanceof UpgradeItem;
+		return stack.getItem() instanceof UpgradeItem && (!stack.is(FTBICItems.PARALLEL_PROCESSING_UPGRADE.get())
+				|| entity instanceof MachineBlockEntity machine && machine.supportsParallelProcessing());
 	}
 
 	public int getSlotLimit(int slot) {
 		return limit;
 	}
 
-	protected void onContentsChanged(int slot) {
+	public int getSlotLimit(int slot, ItemStack stack) {
+		if (!isItemValid(slot, stack)) return 0;
+		if (!stack.is(FTBICItems.PARALLEL_PROCESSING_UPGRADE.get())) return limit;
+		int elsewhere = 0;
+		for (int i = 0; i < stacks.size(); i++) {
+			if (i != slot && stacks.get(i).is(stack.getItem())) elsewhere += stacks.get(i).getCount();
+		}
+		return Math.max(0, Math.min(limit, 3 - elsewhere));
+	}
+
+	public void onContentsChanged(int slot) {
 		if (entity.hasLevel() && !entity.getLevel().isClientSide()) {
 			entity.initProperties();
 			entity.upgradesChanged();

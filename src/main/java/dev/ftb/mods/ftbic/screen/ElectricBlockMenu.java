@@ -23,6 +23,8 @@ public abstract class ElectricBlockMenu extends AbstractContainerMenu {
 	public final DataSlot energyScaled = DataSlot.standalone();
 	public final DataSlot progressScaled = DataSlot.standalone();
 	public final DataSlot maxProgressScaled = DataSlot.standalone();
+	public final DataSlot parallelCapacity = DataSlot.standalone();
+	public final DataSlot runningOperations = DataSlot.standalone();
 	public final DataSlot starvingFlag = DataSlot.standalone();
 
 	protected int machineSlotCount;
@@ -36,6 +38,8 @@ public abstract class ElectricBlockMenu extends AbstractContainerMenu {
 		addDataSlot(progressScaled);
 		addDataSlot(maxProgressScaled);
 		addDataSlot(starvingFlag);
+		addDataSlot(parallelCapacity);
+		addDataSlot(runningOperations);
 	}
 
 	protected ElectricBlockMenu(MenuType<?> type, int id, Inventory playerInv, FriendlyByteBuf buf) {
@@ -162,6 +166,8 @@ public abstract class ElectricBlockMenu extends AbstractContainerMenu {
 				progressScaled.set(m.progress);
 				maxProgressScaled.set(m.maxProgress);
 				starvingFlag.set(m.starving ? 1 : 0);
+				parallelCapacity.set(m.getParallelCapacity());
+				runningOperations.set(m.getRunningOperations());
 			} else {
 				starvingFlag.set(0);
 			}
