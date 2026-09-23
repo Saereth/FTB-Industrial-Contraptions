@@ -3,11 +3,13 @@ package dev.ftb.mods.ftbic.item;
 import dev.ftb.mods.ftbic.FTBICConfig;
 import dev.ftb.mods.ftbic.util.EnergyArmorMaterial;
 import dev.ftb.mods.ftbic.util.EnergyItemHandler;
+import dev.ftb.mods.ftbic.registry.ModDataComponents;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.util.Mth;
 import net.minecraft.world.item.component.TooltipDisplay;
 
 import java.util.function.Consumer;
@@ -39,6 +41,28 @@ public class EnergyArmorItem extends Item implements EnergyItemHandler {
 	@Override
 	public boolean canExtractEnergy() {
 		return true;
+	}
+
+	@Override
+	public boolean isBarVisible(ItemStack stack) {
+		return stack.has(ModDataComponents.ENERGY.get());
+	}
+
+	@Override
+	public int getBarWidth(ItemStack stack) {
+		double capacity = getEnergyCapacity(stack);
+		if (capacity <= 0D) return 0;
+		return (int) Math.round(Mth.clamp(getEnergy(stack) / capacity * 13D, 0D, 13D));
+	}
+
+	@Override
+	public int getBarColor(ItemStack stack) {
+		return 0xFFEE3030;
+	}
+
+	@Override
+	public boolean shouldCauseReequipAnimation(ItemStack oldStack, ItemStack newStack, boolean slotChanged) {
+		return slotChanged || !oldStack.is(newStack.getItem());
 	}
 
 	@Override

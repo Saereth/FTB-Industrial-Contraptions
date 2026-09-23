@@ -51,6 +51,8 @@ public final class FTBICConfig {
 		public final ModConfigSpec.DoubleValue ARMOR_FLIGHT_ENERGY;
 		public final ModConfigSpec.DoubleValue ARMOR_FLIGHT_BOOST;
 		public final ModConfigSpec.DoubleValue ARMOR_FLIGHT_STOP;
+		public final ModConfigSpec.DoubleValue ARMOR_FLIGHT_BOOST_RATE;
+		public final ModConfigSpec.DoubleValue ARMOR_FLIGHT_STOP_RATE;
 
 		Equipment(ModConfigSpec.Builder b) {
 			b.push("equipment");
@@ -60,8 +62,10 @@ public final class FTBICConfig {
 			MECHANICAL_ELYTRA_RECHARGE = b.comment("How much power is recharged passively").defineInRange("mechanical_elytra_recharge", 1D, 0D, 100_000D);
 			ARMOR_DAMAGE_ENERGY = b.comment("Armor damage energy").defineInRange("armor_damage_energy", 5_000D, 0D, Double.POSITIVE_INFINITY);
 			ARMOR_FLIGHT_ENERGY = b.comment("Armor flight energy").defineInRange("armor_flight_energy", 5D, 0D, Double.POSITIVE_INFINITY);
-			ARMOR_FLIGHT_BOOST = b.comment("Boost gained from wearing the armor during flight").defineInRange("armor_flight_boost", 50D, 0D, 100_000D);
-			ARMOR_FLIGHT_STOP = b.comment("Force used to stop flight").defineInRange("armor_flight_stop", 15D, 0D, 100_000D);
+			ARMOR_FLIGHT_BOOST = b.comment("Energy used when boosting during flight").defineInRange("armor_flight_boost", 50D, 0D, 100_000D);
+			ARMOR_FLIGHT_STOP = b.comment("Energy used when braking during flight").defineInRange("armor_flight_stop", 15D, 0D, 100_000D);
+			ARMOR_FLIGHT_BOOST_RATE = b.comment("Flight boost as a percent of the standard rocket boost").defineInRange("armor_flight_boost_rate", 100D, 0D, 200D);
+			ARMOR_FLIGHT_STOP_RATE = b.comment("Forward speed removed each tick while braking, in percent").defineInRange("armor_flight_stop_rate", 9D, 0D, 100D);
 			b.pop();
 		}
 	}

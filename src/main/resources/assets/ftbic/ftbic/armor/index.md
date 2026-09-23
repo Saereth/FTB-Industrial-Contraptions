@@ -10,7 +10,7 @@ navigation:
 <Column alignItems="center" fullWidth={true}>
   <ItemImage id="quantum_chestplate" scale="2" />
 
-  FTBIC armor consumes **zaps** to absorb damage, fly, and run its set effects. Chestplates hold the energy for the whole set — without one, the rest of the armor provides only its base durability.
+  FTBIC armor consumes **zaps** to absorb damage and power flight. Chestplates hold the energy for the whole set. The pieces never wear down, but they provide no protection when the matching chestplate is empty or absent.
 </Column>
 
 <ItemImage id="minecraft:air" scale="0.25"/>

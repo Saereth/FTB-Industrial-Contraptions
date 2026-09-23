@@ -24,6 +24,9 @@ import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.equipment.ArmorMaterials;
 import net.minecraft.world.item.equipment.ArmorType;
+import net.minecraft.world.item.equipment.ArmorMaterial;
+import net.minecraft.world.item.equipment.EquipmentAssets;
+import net.minecraft.world.item.equipment.Equippable;
 import net.minecraft.world.level.block.Block;
 import net.neoforged.neoforge.common.ModConfigSpec;
 import net.neoforged.neoforge.registries.DeferredItem;
@@ -74,6 +77,15 @@ public interface FTBICItems {
 				.component(ModDataComponents.LOOT_BOX.get(), FTBIC.id("gameplay/scrap_box"))));
 		MATERIALS.add(m);
 		return m;
+	}
+
+	static Item.Properties poweredArmor(Identifier name, ArmorMaterial material, ArmorType type) {
+		return props(name).enchantable(material.enchantmentValue())
+				.component(DataComponents.EQUIPPABLE, Equippable.builder(type.getSlot())
+						.setEquipSound(material.equipSound())
+						.setAsset(material.assetId())
+						.setDamageOnHurt(false)
+						.build());
 	}
 
 	DeferredItem<BlockItem> RUBBER_SHEET = blockItem("rubber_sheet", FTBICBlocks.RUBBER_SHEET);
@@ -197,31 +209,35 @@ public interface FTBICItems {
 	DeferredItem<Item> MECHANICAL_ELYTRA = REGISTRY.register("mechanical_elytra", name ->
 			new MechanicalElytraItem(props(name)
 					.component(DataComponents.GLIDER, Unit.INSTANCE)
-					.humanoidArmor(ArmorMaterials.IRON,
-							ArmorType.CHESTPLATE)));
+					.humanoidArmor(ArmorMaterials.IRON, ArmorType.CHESTPLATE)
+					.component(DataComponents.EQUIPPABLE, Equippable.builder(EquipmentSlot.CHEST)
+							.setEquipSound(ArmorMaterials.IRON.equipSound())
+							.setAsset(ResourceKey.create(EquipmentAssets.ROOT_ID, FTBIC.id("mechanical_elytra")))
+							.setDamageOnHurt(false)
+							.build())));
 	DeferredItem<Item> CARBON_HELMET = REGISTRY.register("carbon_helmet", name ->
-			new DummyEnergyArmorItem(props(name).humanoidArmor(FTBICArmorMaterials.CARBON,
-					ArmorType.HELMET), EnergyArmorMaterial.CARBON, EquipmentSlot.HEAD));
+			new DummyEnergyArmorItem(poweredArmor(name, FTBICArmorMaterials.CARBON, ArmorType.HELMET),
+					EnergyArmorMaterial.CARBON, EquipmentSlot.HEAD));
 	DeferredItem<Item> CARBON_CHESTPLATE = REGISTRY.register("carbon_chestplate", name ->
-			new EnergyArmorItem(props(name).humanoidArmor(FTBICArmorMaterials.CARBON,
-					ArmorType.CHESTPLATE), EnergyArmorMaterial.CARBON));
+			new EnergyArmorItem(poweredArmor(name, FTBICArmorMaterials.CARBON, ArmorType.CHESTPLATE),
+					EnergyArmorMaterial.CARBON));
 	DeferredItem<Item> CARBON_LEGGINGS = REGISTRY.register("carbon_leggings", name ->
-			new DummyEnergyArmorItem(props(name).humanoidArmor(FTBICArmorMaterials.CARBON,
-					ArmorType.LEGGINGS), EnergyArmorMaterial.CARBON, EquipmentSlot.LEGS));
+			new DummyEnergyArmorItem(poweredArmor(name, FTBICArmorMaterials.CARBON, ArmorType.LEGGINGS),
+					EnergyArmorMaterial.CARBON, EquipmentSlot.LEGS));
 	DeferredItem<Item> CARBON_BOOTS = REGISTRY.register("carbon_boots", name ->
-			new DummyEnergyArmorItem(props(name).humanoidArmor(FTBICArmorMaterials.CARBON,
-					ArmorType.BOOTS), EnergyArmorMaterial.CARBON, EquipmentSlot.FEET));
+			new DummyEnergyArmorItem(poweredArmor(name, FTBICArmorMaterials.CARBON, ArmorType.BOOTS),
+					EnergyArmorMaterial.CARBON, EquipmentSlot.FEET));
 	DeferredItem<Item> QUANTUM_HELMET = REGISTRY.register("quantum_helmet", name ->
-			new DummyEnergyArmorItem(props(name).humanoidArmor(FTBICArmorMaterials.QUANTUM,
-					ArmorType.HELMET), EnergyArmorMaterial.QUANTUM, EquipmentSlot.HEAD));
+			new DummyEnergyArmorItem(poweredArmor(name, FTBICArmorMaterials.QUANTUM, ArmorType.HELMET),
+					EnergyArmorMaterial.QUANTUM, EquipmentSlot.HEAD));
 	DeferredItem<Item> QUANTUM_CHESTPLATE = REGISTRY.register("quantum_chestplate", name ->
-			new EnergyArmorItem(props(name).humanoidArmor(FTBICArmorMaterials.QUANTUM,
-					ArmorType.CHESTPLATE), EnergyArmorMaterial.QUANTUM));
+			new EnergyArmorItem(poweredArmor(name, FTBICArmorMaterials.QUANTUM, ArmorType.CHESTPLATE)
+					.component(DataComponents.GLIDER, Unit.INSTANCE), EnergyArmorMaterial.QUANTUM));
 	DeferredItem<Item> QUANTUM_LEGGINGS = REGISTRY.register("quantum_leggings", name ->
-			new DummyEnergyArmorItem(props(name).humanoidArmor(FTBICArmorMaterials.QUANTUM,
-					ArmorType.LEGGINGS), EnergyArmorMaterial.QUANTUM, EquipmentSlot.LEGS));
+			new DummyEnergyArmorItem(poweredArmor(name, FTBICArmorMaterials.QUANTUM, ArmorType.LEGGINGS),
+					EnergyArmorMaterial.QUANTUM, EquipmentSlot.LEGS));
 	DeferredItem<Item> QUANTUM_BOOTS = REGISTRY.register("quantum_boots", name ->
-			new DummyEnergyArmorItem(props(name).humanoidArmor(FTBICArmorMaterials.QUANTUM,
-					ArmorType.BOOTS), EnergyArmorMaterial.QUANTUM, EquipmentSlot.FEET));
+			new DummyEnergyArmorItem(poweredArmor(name, FTBICArmorMaterials.QUANTUM, ArmorType.BOOTS),
+					EnergyArmorMaterial.QUANTUM, EquipmentSlot.FEET));
 	DeferredItem<Item> NUKE_ARROW = REGISTRY.register("nuke_arrow", name -> new NukeArrowItem(props(name)));
 }

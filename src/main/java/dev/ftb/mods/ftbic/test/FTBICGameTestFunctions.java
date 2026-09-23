@@ -47,6 +47,9 @@ import com.mojang.authlib.GameProfile;
 import dev.ftb.mods.ftbic.item.FTBICItems;
 import dev.ftb.mods.ftbic.item.FluidCellItem;
 import dev.ftb.mods.ftbic.events.LootBoxItemHandler;
+import dev.ftb.mods.ftbic.events.EnergyArmorDamageHandler;
+import dev.ftb.mods.ftbic.events.PlayerGliderHandler;
+import dev.ftb.mods.ftbic.item.EnergyArmorItem;
 import dev.ftb.mods.ftbic.registry.ModDataComponents;
 import dev.ftb.mods.ftbic.util.EnergyItemHandler;
 import dev.ftb.mods.ftbic.util.FTBICCapabilities;
@@ -54,6 +57,7 @@ import dev.ftb.mods.ftbic.util.FluidCellIngredient;
 import dev.ftb.mods.ftbic.util.ZapEnergyHandler;
 import io.netty.channel.embedded.EmbeddedChannel;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
@@ -74,6 +78,7 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -93,6 +98,9 @@ import net.neoforged.neoforge.transfer.fluid.FluidResource;
 import net.neoforged.neoforge.transfer.item.ItemResource;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import net.neoforged.neoforge.common.damagesource.DamageContainer;
+import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
+import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
 import java.util.UUID;
 
@@ -1066,6 +1074,82 @@ public class FTBICGameTestFunctions {
 		helper.assertValueEqual(500D, handler.getEnergy(chestplate),
 				"Worn chestplate should gain energy when the player steps on the pad");
 		helper.assertValueEqual(0D, pad.energy, "Pad should spend the energy transferred to worn armor");
+		helper.succeed();
+	}
+
+	static void carbonArmorNeedsPowerForProtection(GameTestHelper helper) {
+		verifyPoweredArmor(helper, FTBICItems.CARBON_HELMET.get(), FTBICItems.CARBON_CHESTPLATE.get(),
+				FTBICItems.CARBON_LEGGINGS.get(), FTBICItems.CARBON_BOOTS.get());
+	}
+
+	static void quantumArmorNeedsPowerForProtection(GameTestHelper helper) {
+		verifyPoweredArmor(helper, FTBICItems.QUANTUM_HELMET.get(), FTBICItems.QUANTUM_CHESTPLATE.get(),
+				FTBICItems.QUANTUM_LEGGINGS.get(), FTBICItems.QUANTUM_BOOTS.get());
+	}
+
+	private static void verifyPoweredArmor(GameTestHelper helper, Item helmet, Item chestplate,
+			Item leggings, Item boots) {
+		ServerPlayer player = mockSurvivalPlayer(helper);
+		ItemStack[] pieces = {
+				new ItemStack(helmet), new ItemStack(chestplate),
+				new ItemStack(leggings), new ItemStack(boots)
+		};
+		EquipmentSlot[] slots = {
+				EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET
+		};
+		for (int i = 0; i < pieces.length; i++) {
+			player.setItemSlot(slots[i], pieces[i]);
+			helper.assertFalse(pieces[i].has(DataComponents.MAX_DAMAGE),
+					"Powered armor must not have item durability");
+			helper.assertTrue(pieces[i].get(DataComponents.ATTRIBUTE_MODIFIERS).modifiers().isEmpty(),
+					"Powered armor must not provide permanent armor attributes");
+		}
+
+		ItemStack chest = pieces[1];
+		EnergyArmorItem armor = (EnergyArmorItem) chest.getItem();
+		double costPerDamage = FTBICConfig.EQUIPMENT.ARMOR_DAMAGE_ENERGY.get();
+		helper.assertTrue(costPerDamage > 0D, "Armor damage energy cost must be positive for this test");
+		armor.setEnergy(chest, costPerDamage * 20D);
+		DamageContainer chargedDamage = new DamageContainer(player.damageSources().generic(), 10F);
+		EnergyArmorDamageHandler.onLivingDamage(new LivingDamageEvent.Pre(player, chargedDamage));
+		helper.assertValueEqual(0F, chargedDamage.getNewDamage(),
+				"A charged full set should absorb the hit");
+		helper.assertValueEqual(costPerDamage * 10D, armor.getEnergy(chest),
+				"Absorbed damage should consume chestplate energy");
+
+		armor.setEnergy(chest, costPerDamage / 4D);
+		DamageContainer lowEnergyDamage = new DamageContainer(player.damageSources().generic(), 10F);
+		EnergyArmorDamageHandler.onLivingDamage(new LivingDamageEvent.Pre(player, lowEnergyDamage));
+		helper.assertTrue(lowEnergyDamage.getNewDamage() > 9F && lowEnergyDamage.getNewDamage() < 10F,
+				"Low energy should absorb only the damage it can pay for");
+		helper.assertValueEqual(0D, armor.getEnergy(chest), "Partial absorption should exhaust the chestplate");
+
+		DamageContainer emptyDamage = new DamageContainer(player.damageSources().generic(), 10F);
+		EnergyArmorDamageHandler.onLivingDamage(new LivingDamageEvent.Pre(player, emptyDamage));
+		helper.assertValueEqual(10F, emptyDamage.getNewDamage(),
+				"Unpowered armor must not protect the player");
+		helper.succeed();
+	}
+
+	static void quantumGliderStopsWithoutPower(GameTestHelper helper) {
+		ServerPlayer player = mockSurvivalPlayer(helper);
+		ItemStack chest = new ItemStack(FTBICItems.QUANTUM_CHESTPLATE.get());
+		EnergyArmorItem armor = (EnergyArmorItem) chest.getItem();
+		player.setItemSlot(EquipmentSlot.CHEST, chest);
+		helper.assertTrue(LivingEntity.canGlideUsing(chest, EquipmentSlot.CHEST),
+				"Quantum chestplate should support gliding");
+
+		double flightCost = FTBICConfig.EQUIPMENT.ARMOR_FLIGHT_ENERGY.get();
+		armor.setEnergy(chest, flightCost * 2D);
+		player.startFallFlying();
+		PlayerGliderHandler.onPlayerTick(new PlayerTickEvent.Post(player));
+		helper.assertValueEqual(flightCost, armor.getEnergy(chest),
+				"Quantum flight should consume energy each tick");
+		PlayerGliderHandler.onPlayerTick(new PlayerTickEvent.Post(player));
+		helper.assertValueEqual(0D, armor.getEnergy(chest),
+				"Quantum flight should use the remaining energy");
+		PlayerGliderHandler.onPlayerTick(new PlayerTickEvent.Post(player));
+		helper.assertFalse(player.isFallFlying(), "Quantum flight should stop when the chestplate is empty");
 		helper.succeed();
 	}
 

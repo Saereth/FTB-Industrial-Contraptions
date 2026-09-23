@@ -20,6 +20,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 * Canned Food now uses the standard item remainder behavior to return its empty can after eating.
+* Carbon and Quantum armor sets no longer have item durability or permanent armor defense. The chestplate spends zaps to absorb damage, and an empty chestplate leaves the set without protection.
+* Quantum Chestplates now support powered gliding with jump to boost and sneak to slow down. Mechanical Elytra uses a visible wing texture and shares the same flight energy handling. Adapted from [PR 55](https://github.com/FTBTeam/FTB-Industrial-Contraptions/pull/55) by @jshipley.
 
 ## [26.1.2.10]
 

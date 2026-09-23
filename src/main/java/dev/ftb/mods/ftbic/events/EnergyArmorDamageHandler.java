@@ -43,8 +43,11 @@ public final class EnergyArmorDamageHandler {
 		protection = Math.min(protection, 1F);
 
 		float absorbed = incoming * protection;
-		double energyCost = FTBICConfig.EQUIPMENT.ARMOR_DAMAGE_ENERGY.get() * absorbed;
-		armor.damageEnergyItem(chest, energyCost);
+		double costPerDamage = FTBICConfig.EQUIPMENT.ARMOR_DAMAGE_ENERGY.get();
+		if (costPerDamage > 0D) {
+			absorbed = (float) Math.min(absorbed, armor.getEnergy(chest) / costPerDamage);
+			armor.damageEnergyItem(chest, costPerDamage * absorbed);
+		}
 		event.setNewDamage(incoming - absorbed);
 	}
 

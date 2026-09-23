@@ -34,7 +34,7 @@ item_ids:
   ### <Color id="aqua">Quantum Chestplate</Color>
 </Row>
 
-Holds the full set's energy. **Enables flight** — hold jump to boost, sneak to descend, spending 5 zaps per tick of active flight.
+Holds the full set's energy. **Enables gliding** with 5 zaps spent per tick. Hold jump to boost or sneak to slow down, spending additional zaps while either control is active.
 
 <RecipeFor id="quantum_chestplate" />
 
@@ -59,6 +59,6 @@ Holds the full set's energy. **Enables flight** — hold jump to boost, sneak to
   ## <Color id="gold">Tips</Color>
 </Column>
 
-* The chestplate consumes 5 zaps per tick in active flight — scale your charging infrastructure accordingly.
-* Damage absorption is fully zap-based. Run out and the pieces offer no protection.
+* The chestplate consumes 5 zaps per tick while gliding. Boosting and braking use additional energy.
+* Damage absorption uses only zaps. The pieces never lose durability and provide no protection when the chestplate is empty.
 * Place a <ItemLink id="charge_pad" /> over an <ItemLink id="ev_battery_box" /> so stepping on it recharges the whole set instantly.

@@ -102,6 +102,9 @@ public class FTBICGameTests {
 		reg(event, "charge_pad_transfers_energy_from_buffer_to_stack", FTBICGameTestFunctions::chargePadTransfersEnergyFromBufferToStack, env, 100);
 		reg(event, "charge_pad_charges_inserted_items", FTBICGameTestFunctions::chargePadChargesInsertedItems, env, 100);
 		reg(event, "charge_pad_charges_worn_armor", FTBICGameTestFunctions::chargePadChargesWornArmor, env, 100);
+		reg(event, "carbon_armor_needs_power_for_protection", FTBICGameTestFunctions::carbonArmorNeedsPowerForProtection, env, 100);
+		reg(event, "quantum_armor_needs_power_for_protection", FTBICGameTestFunctions::quantumArmorNeedsPowerForProtection, env, 100);
+		reg(event, "quantum_glider_stops_without_power", FTBICGameTestFunctions::quantumGliderStopsWithoutPower, env, 100);
 
 		reg(event, "rechargeable_battery_accepts_and_holds_energy", FTBICGameTestFunctions::rechargeableBatteryAcceptsAndHoldsEnergy, env, 100);
 		reg(event, "rechargeable_battery_clears_component_at_zero", FTBICGameTestFunctions::rechargeableBatteryClearsComponentAtZero, env, 100);
