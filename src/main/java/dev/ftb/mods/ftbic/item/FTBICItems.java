@@ -191,28 +191,28 @@ public interface FTBICItems {
 					.humanoidArmor(ArmorMaterials.IRON,
 							ArmorType.CHESTPLATE)));
 	DeferredItem<Item> CARBON_HELMET = REGISTRY.register("carbon_helmet", name ->
-			new DummyEnergyArmorItem(props(name).humanoidArmor(ArmorMaterials.DIAMOND,
+			new DummyEnergyArmorItem(props(name).humanoidArmor(FTBICArmorMaterials.CARBON,
 					ArmorType.HELMET), EnergyArmorMaterial.CARBON, EquipmentSlot.HEAD));
 	DeferredItem<Item> CARBON_CHESTPLATE = REGISTRY.register("carbon_chestplate", name ->
-			new EnergyArmorItem(props(name).humanoidArmor(ArmorMaterials.DIAMOND,
+			new EnergyArmorItem(props(name).humanoidArmor(FTBICArmorMaterials.CARBON,
 					ArmorType.CHESTPLATE), EnergyArmorMaterial.CARBON));
 	DeferredItem<Item> CARBON_LEGGINGS = REGISTRY.register("carbon_leggings", name ->
-			new DummyEnergyArmorItem(props(name).humanoidArmor(ArmorMaterials.DIAMOND,
+			new DummyEnergyArmorItem(props(name).humanoidArmor(FTBICArmorMaterials.CARBON,
 					ArmorType.LEGGINGS), EnergyArmorMaterial.CARBON, EquipmentSlot.LEGS));
 	DeferredItem<Item> CARBON_BOOTS = REGISTRY.register("carbon_boots", name ->
-			new DummyEnergyArmorItem(props(name).humanoidArmor(ArmorMaterials.DIAMOND,
+			new DummyEnergyArmorItem(props(name).humanoidArmor(FTBICArmorMaterials.CARBON,
 					ArmorType.BOOTS), EnergyArmorMaterial.CARBON, EquipmentSlot.FEET));
 	DeferredItem<Item> QUANTUM_HELMET = REGISTRY.register("quantum_helmet", name ->
-			new DummyEnergyArmorItem(props(name).humanoidArmor(ArmorMaterials.NETHERITE,
+			new DummyEnergyArmorItem(props(name).humanoidArmor(FTBICArmorMaterials.QUANTUM,
 					ArmorType.HELMET), EnergyArmorMaterial.QUANTUM, EquipmentSlot.HEAD));
 	DeferredItem<Item> QUANTUM_CHESTPLATE = REGISTRY.register("quantum_chestplate", name ->
-			new EnergyArmorItem(props(name).humanoidArmor(ArmorMaterials.NETHERITE,
+			new EnergyArmorItem(props(name).humanoidArmor(FTBICArmorMaterials.QUANTUM,
 					ArmorType.CHESTPLATE), EnergyArmorMaterial.QUANTUM));
 	DeferredItem<Item> QUANTUM_LEGGINGS = REGISTRY.register("quantum_leggings", name ->
-			new DummyEnergyArmorItem(props(name).humanoidArmor(ArmorMaterials.NETHERITE,
+			new DummyEnergyArmorItem(props(name).humanoidArmor(FTBICArmorMaterials.QUANTUM,
 					ArmorType.LEGGINGS), EnergyArmorMaterial.QUANTUM, EquipmentSlot.LEGS));
 	DeferredItem<Item> QUANTUM_BOOTS = REGISTRY.register("quantum_boots", name ->
-			new DummyEnergyArmorItem(props(name).humanoidArmor(ArmorMaterials.NETHERITE,
+			new DummyEnergyArmorItem(props(name).humanoidArmor(FTBICArmorMaterials.QUANTUM,
 					ArmorType.BOOTS), EnergyArmorMaterial.QUANTUM, EquipmentSlot.FEET));
 	DeferredItem<Item> NUKE_ARROW = REGISTRY.register("nuke_arrow", name -> new NukeArrowItem(props(name)));
 }
