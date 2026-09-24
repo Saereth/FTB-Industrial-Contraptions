@@ -39,6 +39,7 @@ public class ElectricBlockInstance {
 	public Supplier<Double> energyUsage = () -> 0D;
 	public Supplier<Double> maxEnergyInput = () -> 0D;
 	public boolean wip = false;
+	public boolean bankCasing = false;
 	public int inputItemCount = 0;
 	public int outputItemCount = 0;
 	public FECapMode feCapMode = FECapMode.NONE;
@@ -55,7 +56,8 @@ public class ElectricBlockInstance {
 			current = this;
 			try {
 				ResourceKey<Block> key = ResourceKey.create(Registries.BLOCK, name);
-				return new ElectricBlock(this, BlockBehaviour.Properties.of().setId(key));
+				return bankCasing ? new BatteryBankBlock(this, BlockBehaviour.Properties.of().setId(key))
+						: new ElectricBlock(this, BlockBehaviour.Properties.of().setId(key));
 			} finally {
 				current = null;
 			}
@@ -74,6 +76,7 @@ public class ElectricBlockInstance {
 	public ElectricBlockInstance cantBeActive() { canBeActive = false; return this; }
 	public ElectricBlockInstance canBurn() { canBurn = true; return this; }
 	public ElectricBlockInstance wip() { wip = true; return this; }
+	public ElectricBlockInstance bankCasing() { bankCasing = true; return this; }
 	public ElectricBlockInstance energyUsageIsntPerTick() { return this; }
 	public ElectricBlockInstance io(int inItems, int outItems) { inputItemCount = inItems; outputItemCount = outItems; return this; }
 

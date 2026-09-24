@@ -15,10 +15,25 @@ item_ids:
   - ftbic:mv_battery_box
   - ftbic:hv_battery_box
   - ftbic:ev_battery_box
+  - ftbic:industrial_bank_cell
+  - ftbic:industrial_bank_port
   - ftbic:energy_crystal
 ---
 
 # <Color id="gold">Batteries & Battery Boxes</Color>
+
+## <Color id="gold">Industrial Battery Bank</Color>
+
+Place <ItemLink id="industrial_bank_cell" /> and <ItemLink id="industrial_bank_port" /> face to face to form one bank. Each cell adds storage; each port accepts and supplies energy through its exposed faces. Add more ports for more connections. Right-click any cell or port to see the bank's charge, capacity, and member counts. The side configuration on a port can restrict input and output faces.
+
+The default cell holds 10 million zaps. Each port automatically outputs up to 8,192 zaps per tick and accepts up to that amount in one input transaction. Incoming energy moves into connected cells so the port can keep accepting power. Server config controls both values and the maximum number of blocks searched per bank. Energy remains in each cell if you split the bank, and reconnecting cells restores the shared readout. Bank casings join visually along touching faces.
+
+Sneak and right-click a port to cycle its appearance: **Port** (the default connection symbol), **Gauge**, then **Basic** (plain steel like a cell). The choice belongs to that port and survives a world reload. Changing the appearance does not change energy input or output. The selected style appears briefly above the hotbar.
+
+Gauge shows the whole bank's fill level with a glowing bar. Set neighboring ports to Gauge on the same flat face to form a wider or taller display. A rectangle of Gauge ports fills from the bottom of the entire panel. Basic and Port styles interrupt the display, as do gaps, covered faces, and corners. Irregular Gauge shapes form smaller rectangular panels.
+
+<RecipeFor id="industrial_bank_cell" />
+<RecipeFor id="industrial_bank_port" />
 
 <Column alignItems="center" fullWidth={true}>
   <ItemImage id="hv_battery_box" scale="2" />
@@ -93,6 +108,8 @@ Infinite energy. Creative-only.
 </Column>
 
 A battery box has four **charge** slots and four **discharge** slots. Place charged batteries in the discharge slots to feed the network; drop empty batteries in the charge slots to refill them. Each box also has an internal buffer matched to its tier.
+
+Open **I/O**, choose **Energy**, then set any face to **Output** to send power there. You can set several faces to Output. Set a face to **Input** to receive power, **Both** to allow both directions, or **Disabled** to disconnect it. **Default** keeps the original arrangement: the front outputs, and the other faces input. Each face changes between the input and output texture when its output role changes. The same controls work on LV, MV, HV, and EV Battery Boxes.
 
 <Row>
   <ItemImage id="lv_battery_box" />

@@ -8,6 +8,9 @@ import dev.ftb.mods.ftbic.block.entity.generator.NuclearReactorBlockEntity;
 import dev.ftb.mods.ftbic.block.entity.machine.MachineBlockEntity;
 import dev.ftb.mods.ftbic.block.entity.machine.PumpBlockEntity;
 import dev.ftb.mods.ftbic.block.entity.machine.TeleporterBlockEntity;
+import dev.ftb.mods.ftbic.block.entity.storage.BankCellBlockEntity;
+import dev.ftb.mods.ftbic.block.entity.storage.BankPortBlockEntity;
+import dev.ftb.mods.ftbic.block.entity.storage.BankTopology;
 import dev.ftb.mods.ftbic.util.FTBICUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -71,8 +74,14 @@ public class FTBICJadePlugin implements IWailaPlugin {
 		@Override
 		public void appendServerData(CompoundTag data, BlockAccessor accessor) {
 			if (accessor.getBlockEntity() instanceof ElectricBlockEntity be) {
-				data.putDouble("ftbic_energy", be.getEnergy());
-				data.putDouble("ftbic_energy_capacity", be.getEnergyCapacity());
+				if (be instanceof BankCellBlockEntity || be instanceof BankPortBlockEntity) {
+					BankTopology.Snapshot bank = BankTopology.snapshot(accessor.getLevel(), be.getBlockPos());
+					data.putDouble("ftbic_energy", bank.stored());
+					data.putDouble("ftbic_energy_capacity", bank.capacity());
+				} else {
+					data.putDouble("ftbic_energy", be.getEnergy());
+					data.putDouble("ftbic_energy_capacity", be.getEnergyCapacity());
+				}
 				if (be.isBurnt()) {
 					data.putBoolean("ftbic_burnt", true);
 				}

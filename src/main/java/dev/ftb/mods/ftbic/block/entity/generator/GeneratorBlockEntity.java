@@ -91,24 +91,25 @@ public class GeneratorBlockEntity extends ElectricBlockEntity {
 			return;
 		}
 
-		pushFEToNeighbours();
+		double remainingOutput = maxEnergyOutputTransfer - pushFEToNeighbours();
 
 		if (energy > 0D) {
 			ItemStack battery = chargeBatteryInventory.getStackInSlot(0);
 			if (!battery.isEmpty() && battery.getItem() instanceof EnergyItemHandler item) {
 				double transfer = item.isCreativeEnergyItem()
 						? Double.POSITIVE_INFINITY
-						: maxEnergyOutputTransfer * FTBICConfig.MACHINES.ITEM_TRANSFER_EFFICIENCY.get();
-				double accepted = item.insertEnergy(battery, Math.min(energy, transfer), false);
+						: remainingOutput * FTBICConfig.MACHINES.ITEM_TRANSFER_EFFICIENCY.get();
+				double accepted = item.insertEnergy(battery, Math.min(energy, Math.min(transfer, remainingOutput)), false);
 				if (accepted > 0) {
 					energy -= accepted;
+					remainingOutput -= accepted;
 					active = true;
 					setChanged();
 				}
 			}
 		}
 
-		double transferable = Math.min(energy, maxEnergyOutputTransfer);
+		double transferable = Math.min(energy, remainingOutput);
 		if (transferable <= 0D) {
 			return;
 		}
@@ -176,18 +177,20 @@ public class GeneratorBlockEntity extends ElectricBlockEntity {
 		return allowsTransfer(SideConfiguration.Resource.ENERGY, direction, false);
 	}
 
-	private void pushFEToNeighbours() {
+	private double pushFEToNeighbours() {
 		boolean canFEOutput = electricBlockInstance.feCapMode == ElectricBlockInstance.FECapMode.EXTRACT_ONLY
+				|| electricBlockInstance.feCapMode == ElectricBlockInstance.FECapMode.INSERT_AND_EXTRACT
 				|| (FTBICConfig.ENERGY.FULL_FE_MODE.get() && maxEnergyOutput > 0D);
-		if (!canFEOutput) return;
-		if (energy <= 0D || maxEnergyOutputTransfer <= 0D) return;
-		if (!(level instanceof ServerLevel serverLevel)) return;
+		if (!canFEOutput) return 0D;
+		if (energy <= 0D || maxEnergyOutputTransfer <= 0D) return 0D;
+		if (!(level instanceof ServerLevel serverLevel)) return 0D;
+		double remaining = maxEnergyOutputTransfer;
 		for (Direction dir : FTBICUtils.DIRECTIONS) {
 			if (!isValidEnergyOutputSide(dir)) continue;
 			if (zapPushCache(serverLevel, dir).getCapability() != null) continue;
 			EnergyHandler fe = fePushCache(serverLevel, dir).getCapability();
 			if (fe == null) continue;
-			double zapsAvailable = Math.min(energy, maxEnergyOutputTransfer);
+			double zapsAvailable = Math.min(energy, remaining);
 			int feToOffer = ZapFEConversion.zapsToFEFloor(zapsAvailable);
 			if (feToOffer <= 0) continue;
 			try (Transaction tx = Transaction.openRoot()) {
@@ -195,13 +198,15 @@ public class GeneratorBlockEntity extends ElectricBlockEntity {
 				if (feAccepted > 0) {
 					double zapsConsumed = Math.min(ZapFEConversion.feToZapsCeil(feAccepted), energy);
 					energy -= zapsConsumed;
+					remaining -= zapsConsumed;
 					tx.commit();
 					active = true;
 					setChanged();
 				}
 			}
-			if (energy <= 0D) return;
+			if (energy <= 0D || remaining <= 0D) break;
 		}
+		return maxEnergyOutputTransfer - remaining;
 	}
 
 	@SuppressWarnings("unchecked")

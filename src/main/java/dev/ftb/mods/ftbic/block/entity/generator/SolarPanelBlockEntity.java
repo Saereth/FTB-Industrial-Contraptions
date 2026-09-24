@@ -26,7 +26,9 @@ public class SolarPanelBlockEntity extends GeneratorBlockEntity {
 
 	@Override
 	public void handleGeneration() {
-		if (energy < energyCapacity && level.isBrightOutside() && level.canSeeSky(worldPosition.above())) {
+		if (energy < energyCapacity && level.isBrightOutside()
+				&& !level.getBlockState(worldPosition.above()).canOcclude()
+				&& level.canSeeSky(worldPosition.above())) {
 			energy += Math.min(energyCapacity - energy, maxEnergyOutput);
 			setChanged();
 		}

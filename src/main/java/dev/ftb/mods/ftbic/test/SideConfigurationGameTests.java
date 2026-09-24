@@ -5,12 +5,14 @@ import dev.ftb.mods.ftbic.FTBICConfig;
 import dev.ftb.mods.ftbic.block.CableBlock;
 import dev.ftb.mods.ftbic.block.FTBICBlocks;
 import dev.ftb.mods.ftbic.block.FTBICElectricBlocks;
+import dev.ftb.mods.ftbic.block.ElectricBlockInstance;
 import dev.ftb.mods.ftbic.block.entity.ElectricBlockEntity;
 import dev.ftb.mods.ftbic.block.entity.generator.GeneratorBlockEntity;
 import dev.ftb.mods.ftbic.block.entity.generator.NuclearReactorBlockEntity;
 import dev.ftb.mods.ftbic.block.entity.machine.BasicMachineBlockEntity;
 import dev.ftb.mods.ftbic.block.entity.machine.PumpBlockEntity;
 import dev.ftb.mods.ftbic.block.entity.machine.TeleporterBlockEntity;
+import dev.ftb.mods.ftbic.block.entity.storage.BatteryBoxBlockEntity;
 import dev.ftb.mods.ftbic.item.FTBICItems;
 import dev.ftb.mods.ftbic.net.SideConfigurationPayload;
 import dev.ftb.mods.ftbic.registry.ModDataComponents;
@@ -50,6 +52,46 @@ final class SideConfigurationGameTests {
 	}
 	private static void disable(ElectricBlockEntity machine, Resource resource) {
 		for (Direction direction : Direction.values()) side(machine, resource, direction, Mode.DISABLED);
+	}
+
+	static void batteryBoxOutputOnAnySide(GameTestHelper h) {
+		ElectricBlockInstance[] tiers = {
+				FTBICElectricBlocks.LV_BATTERY_BOX, FTBICElectricBlocks.MV_BATTERY_BOX,
+				FTBICElectricBlocks.HV_BATTERY_BOX, FTBICElectricBlocks.EV_BATTERY_BOX
+		};
+		for (ElectricBlockInstance tier : tiers) {
+			h.setBlock(POS, tier.block.get());
+			BatteryBoxBlockEntity box = h.getBlockEntity(POS, BatteryBoxBlockEntity.class);
+			Direction front = box.getFacing(Direction.NORTH);
+			for (Direction direction : Direction.values()) {
+				Face face = Face.relative(front, direction);
+				h.assertTrue(box.supportsSideMode(Resource.ENERGY, face, Mode.OUTPUT), tier.id + " supports output on " + direction);
+				h.assertTrue(box.supportsSideMode(Resource.ENERGY, face, Mode.BOTH), tier.id + " supports both on " + direction);
+				h.assertValueEqual(direction == front, box.isValidEnergyOutputSide(direction), "default output face");
+				h.assertValueEqual(direction != front, box.isValidEnergyInputSide(direction), "default input face");
+				side(box, Resource.ENERGY, direction, Mode.OUTPUT);
+				h.assertTrue(box.isValidEnergyOutputSide(direction), tier.id + " sends from " + direction);
+				h.assertFalse(box.isValidEnergyInputSide(direction), "output face blocks native energy input");
+				side(box, Resource.ENERGY, direction, Mode.INPUT);
+				h.assertFalse(box.isValidEnergyOutputSide(direction), "input face stops native output");
+				h.assertTrue(box.isValidEnergyInputSide(direction), tier.id + " accepts input on " + direction);
+				side(box, Resource.ENERGY, direction, Mode.BOTH);
+				h.assertTrue(box.isValidEnergyOutputSide(direction), "both mode sends energy");
+				h.assertTrue(box.isValidEnergyInputSide(direction), "both mode receives energy");
+				side(box, Resource.ENERGY, direction, Mode.DISABLED);
+				h.assertFalse(box.isValidEnergyOutputSide(direction), "disabled face stops output");
+				h.assertFalse(box.isValidEnergyInputSide(direction), "disabled face stops input");
+				side(box, Resource.ENERGY, direction, Mode.DEFAULT);
+			}
+			side(box, Resource.ENERGY, Direction.UP, Mode.OUTPUT);
+			h.setBlock(POS.above(), tier.block.get());
+			ElectricBlockEntity receiver = h.getBlockEntity(POS.above(), ElectricBlockEntity.class);
+			box.energy = 1000;
+			box.handleEnergyOutput();
+			h.assertTrue(receiver.energy > 0D, tier.id + " pushes energy through configured top output");
+			h.setBlock(POS.above(), Blocks.AIR);
+		}
+		h.succeed();
 	}
 
 	static void itemTransfers(GameTestHelper h) {

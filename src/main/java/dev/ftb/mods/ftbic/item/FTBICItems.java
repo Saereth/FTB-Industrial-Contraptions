@@ -175,9 +175,9 @@ public interface FTBICItems {
 	DeferredItem<Item> SMALL_COOLANT_CELL = REGISTRY.register("small_coolant_cell", name -> new CoolantItem(props(name), 10_000));
 	DeferredItem<Item> MEDIUM_COOLANT_CELL = REGISTRY.register("medium_coolant_cell", name -> new CoolantItem(props(name), 30_000));
 	DeferredItem<Item> LARGE_COOLANT_CELL = REGISTRY.register("large_coolant_cell", name -> new CoolantItem(props(name), 60_000));
-	DeferredItem<Item> URANIUM_FUEL_ROD = REGISTRY.register("uranium_fuel_rod", name -> new FuelRodItem(props(name), 20_000, 1, 5, 2));
-	DeferredItem<Item> DUAL_URANIUM_FUEL_ROD = REGISTRY.register("dual_uranium_fuel_rod", name -> new FuelRodItem(props(name), 20_000, 2, 10, 4));
-	DeferredItem<Item> QUAD_URANIUM_FUEL_ROD = REGISTRY.register("quad_uranium_fuel_rod", name -> new FuelRodItem(props(name), 20_000, 4, 20, 8));
+	DeferredItem<Item> URANIUM_FUEL_ROD = REGISTRY.register("uranium_fuel_rod", name -> new FuelRodItem(props(name), 20_000, 1, 20, 2));
+	DeferredItem<Item> DUAL_URANIUM_FUEL_ROD = REGISTRY.register("dual_uranium_fuel_rod", name -> new FuelRodItem(props(name), 20_000, 2, 40, 4));
+	DeferredItem<Item> QUAD_URANIUM_FUEL_ROD = REGISTRY.register("quad_uranium_fuel_rod", name -> new FuelRodItem(props(name), 20_000, 4, 80, 8));
 	DeferredItem<Item> HEAT_VENT = REGISTRY.register("heat_vent", name -> new HeatVentItem(props(name), 1_000, 6, 0, 0));
 	DeferredItem<Item> ADVANCED_HEAT_VENT = REGISTRY.register("advanced_heat_vent", name -> new HeatVentItem(props(name), 1_000, 12, 0, 0));
 	DeferredItem<Item> REACTOR_HEAT_VENT = REGISTRY.register("reactor_heat_vent", name -> new HeatVentItem(props(name), 1_000, 5, 5, 0));

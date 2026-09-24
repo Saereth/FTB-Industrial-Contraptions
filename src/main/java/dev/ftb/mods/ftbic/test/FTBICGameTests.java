@@ -35,6 +35,10 @@ public class FTBICGameTests {
 				new TestEnvironmentDefinition.AllOf());
 		reg(event, "bank_connected_storage", BankGameTests::connectedStorage, env, 60);
 		reg(event, "bank_cell_seam_states", BankGameTests::cellSeamStates, env, 60);
+		reg(event, "bank_charge_display", BankGameTests::chargeDisplayTracksBank, env, 60);
+		reg(event, "bank_combined_displays", BankGameTests::combinedDisplays, env, 60);
+		reg(event, "bank_port_face_styles", BankGameTests::portFaceStyles, env, 60);
+		reg(event, "bank_sustained_cable_charging", BankGameTests::sustainedCableCharging, env, 60);
 
 		reg(event, "parallel_changed_inputs", ParallelProcessingGameTests::changedInputs, env, 60);
 		reg(event, "parallel_processing", ParallelProcessingGameTests::processing, env, 60);
@@ -66,6 +70,7 @@ public class FTBICGameTests {
 		reg(event, "side_configuration_reactorchambers", SideConfigurationGameTests::reactorChambers, env, 60);
 		reg(event, "side_configuration_persistenceandrotation", SideConfigurationGameTests::persistenceAndRotation, env, 60);
 		reg(event, "side_configuration_cardandpackets", SideConfigurationGameTests::cardAndPackets, env, 60);
+		reg(event, "battery_box_configured_output", SideConfigurationGameTests::batteryBoxOutputOnAnySide, env, 60);
 
 		reg(event, "reactor_design_fill", ReactorDesignGameTests::fillsWithoutReplacingOrLosingData, env, 40);
 		reg(event, "reactor_fuel_rod_base_output", ReactorDesignGameTests::fuelRodBaseOutput, env, 40);

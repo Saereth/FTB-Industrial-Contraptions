@@ -105,9 +105,9 @@ public class FTBICJEIPlugin implements IModPlugin {
 	}
 
 	private static void registerReactorComponentInfo(IRecipeRegistration r) {
-		rodInfo(r, FTBICItems.URANIUM_FUEL_ROD.get(), 1, 5, 2, 20000);
-		rodInfo(r, FTBICItems.DUAL_URANIUM_FUEL_ROD.get(), 2, 10, 4, 20000);
-		rodInfo(r, FTBICItems.QUAD_URANIUM_FUEL_ROD.get(), 4, 20, 8, 20000);
+		rodInfo(r, FTBICItems.URANIUM_FUEL_ROD.get(), 1, 20, 2, 20000);
+		rodInfo(r, FTBICItems.DUAL_URANIUM_FUEL_ROD.get(), 2, 40, 4, 20000);
+		rodInfo(r, FTBICItems.QUAD_URANIUM_FUEL_ROD.get(), 4, 80, 8, 20000);
 
 		coolantInfo(r, FTBICItems.SMALL_COOLANT_CELL.get(), 10_000);
 		coolantInfo(r, FTBICItems.MEDIUM_COOLANT_CELL.get(), 30_000);

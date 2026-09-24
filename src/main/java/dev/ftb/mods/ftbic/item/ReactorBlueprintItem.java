@@ -35,6 +35,16 @@ public class ReactorBlueprintItem extends Item {
 		return false;
 	}
 
+	public static boolean hasBlank(Inventory inventory) {
+		for (int i = 0; i < inventory.getContainerSize(); i++) {
+			ItemStack stack = inventory.getItem(i);
+			if (stack.is(FTBICItems.REACTOR_BLUEPRINT.get()) && !stack.has(ModDataComponents.REACTOR_DESIGN.get())) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	@Override
 	public InteractionResult useOn(UseOnContext context) {
 		var level = context.getLevel();

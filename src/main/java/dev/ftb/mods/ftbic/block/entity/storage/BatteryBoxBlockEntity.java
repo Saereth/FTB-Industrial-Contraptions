@@ -5,7 +5,9 @@ import dev.ftb.mods.ftbic.block.ElectricBlockInstance;
 import dev.ftb.mods.ftbic.block.entity.generator.GeneratorBlockEntity;
 import dev.ftb.mods.ftbic.screen.BatteryBoxMenu;
 import dev.ftb.mods.ftbic.util.BatterySlotHelper;
-import dev.ftb.mods.ftbic.util.SideConfiguration;
+import dev.ftb.mods.ftbic.util.SideConfiguration.Face;
+import dev.ftb.mods.ftbic.util.SideConfiguration.Mode;
+import dev.ftb.mods.ftbic.util.SideConfiguration.Resource;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.player.Inventory;
@@ -31,12 +33,19 @@ public class BatteryBoxBlockEntity extends GeneratorBlockEntity {
 
 	@Override
 	public boolean isValidEnergyOutputSide(Direction direction) {
-		return direction == getFacing(Direction.NORTH) && allowsTransfer(SideConfiguration.Resource.ENERGY, direction, false);
+		Mode mode = getSideConfiguration().mode(Resource.ENERGY, Face.relative(getFacing(Direction.NORTH), direction));
+		return mode == Mode.DEFAULT ? direction == getFacing(Direction.NORTH) : mode.allows(false);
 	}
 
 	@Override
 	public boolean isValidEnergyInputSide(Direction direction) {
-		return direction != getFacing(Direction.NORTH) && allowsTransfer(SideConfiguration.Resource.ENERGY, direction, true);
+		Mode mode = getSideConfiguration().mode(Resource.ENERGY, Face.relative(getFacing(Direction.NORTH), direction));
+		return mode == Mode.DEFAULT ? direction != getFacing(Direction.NORTH) : mode.allows(true);
+	}
+
+	@Override
+	public int supportedTransfers(Resource resource, Face face) {
+		return resource == Resource.ENERGY ? 3 : super.supportedTransfers(resource, face);
 	}
 
 	@Override

@@ -214,8 +214,8 @@ public class FTBICGameTestFunctions {
 		helper.setBlock(CENTER.above(), Blocks.STONE);
 
 		helper.runAfterDelay(20, () -> {
-			helper.assertFalse(helper.getLevel().canSeeSky(helper.absolutePos(CENTER.above())),
-					"obstruction must block sky access before measuring");
+			helper.assertTrue(helper.getBlockState(CENTER.above()).canOcclude(),
+					"opaque cover remains above the panel before measuring");
 			LVSolarPanelBlockEntity panel = helper.getBlockEntity(CENTER, LVSolarPanelBlockEntity.class);
 			panel.energy = 0D;
 			helper.runAfterDelay(40, () -> {

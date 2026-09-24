@@ -41,7 +41,7 @@ Pipes and hoppers can extract from an output face directly. Install an <ItemLink
 
 ## Machine Rules
 
-Side settings preserve the machine's slot restrictions, energy limits, and conversion rules. Battery boxes retain their front energy output. Transformers retain their front input, and rectifiers retain their front FE input. The remaining electrical faces keep their existing roles; they can be disabled individually.
+Side settings preserve the machine's slot restrictions, energy limits, and conversion rules. Battery boxes default to front output and input on the other faces; you can assign input, output, or both to any face. Their face texture follows the selected output role. Transformers retain their front input, and rectifiers retain their front FE input. The remaining electrical faces keep their existing roles; they can be disabled individually.
 
 Energy settings affect both zaps and FE wherever those interfaces are available. **Default** retains the original behavior of your energy compatibility mode.
 

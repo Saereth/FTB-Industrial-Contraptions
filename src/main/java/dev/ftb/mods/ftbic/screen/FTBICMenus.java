@@ -23,6 +23,7 @@ public interface FTBICMenus {
 	DeferredHolder<MenuType<?>, MenuType<SolarPanelMenu>> SOLAR_PANEL = register("solar_panel", SolarPanelMenu::new);
 	DeferredHolder<MenuType<?>, MenuType<NuclearReactorMenu>> NUCLEAR_REACTOR = register("nuclear_reactor", NuclearReactorMenu::new);
 	DeferredHolder<MenuType<?>, MenuType<BatteryBoxMenu>> BATTERY_BOX = register("battery_box", BatteryBoxMenu::new);
+	DeferredHolder<MenuType<?>, MenuType<BankMenu>> BANK = register("industrial_bank", BankMenu::new);
 	DeferredHolder<MenuType<?>, MenuType<AntimatterConstructorMenu>> ANTIMATTER_CONSTRUCTOR = register("antimatter_constructor", AntimatterConstructorMenu::new);
 	DeferredHolder<MenuType<?>, MenuType<PoweredCraftingTableMenu>> POWERED_CRAFTING_TABLE = register("powered_crafting_table", PoweredCraftingTableMenu::new);
 	DeferredHolder<MenuType<?>, MenuType<QuarryMenu>> QUARRY = register("quarry", QuarryMenu::new);

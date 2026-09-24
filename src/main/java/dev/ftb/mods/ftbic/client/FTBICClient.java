@@ -4,6 +4,7 @@ import dev.ftb.mods.ftbic.FTBIC;
 import dev.ftb.mods.ftbic.client.gui.AntimatterConstructorScreen;
 import dev.ftb.mods.ftbic.client.gui.BasicGeneratorScreen;
 import dev.ftb.mods.ftbic.client.gui.BatteryBoxScreen;
+import dev.ftb.mods.ftbic.client.gui.BankScreen;
 import dev.ftb.mods.ftbic.client.gui.GeothermalGeneratorScreen;
 import dev.ftb.mods.ftbic.client.gui.IronFurnaceScreen;
 import dev.ftb.mods.ftbic.client.gui.MachineScreen;
@@ -16,7 +17,12 @@ import dev.ftb.mods.ftbic.client.gui.ReactorSimulatorScreen;
 import dev.ftb.mods.ftbic.client.gui.SolarPanelScreen;
 import dev.ftb.mods.ftbic.client.gui.TeleporterScreen;
 import dev.ftb.mods.ftbic.block.FTBICElectricBlocks;
+import dev.ftb.mods.ftbic.block.ElectricBlockInstance;
 import dev.ftb.mods.ftbic.block.entity.machine.DiggingBaseBlockEntity;
+import dev.ftb.mods.ftbic.block.entity.storage.BankPortBlockEntity;
+import dev.ftb.mods.ftbic.block.entity.storage.BatteryBoxBlockEntity;
+import dev.ftb.mods.ftbic.client.renderer.BankDisplayRenderer;
+import dev.ftb.mods.ftbic.client.renderer.BatteryBoxFaceRenderer;
 import dev.ftb.mods.ftbic.client.renderer.DiggingBeamRenderer;
 import dev.ftb.mods.ftbic.client.renderer.NukeArrowRenderer;
 import dev.ftb.mods.ftbic.entity.FTBICEntities;
@@ -52,6 +58,7 @@ public final class FTBICClient {
 		event.register(FTBICMenus.SOLAR_PANEL.get(), SolarPanelScreen::new);
 		event.register(FTBICMenus.NUCLEAR_REACTOR.get(), NuclearReactorScreen::new);
 		event.register(FTBICMenus.BATTERY_BOX.get(), BatteryBoxScreen::new);
+		event.register(FTBICMenus.BANK.get(), BankScreen::new);
 		event.register(FTBICMenus.ANTIMATTER_CONSTRUCTOR.get(), AntimatterConstructorScreen::new);
 		event.register(FTBICMenus.POWERED_CRAFTING_TABLE.get(), PoweredCraftingTableScreen::new);
 		event.register(FTBICMenus.QUARRY.get(), QuarryScreen::new);
@@ -74,6 +81,18 @@ public final class FTBICClient {
 						(Object) FTBICElectricBlocks.PUMP.blockEntity.get();
 		event.registerBlockEntityRenderer(quarryType, DiggingBeamRenderer::new);
 		event.registerBlockEntityRenderer(pumpType, DiggingBeamRenderer::new);
+		@SuppressWarnings("unchecked")
+		BlockEntityType<BankPortBlockEntity> bankPortType =
+				(BlockEntityType<BankPortBlockEntity>) (Object) FTBICElectricBlocks.INDUSTRIAL_BANK_PORT.blockEntity.get();
+		event.registerBlockEntityRenderer(bankPortType, BankDisplayRenderer::new);
+		for (ElectricBlockInstance box : new ElectricBlockInstance[]{
+				FTBICElectricBlocks.LV_BATTERY_BOX, FTBICElectricBlocks.MV_BATTERY_BOX,
+				FTBICElectricBlocks.HV_BATTERY_BOX, FTBICElectricBlocks.EV_BATTERY_BOX}) {
+			@SuppressWarnings("unchecked")
+			BlockEntityType<BatteryBoxBlockEntity> batteryBoxType =
+					(BlockEntityType<BatteryBoxBlockEntity>) (Object) box.blockEntity.get();
+			event.registerBlockEntityRenderer(batteryBoxType, BatteryBoxFaceRenderer::new);
+		}
 	}
 
 }

@@ -86,6 +86,9 @@ public final class FTBICConfig {
 		public final ModConfigSpec.DoubleValue MV_BATTERY_BOX_CAPACITY;
 		public final ModConfigSpec.DoubleValue HV_BATTERY_BOX_CAPACITY;
 		public final ModConfigSpec.DoubleValue EV_BATTERY_BOX_CAPACITY;
+		public final ModConfigSpec.DoubleValue BANK_CELL_CAPACITY;
+		public final ModConfigSpec.DoubleValue BANK_PORT_TRANSFER;
+		public final ModConfigSpec.IntValue BANK_MAX_BLOCKS;
 		public final ModConfigSpec.IntValue MAX_CABLE_LENGTH;
 		public final ModConfigSpec.BooleanValue FULL_FE_MODE;
 
@@ -106,6 +109,9 @@ public final class FTBICConfig {
 			MV_BATTERY_BOX_CAPACITY = b.comment("MV battery box capacity").defineInRange("mv_battery_box_capacity", 400_000D, 1D, Double.POSITIVE_INFINITY);
 			HV_BATTERY_BOX_CAPACITY = b.comment("HV battery box capacity").defineInRange("hv_battery_box_capacity", 4_000_000D, 1D, Double.POSITIVE_INFINITY);
 			EV_BATTERY_BOX_CAPACITY = b.comment("EV battery box capacity").defineInRange("ev_battery_box_capacity", 40_000_000D, 1D, Double.POSITIVE_INFINITY);
+			BANK_CELL_CAPACITY = b.comment("Industrial battery bank capacity per storage cell (Zaps)").defineInRange("bank_cell_capacity", 10_000_000D, 1D, Double.POSITIVE_INFINITY);
+			BANK_PORT_TRANSFER = b.comment("Industrial battery bank automatic output per port and maximum energy per input transaction (Zaps)").defineInRange("bank_port_transfer", 8_192D, 1D, Double.POSITIVE_INFINITY);
+			BANK_MAX_BLOCKS = b.comment("Maximum connected battery bank blocks searched per port").defineInRange("bank_max_blocks", 128, 2, 1024);
 			MAX_CABLE_LENGTH = b.comment("Max cable chain length. Higher values increase tick cost.").defineInRange("max_cable_length", 300, 1, 100_000);
 			FULL_FE_MODE = b.comment("If true, FTBIC machines accept and emit FE directly on every side and rectifiers are no longer required. Takes effect on game start.")
 					.define("full_fe_mode", false);

@@ -75,6 +75,10 @@ public class FTBICModelProvider extends ModelProvider {
 				"block/electric/light/nuclear_reactor_top", "block/electric/light/advanced_side", "block/electric/light/advanced_bottom");
 
 		for (ElectricBlockInstance m : FTBICElectricBlocks.ALL) {
+			if (m.bankCasing) {
+				blockModels.registerSimpleItemModel(m.item.get(), FTBIC.id("block/" + m.id + "_item"));
+				continue;
+			}
 			String modelPath = "block/electric/light/" + m.id + (m.canBeActive ? "_off" : "");
 			blockModels.registerSimpleItemModel(m.item.get(), FTBIC.id(modelPath));
 			electricBlockstate(blockModels, m);

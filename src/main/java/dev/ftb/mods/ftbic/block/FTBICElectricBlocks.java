@@ -242,6 +242,16 @@ public interface FTBICElectricBlocks {
 			.io(1, 1);
 
 	// Battery Boxes //
+	ElectricBlockInstance INDUSTRIAL_BANK_CELL = register("industrial_bank_cell", BankCellBlockEntity::new)
+			.name("Industrial Battery Bank Cell").noRotation().cantBeActive().bankCasing()
+			.energyCapacity(FTBICConfig.ENERGY.BANK_CELL_CAPACITY);
+
+	ElectricBlockInstance INDUSTRIAL_BANK_PORT = register("industrial_bank_port", BankPortBlockEntity::new)
+			.name("Industrial Battery Bank Port").noRotation().cantBeActive().bankCasing()
+			.energyCapacity(FTBICConfig.ENERGY.BANK_PORT_TRANSFER)
+			.maxEnergyInput(FTBICConfig.ENERGY.BANK_PORT_TRANSFER)
+			.maxEnergyOutput(FTBICConfig.ENERGY.BANK_PORT_TRANSFER)
+			.feMode(ElectricBlockInstance.FECapMode.INSERT_AND_EXTRACT);
 
 	ElectricBlockInstance LV_BATTERY_BOX = register("lv_battery_box", LVBatteryBoxBlockEntity::new)
 			.name("LV Battery Box").rotate3D().cantBeActive().canBurn()

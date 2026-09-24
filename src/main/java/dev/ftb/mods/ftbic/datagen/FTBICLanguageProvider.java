@@ -12,6 +12,16 @@ public class FTBICLanguageProvider extends LanguageProvider {
 
 	@Override
 	protected void addTranslations() {
+		add("block.ftbic.industrial_bank_cell", "Industrial Battery Bank Cell");
+		add("item.ftbic.industrial_bank_cell", "Industrial Battery Bank Cell");
+		add("block.ftbic.industrial_bank_port", "Industrial Battery Bank Port");
+		add("item.ftbic.industrial_bank_port", "Industrial Battery Bank Port");
+		add("ftbic.bank.title", "Industrial Battery Bank");
+		add("ftbic.bank.stored", "STORED ENERGY");
+		add("ftbic.bank.members", "Cells: %s    Ports: %s");
+		add("ftbic.bank_port.style.port", "Port texture");
+		add("ftbic.bank_port.style.gauge", "Gauge texture");
+		add("ftbic.bank_port.style.basic", "Basic texture");
 		add("item.ftbic.configuration_card", "Configuration Card");
 		add("item.ftbic.configuration_card.copy", "Sneak-use to copy sides, input locks, and batch settings.");
 		add("item.ftbic.configuration_card.use", "Use on the same machine type to apply. Reusable.");

@@ -64,6 +64,8 @@
     "ftbic:powered_crafting_table",
     "ftbic:quarry",
     "ftbic:pump",
+    "ftbic:industrial_bank_cell",
+    "ftbic:industrial_bank_port",
     "ftbic:lv_battery_box",
     "ftbic:mv_battery_box",
     "ftbic:hv_battery_box",
