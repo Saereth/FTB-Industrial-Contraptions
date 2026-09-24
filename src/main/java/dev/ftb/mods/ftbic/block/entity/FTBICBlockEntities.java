@@ -32,5 +32,8 @@ public final class FTBICBlockEntities {
 			"active_nuke", ActiveNukeBlockEntity::new,
 			() -> FTBICBlocks.ACTIVE_NUKE.get());
 
+	public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<?>> SUPERCONDUCTING_CABLE = register(
+			"superconducting_cable", SuperconductingCableBlockEntity::new, FTBICBlocks.SUPERCONDUCTING_CABLE);
+
 	private FTBICBlockEntities() {}
 }

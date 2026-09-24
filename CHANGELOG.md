@@ -9,9 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+* Teleporter destination lists stay inside the machine screen above the inventory, with scrolling for longer lists. Its controls now match the industrial machine UI.
+* Industrial Battery Bank casing has clean corner joins and plain steel cell faces, and Jade shows the connected bank's total charge and capacity.
+* Jade's energy bar now uses the entire Industrial Battery Bank's stored energy and capacity when looking at either a cell or a port.
+* LV, MV, HV, and EV Battery Boxes can output energy from any configured face, with input/output textures that follow each face's energy setting and use the correct face lighting.
+* Solar panels no longer generate through a directly adjacent opaque block.
+* Missing Reactor Blueprint feedback now appears over the open planner or reactor screen instead of being hidden behind it.
 * Lapis Lazuli ore can be macerated into dust again.
-* Crash when opening either centrifuge with an empty hand.
-* Unreadable text and clipped button labels, component names, and material counts in the Reactor Design panel.
+* clipped button labels, component names, and material counts in the Reactor Design panel.
 * I/O configuration forgetting the selected tab when reopened.
 * Reactor components and fuel rods now stack when their data matches, with reactor and planner slots limited to one item.
 * Carbon and Quantum armor now render their own textures when equipped. {#12410}
@@ -22,6 +27,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+* Superconducting Cables carry unlimited zaps and show a fast emissive cyan pulse that loops seamlessly during energy transfer.
+* Industrial battery banks with connected EV-style steel casings: storage cells add configurable capacity, and ports provide configurable energy transfer. Adjacent ports on the same flat face combine into larger emissive gauges showing the whole bank's fill level.
+* Battery Bank Ports can cycle between the default port symbol, a shared charge gauge, and plain cell-style steel with sneak-right-click. Each port remembers its style.
 * Quarry Filter Upgrades add block and tag whitelist/blacklist rules, ore-only mining, free skipping of unmatched columns, JEI ghost targets, and Configuration Card support.
 * Parallel Processing Upgrades let advanced processors run up to four copies of a recipe per cycle, with energy use per operation and support for centrifuge fluids. Includes a running-operation counter and GuideMe instructions.
 * Persistent input-slot locks, copied by Configuration Cards.
@@ -39,6 +47,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+* Nuclear fuel rods now generate four times their previous base energy output, without increasing heat generation.
 * Refreshed machine and I/O screens with light steel panels, vanilla-style slots, and outlined progress arrows.
 * Side configuration now uses a spatial face diagram, a color legend, reverse cycling, and per-face reset.
 * Canned Food now uses the standard item remainder behavior to return its empty can after eating.

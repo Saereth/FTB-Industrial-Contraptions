@@ -99,6 +99,7 @@ public interface FTBICItems {
 	DeferredItem<BlockItem> HV_CABLE = blockItem("hv_cable", FTBICBlocks.HV_CABLE);
 	DeferredItem<BlockItem> EV_CABLE = blockItem("ev_cable", FTBICBlocks.EV_CABLE);
 	DeferredItem<BlockItem> IV_CABLE = blockItem("iv_cable", FTBICBlocks.IV_CABLE);
+	DeferredItem<BlockItem> SUPERCONDUCTING_CABLE = blockItem("superconducting_cable", FTBICBlocks.SUPERCONDUCTING_CABLE);
 	DeferredItem<BlockItem> BURNT_CABLE = blockItem("burnt_cable", FTBICBlocks.BURNT_CABLE);
 	DeferredItem<BlockItem> LV_REINFORCED_CABLE = blockItem("lv_reinforced_cable", FTBICBlocks.LV_REINFORCED_CABLE);
 	DeferredItem<BlockItem> MV_REINFORCED_CABLE = blockItem("mv_reinforced_cable", FTBICBlocks.MV_REINFORCED_CABLE);

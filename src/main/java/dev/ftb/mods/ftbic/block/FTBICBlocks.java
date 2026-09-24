@@ -49,6 +49,8 @@ public interface FTBICBlocks {
 			name -> new CableBlock(props(name).strength(0.9F).sound(SoundType.WOOL), EnergyTier.EV, 4));
 	DeferredBlock<CableBlock> IV_CABLE = REGISTRY.register("iv_cable",
 			name -> new CableBlock(props(name).strength(0.9F).sound(SoundType.GLASS), EnergyTier.IV, 6));
+	DeferredBlock<CableBlock> SUPERCONDUCTING_CABLE = REGISTRY.register("superconducting_cable",
+			name -> new SuperconductingCableBlock(props(name).strength(0.9F).sound(SoundType.GLASS).noOcclusion()));
 	DeferredBlock<BurntCableBlock> BURNT_CABLE = REGISTRY.register("burnt_cable",
 			name -> new BurntCableBlock(props(name).strength(0.9F).sound(SoundType.METAL)));
 
@@ -80,7 +82,7 @@ public interface FTBICBlocks {
 	DeferredBlock<ActiveNukeBlock> ACTIVE_NUKE = REGISTRY.register("active_nuke",
 			name -> new ActiveNukeBlock(props(name).sound(SoundType.GRASS).strength(-1F, 10_000_000_000F).noLootTable()));
 
-	List<DeferredBlock<CableBlock>> CABLES = Arrays.asList(LV_CABLE, MV_CABLE, HV_CABLE, EV_CABLE, IV_CABLE);
+	List<DeferredBlock<CableBlock>> CABLES = Arrays.asList(LV_CABLE, MV_CABLE, HV_CABLE, EV_CABLE, IV_CABLE, SUPERCONDUCTING_CABLE);
 	List<DeferredBlock<ReinforcedCableBlock>> REINFORCED_CABLES = Arrays.asList(LV_REINFORCED_CABLE, MV_REINFORCED_CABLE, HV_REINFORCED_CABLE, EV_REINFORCED_CABLE, IV_REINFORCED_CABLE);
 
 	DeferredBlock<Block> ENDERIUM_BLOCK = REGISTRY.register("enderium_block",

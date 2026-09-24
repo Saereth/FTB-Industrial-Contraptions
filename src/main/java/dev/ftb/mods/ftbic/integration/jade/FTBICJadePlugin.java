@@ -38,12 +38,15 @@ public class FTBICJadePlugin implements IWailaPlugin {
 	@Override
 	public void register(IWailaCommonRegistration registration) {
 		registration.registerBlockDataProvider(EnergyServerDataProvider.INSTANCE, ElectricBlockEntity.class);
+		registration.registerEnergyStorage(BankEnergyStorageProvider.INSTANCE, BankCellBlockEntity.class);
+		registration.registerEnergyStorage(BankEnergyStorageProvider.INSTANCE, BankPortBlockEntity.class);
 	}
 
 	@Override
 	public void registerClient(IWailaClientRegistration registration) {
 		registration.registerBlockComponent(EnergyClientProvider.INSTANCE, Block.class);
 		registration.registerBlockComponent(CableTierProvider.INSTANCE, CableBlock.class);
+		registration.registerEnergyStorageClient(BankEnergyStorageProvider.INSTANCE);
 	}
 
 	public static final class CableTierProvider implements IBlockComponentProvider {

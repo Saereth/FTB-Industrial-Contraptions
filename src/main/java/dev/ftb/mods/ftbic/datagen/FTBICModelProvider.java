@@ -38,7 +38,7 @@ import java.util.stream.Stream;
 public class FTBICModelProvider extends ModelProvider {
 
 	private static final Set<String> CUSTOM_CABLE_ITEMS = Set.of(
-			"lv_cable", "mv_cable", "hv_cable", "ev_cable", "iv_cable", "burnt_cable"
+			"lv_cable", "mv_cable", "hv_cable", "ev_cable", "iv_cable", "superconducting_cable", "burnt_cable"
 	);
 
 	public FTBICModelProvider(PackOutput output) {
@@ -91,6 +91,7 @@ public class FTBICModelProvider extends ModelProvider {
 		cableMultipart(blockModels, FTBICBlocks.HV_CABLE.get(), "hv_cable");
 		cableMultipart(blockModels, FTBICBlocks.EV_CABLE.get(), "ev_cable");
 		cableMultipart(blockModels, FTBICBlocks.IV_CABLE.get(), "iv_cable");
+		cableMultipart(blockModels, FTBICBlocks.SUPERCONDUCTING_CABLE.get(), "superconducting_cable");
 		cableMultipart(blockModels, FTBICBlocks.BURNT_CABLE.get(), "burnt_cable");
 
 		reinforcedCableMultipart(blockModels, FTBICBlocks.LV_REINFORCED_CABLE.get(), "lv_reinforced_cable");

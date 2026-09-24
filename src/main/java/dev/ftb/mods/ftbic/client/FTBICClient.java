@@ -1,6 +1,9 @@
 package dev.ftb.mods.ftbic.client;
 
 import dev.ftb.mods.ftbic.FTBIC;
+import dev.ftb.mods.ftbic.block.entity.FTBICBlockEntities;
+import dev.ftb.mods.ftbic.block.entity.SuperconductingCableBlockEntity;
+import dev.ftb.mods.ftbic.client.renderer.SuperconductingCableRenderer;
 import dev.ftb.mods.ftbic.client.gui.AntimatterConstructorScreen;
 import dev.ftb.mods.ftbic.client.gui.BasicGeneratorScreen;
 import dev.ftb.mods.ftbic.client.gui.BatteryBoxScreen;
@@ -85,6 +88,10 @@ public final class FTBICClient {
 		BlockEntityType<BankPortBlockEntity> bankPortType =
 				(BlockEntityType<BankPortBlockEntity>) (Object) FTBICElectricBlocks.INDUSTRIAL_BANK_PORT.blockEntity.get();
 		event.registerBlockEntityRenderer(bankPortType, BankDisplayRenderer::new);
+		@SuppressWarnings("unchecked")
+		BlockEntityType<SuperconductingCableBlockEntity> superconductingType =
+				(BlockEntityType<SuperconductingCableBlockEntity>) (Object) FTBICBlockEntities.SUPERCONDUCTING_CABLE.get();
+		event.registerBlockEntityRenderer(superconductingType, SuperconductingCableRenderer::new);
 		for (ElectricBlockInstance box : new ElectricBlockInstance[]{
 				FTBICElectricBlocks.LV_BATTERY_BOX, FTBICElectricBlocks.MV_BATTERY_BOX,
 				FTBICElectricBlocks.HV_BATTERY_BOX, FTBICElectricBlocks.EV_BATTERY_BOX}) {

@@ -2,6 +2,8 @@ package dev.ftb.mods.ftbic.block.entity.generator;
 
 import dev.ftb.mods.ftbic.FTBICConfig;
 import dev.ftb.mods.ftbic.block.CableBlock;
+import dev.ftb.mods.ftbic.block.SuperconductingCableBlock;
+import dev.ftb.mods.ftbic.block.entity.SuperconductingCableBlockEntity;
 import dev.ftb.mods.ftbic.block.ElectricBlockInstance;
 import dev.ftb.mods.ftbic.block.entity.ElectricBlockEntity;
 import dev.ftb.mods.ftbic.block.entity.machine.BatteryInventory;
@@ -32,8 +34,10 @@ import net.neoforged.neoforge.transfer.energy.EnergyHandler;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
 
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -151,6 +155,9 @@ public class GeneratorBlockEntity extends ElectricBlockEntity {
 
 			double accepted = storage.insertZaps(Math.min(thisShare, energy));
 			if (accepted > 0D) {
+				for (BlockPos cablePos : storage.superconductingPath) {
+					if (level.getBlockEntity(cablePos) instanceof SuperconductingCableBlockEntity cable) cable.recordTransfer();
+				}
 				energy -= accepted;
 				active = true;
 				changed = true;
@@ -267,7 +274,7 @@ public class GeneratorBlockEntity extends ElectricBlockEntity {
 					&& level.getBlockState(worldPosition.relative(direction)).getBlock() instanceof NuclearReactorChamberBlock)) {
 				CachedEnergyStorageOrigin origin = new CachedEnergyStorageOrigin();
 				origin.direction = direction;
-				find(traversed, set, origin, 0, maxCableLength, worldPosition, direction);
+				find(traversed, set, origin, 0, maxCableLength, worldPosition, direction, new ArrayList<>());
 			}
 		}
 
@@ -277,7 +284,7 @@ public class GeneratorBlockEntity extends ElectricBlockEntity {
 	}
 
 	private void find(LongOpenHashSet traversed, Set<CachedEnergyStorage> set, CachedEnergyStorageOrigin origin,
-			int distance, int maxCableLength, BlockPos currentPos, Direction direction) {
+			int distance, int maxCableLength, BlockPos currentPos, Direction direction, List<BlockPos> superconductingPath) {
 		if (level == null || distance > maxCableLength) {
 			return;
 		}
@@ -291,6 +298,8 @@ public class GeneratorBlockEntity extends ElectricBlockEntity {
 
 		if (state.getBlock() instanceof CableBlock cableBlock) {
 			traversed.add(pos.asLong());
+			boolean superconducting = cableBlock instanceof SuperconductingCableBlock;
+			if (superconducting) superconductingPath.add(pos);
 			double rate = cableBlock.tier.transferRate();
 			if (rate < origin.cableTransferRate) {
 				origin.cableTier = cableBlock.tier;
@@ -299,9 +308,10 @@ public class GeneratorBlockEntity extends ElectricBlockEntity {
 			}
 			for (Direction dir : FTBICUtils.DIRECTIONS) {
 				if (state.getValue(CableBlock.CONNECTION[dir.get3DDataValue()])) {
-					find(traversed, set, origin, distance + 1, maxCableLength, pos, dir);
+					find(traversed, set, origin, distance + 1, maxCableLength, pos, dir, superconductingPath);
 				}
 			}
+			if (superconducting) superconductingPath.removeLast();
 			return;
 		}
 
@@ -309,7 +319,7 @@ public class GeneratorBlockEntity extends ElectricBlockEntity {
 			traversed.add(pos.asLong());
 			for (Direction dir : FTBICUtils.DIRECTIONS) {
 				if (this instanceof NuclearReactorBlockEntity && !isValidEnergyOutputSide(dir)) continue;
-				find(traversed, set, origin, distance + 1, maxCableLength, pos, dir);
+				find(traversed, set, origin, distance + 1, maxCableLength, pos, dir, superconductingPath);
 			}
 			return;
 		}
@@ -339,6 +349,7 @@ public class GeneratorBlockEntity extends ElectricBlockEntity {
 				traversed.add(pos.asLong());
 				CachedEnergyStorage s = new CachedEnergyStorage();
 				s.origin = origin;
+				s.superconductingPath = List.copyOf(superconductingPath);
 				s.distance = distance;
 				s.blockEntity = entity;
 				s.energyHandler = zapHandler;
@@ -358,6 +369,7 @@ public class GeneratorBlockEntity extends ElectricBlockEntity {
 		traversed.add(pos.asLong());
 		CachedEnergyStorage s = new CachedEnergyStorage();
 		s.origin = origin;
+		s.superconductingPath = List.copyOf(superconductingPath);
 		s.distance = distance;
 		s.blockEntity = entity;
 		s.feHandlerCache = feCache;

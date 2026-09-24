@@ -7,10 +7,13 @@ import net.minecraft.core.Direction;
 import java.util.List;
 
 public class BankDisplayRenderState extends BlockEntityRenderState {
-	public record Panel(Direction face, Tile tile) {
+	public record Panel(Direction face, Tile tile, int light) {
+	}
+
+	public record PortFace(Direction direction, int light) {
 	}
 
 	public List<Panel> panels = List.of();
-	public List<Direction> portFaces = List.of();
+	public List<PortFace> portFaces = List.of();
 	public float charge;
 }

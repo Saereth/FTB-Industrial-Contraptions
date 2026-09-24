@@ -84,6 +84,7 @@ public class FTBICBlockTagsProvider extends BlockTagsProvider {
 				.add(FTBICBlocks.HV_CABLE.get())
 				.add(FTBICBlocks.EV_CABLE.get())
 				.add(FTBICBlocks.IV_CABLE.get())
+				.add(FTBICBlocks.SUPERCONDUCTING_CABLE.get())
 				.add(FTBICBlocks.BURNT_CABLE.get())
 				.add(FTBICBlocks.LV_REINFORCED_CABLE.get())
 				.add(FTBICBlocks.MV_REINFORCED_CABLE.get())

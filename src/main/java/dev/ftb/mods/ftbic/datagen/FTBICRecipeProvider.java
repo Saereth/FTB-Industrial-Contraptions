@@ -948,6 +948,7 @@ public class FTBICRecipeProvider extends RecipeProvider {
 		shapeless("hv_battery", ftbicStack("hv_battery", 1), i("ftbic:mv_battery"), i("ftbic:graphene"));
 		shapeless("hv_cable", ftbicStack("hv_cable", 1), commonOrTag("c:wires/gold"), i("ftbic:rubber"));
 		shapeless("hv_reinforced_cable", ftbicStack("hv_reinforced_cable", 1), i("ftbic:reinforced_stone"), i("ftbic:hv_cable"));
+		shapeless("superconducting_cable", ftbicStack("superconducting_cable", 2), i("ftbic:iv_cable"), i("ftbic:iv_cable"), i("minecraft:redstone"), i("minecraft:glowstone_dust"));
 		shapeless("iv_reinforced_cable", ftbicStack("iv_reinforced_cable", 1), i("ftbic:reinforced_stone"), i("ftbic:iv_cable"));
 		shapeless("iridium_circuit", ftbicStack("iridium_circuit", 2), i("ftbic:advanced_alloy"), i("ftbic:graphene"), i("ftbic:advanced_alloy"), i("ftbic:advanced_circuit"), i("ftbic:iridium_alloy"), i("ftbic:advanced_circuit"), i("ftbic:advanced_alloy"), i("ftbic:graphene"), i("ftbic:advanced_alloy"));
 		shapeless("landmark", ftbicStack("landmark", 1), i("minecraft:redstone_torch"), commonOrTag("c:gems/lapis"));

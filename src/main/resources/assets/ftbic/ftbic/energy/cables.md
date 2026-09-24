@@ -10,6 +10,7 @@ item_ids:
   - ftbic:hv_cable
   - ftbic:ev_cable
   - ftbic:iv_cable
+  - ftbic:superconducting_cable
   - ftbic:burnt_cable
   - ftbic:lv_reinforced_cable
   - ftbic:mv_reinforced_cable
@@ -79,9 +80,24 @@ Insulated iridium wire. Feeds the Teleporter, Antimatter Constructor, and Quantu
   ### <Color id="aqua">IV Cable — 8,192 zaps/t</Color>
 </Row>
 
-The highest transfer rate in the mod. Reserved for maxed-out reactor designs and the endgame antimatter chain.
+Glass cable for high-output reactor designs and the endgame antimatter chain.
 
 <RecipeFor id="iv_cable" />
+
+<ItemImage id="minecraft:air" scale="0.25"/>
+
+<Row>
+  <ItemImage id="superconducting_cable" />
+  ### <Color id="aqua">Superconducting Cable — Unlimited zaps/t</Color>
+</Row>
+
+Combine **two IV glass cables**, **one redstone dust**, and **one glowstone dust** in any crafting grid to make **two Superconducting Cables**.
+
+Superconducting cables have no zap transfer limit and cannot burn from overload. Machines still obey their own input and output limits, and the configured maximum cable length still applies. Connect superconducting cables to each other; different cable tiers do not connect directly.
+
+A glowing cyan pulse travels through the exposed core while energy is transferred. It fades when the source stops supplying energy or the destination fills. Branches with no accepted transfer stay dark. The glow works without shaders.
+
+<RecipeFor id="superconducting_cable" />
 
 <ItemImage id="minecraft:air" scale="0.25"/>
 

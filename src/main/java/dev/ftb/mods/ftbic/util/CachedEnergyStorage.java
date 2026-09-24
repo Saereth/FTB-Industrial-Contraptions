@@ -1,17 +1,21 @@
 package dev.ftb.mods.ftbic.util;
 
 import net.minecraft.core.Direction;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.capabilities.BlockCapabilityCache;
 import net.neoforged.neoforge.transfer.energy.EnergyHandler;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
 
+import java.util.List;
+
 public final class CachedEnergyStorage {
 	public static final CachedEnergyStorage[] EMPTY = new CachedEnergyStorage[0];
 
 	public CachedEnergyStorageOrigin origin;
 	public int distance;
+	public List<BlockPos> superconductingPath = List.of();
 	public BlockEntity blockEntity;
 	public ZapEnergyHandler energyHandler;
 	public BlockCapabilityCache<EnergyHandler, Direction> feHandlerCache;

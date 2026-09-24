@@ -8,6 +8,7 @@ import dev.ftb.mods.ftbic.block.entity.storage.BankDisplayLayout.Tile;
 import dev.ftb.mods.ftbic.block.entity.storage.BankPortBlockEntity;
 import dev.ftb.mods.ftbic.block.entity.storage.BankPortBlockEntity.FaceStyle;
 import dev.ftb.mods.ftbic.client.renderer.BankDisplayRenderState.Panel;
+import dev.ftb.mods.ftbic.client.renderer.BankDisplayRenderState.PortFace;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
@@ -19,7 +20,9 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.LightCoordsUtil;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.ArrayList;
@@ -59,9 +62,11 @@ public class BankDisplayRenderer implements BlockEntityRenderer<BankPortBlockEnt
 		state.charge = be.getDisplayCharge() / 1000F;
 		if (level == null) return;
 		if (be.getFaceStyle() == FaceStyle.PORT) {
-			List<Direction> faces = new ArrayList<>();
+			List<PortFace> faces = new ArrayList<>();
 			for (Direction face : Direction.values()) {
-				if (BankDisplayLayout.visible(level, be.getBlockPos(), face)) faces.add(face);
+				if (BankDisplayLayout.visible(level, be.getBlockPos(), face)) {
+					faces.add(new PortFace(face, faceLight(level, be.getBlockPos(), face)));
+				}
 			}
 			state.portFaces = List.copyOf(faces);
 			return;
@@ -81,9 +86,16 @@ public class BankDisplayRenderer implements BlockEntityRenderer<BankPortBlockEnt
 				layouts.putIfAbsent(key, null);
 			}
 			Tile tile = layouts.get(key);
-			if (tile != null) panels.add(new Panel(face, tile));
+			if (tile != null) panels.add(new Panel(face, tile, faceLight(level, be.getBlockPos(), face)));
 		}
 		state.panels = List.copyOf(panels);
+	}
+
+	private static int faceLight(Level level, BlockPos pos, Direction face) {
+		// The solid bank block is dark internally; overlays need the light just outside each face.
+		BlockPos outside = pos.relative(face);
+		return LightCoordsUtil.pack(level.getBrightness(LightLayer.BLOCK, outside),
+				level.getBrightness(LightLayer.SKY, outside));
 	}
 
 	@Override
@@ -91,20 +103,19 @@ public class BankDisplayRenderer implements BlockEntityRenderer<BankPortBlockEnt
 		// Each port draws only its own tile, preserving normal block-entity culling.
 		List<Panel> panels = state.panels;
 		if (!state.portFaces.isEmpty()) {
-			List<Direction> faces = state.portFaces;
-			int light = state.lightCoords;
+			List<PortFace> faces = state.portFaces;
 			buffers.submitCustomGeometry(pose, PORT_MARK, (transform, vertices) -> {
-				for (Direction face : faces) {
-					portFace(vertices, transform, face, light);
+				for (PortFace face : faces) {
+					portFace(vertices, transform, face.direction(), face.light());
 				}
 			});
 		}
-		int light = state.lightCoords;
 		float charge = state.charge;
 		if (panels.isEmpty()) return;
 		buffers.submitCustomGeometry(pose, CASING, (transform, vertices) -> {
 			for (Panel panel : panels) {
 				Tile tile = panel.tile();
+				int light = panel.light();
 				rect(vertices, transform, panel.face(), 0.25F - tile.column(), 0.1875F - tile.row(),
 						tile.width() - 0.25F - tile.column(), tile.height() - 0.1875F - tile.row(), 0.501F, 0, light);
 				rect(vertices, transform, panel.face(), 0.3125F - tile.column(), 0.25F - tile.row(),

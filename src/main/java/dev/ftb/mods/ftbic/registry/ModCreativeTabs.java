@@ -39,6 +39,7 @@ public final class ModCreativeTabs {
 						out.accept(FTBICItems.HV_CABLE.get());
 						out.accept(FTBICItems.EV_CABLE.get());
 						out.accept(FTBICItems.IV_CABLE.get());
+						out.accept(FTBICItems.SUPERCONDUCTING_CABLE.get());
 						out.accept(FTBICItems.BURNT_CABLE.get());
 						out.accept(FTBICItems.LV_REINFORCED_CABLE.get());
 						out.accept(FTBICItems.MV_REINFORCED_CABLE.get());

@@ -7,7 +7,8 @@ public enum EnergyTier {
 	MV("mv", 2),
 	HV("hv", 3),
 	EV("ev", 4),
-	IV("iv", 4);
+	IV("iv", 4),
+	SUPERCONDUCTING("superconducting", 5);
 
 	public static final EnergyTier[] VALUES = values();
 
@@ -26,6 +27,7 @@ public enum EnergyTier {
 			case HV -> FTBICConfig.ENERGY.HV_TRANSFER_RATE.get();
 			case EV -> FTBICConfig.ENERGY.EV_TRANSFER_RATE.get();
 			case IV -> FTBICConfig.ENERGY.IV_TRANSFER_RATE.get();
+			case SUPERCONDUCTING -> Double.POSITIVE_INFINITY;
 		};
 	}
 

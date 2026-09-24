@@ -163,6 +163,8 @@ public class FTBICLanguageProvider extends LanguageProvider {
 		add("block.ftbic.hv_transformer", "HV Transformer");
 		add("block.ftbic.iron_furnace", "Iron Furnace");
 		add("block.ftbic.iv_cable", "IV Cable");
+		add("block.ftbic.superconducting_cable", "Superconducting Cable");
+		add("item.ftbic.superconducting_cable", "Superconducting Cable");
 		add("block.ftbic.iv_reinforced_cable", "Reinforced IV Cable");
 		add("block.ftbic.iv_rectifier", "IV Energy Rectifier");
 		add("block.ftbic.landmark", "Landmark");

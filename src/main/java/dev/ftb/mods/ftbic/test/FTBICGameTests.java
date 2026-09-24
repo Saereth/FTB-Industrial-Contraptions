@@ -39,6 +39,10 @@ public class FTBICGameTests {
 		reg(event, "bank_combined_displays", BankGameTests::combinedDisplays, env, 60);
 		reg(event, "bank_port_face_styles", BankGameTests::portFaceStyles, env, 60);
 		reg(event, "bank_sustained_cable_charging", BankGameTests::sustainedCableCharging, env, 60);
+		reg(event, "bank_jade_energy_bar", BankJadeGameTests::combinedEnergyBar, env, 60);
+		reg(event, "superconducting_unlimited_transfer", SuperconductingCableGameTests::unlimitedTransfer, env, 60);
+		reg(event, "superconducting_active_routes", SuperconductingCableGameTests::onlyUsedRoutesPulse, env, 60);
+		reg(event, "superconducting_connections", SuperconductingCableGameTests::connectionsAndRemoval, env, 60);
 
 		reg(event, "parallel_changed_inputs", ParallelProcessingGameTests::changedInputs, env, 60);
 		reg(event, "parallel_processing", ParallelProcessingGameTests::processing, env, 60);
