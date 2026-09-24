@@ -33,6 +33,8 @@ public class FTBICGameTests {
 		Holder<TestEnvironmentDefinition<?>> env = event.registerEnvironment(
 				FTBIC.id("default"),
 				new TestEnvironmentDefinition.AllOf());
+		reg(event, "upgrade_shift_click_limit", UpgradeInventoryGameTests::shiftClickLimit, env, 60);
+		reg(event, "upgrade_sneak_insert", UpgradeInventoryGameTests::sneakInsert, env, 60);
 		reg(event, "refining_full_chain", RefiningGameTests::fullChain, env, 60);
 		reg(event, "refining_blocking_identity", RefiningGameTests::blockingAndIdentity, env, 60);
 		reg(event, "refining_discovery_overrides", RefiningGameTests::discoveryAndOverrides, env, 60);

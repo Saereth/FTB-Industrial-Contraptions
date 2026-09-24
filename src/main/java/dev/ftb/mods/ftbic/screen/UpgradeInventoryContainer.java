@@ -87,6 +87,6 @@ public class UpgradeInventoryContainer implements Container {
 
 	@Override
 	public boolean canPlaceItem(int slot, ItemStack stack) {
-		return inv.isItemValid(slot, stack);
+		return inv.getSlotLimit(slot, stack) > 0;
 	}
 }

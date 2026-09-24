@@ -150,6 +150,7 @@ public class FTBICLanguageProvider extends LanguageProvider {
 		add("item.ftbic.crushed_ore.material", "Crushed %s");
 		add("item.ftbic.washed_ore.material", "Washed %s");
 		add("item.ftbic.refined_concentrate.material", "Refined %s Concentrate");
+		add("ftbic.upgrade.cannot_insert", "This machine cannot accept more of that upgrade");
 		add("block.ftbic.centrifuge", "Centrifuge");
 		add("block.ftbic.charge_pad", "Charge Pad");
 		add("block.ftbic.compressor", "Compressor");

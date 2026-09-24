@@ -121,8 +121,8 @@ public class BasicMachineBlockEntity extends ElectricBlockEntity {
 
 	public double getTotalPossibleEnergyCapacity() {
 		return electricBlockInstance.energyCapacity.get()
-				+ upgradeInventory.getSlots()
-				* FTBICConfig.MACHINES.UPGRADE_LIMIT_PER_SLOT.get()
+				+ Math.min(UpgradeInventory.MAX_TOTAL_UPGRADES,
+						upgradeInventory.getSlots() * FTBICConfig.MACHINES.UPGRADE_LIMIT_PER_SLOT.get())
 				* FTBICConfig.MACHINES.STORAGE_UPGRADE.get();
 	}
 
