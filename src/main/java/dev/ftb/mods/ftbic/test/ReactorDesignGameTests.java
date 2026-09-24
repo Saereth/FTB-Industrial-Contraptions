@@ -5,6 +5,7 @@ import dev.ftb.mods.ftbic.block.entity.generator.NuclearReactorBlockEntity;
 import dev.ftb.mods.ftbic.block.entity.machine.ReactorSimulatorBlockEntity;
 import dev.ftb.mods.ftbic.item.FTBICItems;
 import dev.ftb.mods.ftbic.item.ReactorBlueprintItem;
+import dev.ftb.mods.ftbic.item.reactor.NuclearReactor;
 import dev.ftb.mods.ftbic.registry.ModDataComponents;
 import dev.ftb.mods.ftbic.util.ReactorDesign;
 import net.minecraft.core.BlockPos;
@@ -22,6 +23,7 @@ import dev.ftb.mods.ftbic.screen.NuclearReactorMenu;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.storage.TagValueInput;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.OptionalInt;
 import java.util.UUID;
@@ -35,6 +37,27 @@ import net.minecraft.world.inventory.ContainerInput;
 
 final class ReactorDesignGameTests {
 	private static final BlockPos POS = new BlockPos(2, 2, 2);
+
+	static void fuelRodBaseOutput(GameTestHelper helper) {
+		Item[] rods = {
+				FTBICItems.URANIUM_FUEL_ROD.get(),
+				FTBICItems.DUAL_URANIUM_FUEL_ROD.get(),
+				FTBICItems.QUAD_URANIUM_FUEL_ROD.get()
+		};
+		int[] expectedEnergy = {20, 80, 240};
+		int[] expectedHeat = {4, 24, 96};
+		for (int i = 0; i < rods.length; i++) {
+			ItemStack[] items = new ItemStack[NuclearReactor.MAX_SLOTS];
+			Arrays.fill(items, ItemStack.EMPTY);
+			NuclearReactor reactor = new NuclearReactor(items);
+			reactor.paused = false;
+			reactor.setAt(0, 0, new ItemStack(rods[i]));
+			reactor.tick();
+			helper.assertValueEqual((double) expectedEnergy[i], reactor.energyOutput, "Fuel rod base output");
+			helper.assertValueEqual(expectedHeat[i], reactor.heat, "Fuel rod heat remains unchanged");
+		}
+		helper.succeed();
+	}
 
 	private static ReactorDesign design(int chambers, ReactorDesign.DesignSlot... slots) {
 		return new ReactorDesign(1, chambers, 0, List.of(slots));
@@ -100,7 +123,9 @@ final class ReactorDesignGameTests {
 		var inventory = helper.makeMockPlayer(GameType.SURVIVAL).getInventory();
 		var plan = design(0, slot(0, FTBICItems.URANIUM_FUEL_ROD.get()));
 		inventory.setItem(0, new ItemStack(FTBICItems.REACTOR_BLUEPRINT.get()));
+		helper.assertTrue(ReactorBlueprintItem.hasBlank(inventory), "Blank blueprint is detected before writing");
 		helper.assertTrue(ReactorBlueprintItem.writeBlank(inventory, plan), "Writes owned blank blueprint");
+		helper.assertFalse(ReactorBlueprintItem.hasBlank(inventory), "Filled blueprint is not mistaken for a blank one");
 		helper.assertFalse(ReactorBlueprintItem.writeBlank(inventory, design(0)), "Write button never overwrites a filled blueprint");
 		var ops = helper.getLevel().registryAccess().createSerializationContext(NbtOps.INSTANCE);
 		var encoded = ItemStack.CODEC.encodeStart(ops, inventory.getItem(0)).getOrThrow();

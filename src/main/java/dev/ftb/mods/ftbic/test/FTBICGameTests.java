@@ -33,6 +33,8 @@ public class FTBICGameTests {
 		Holder<TestEnvironmentDefinition<?>> env = event.registerEnvironment(
 				FTBIC.id("default"),
 				new TestEnvironmentDefinition.AllOf());
+		reg(event, "bank_connected_storage", BankGameTests::connectedStorage, env, 60);
+		reg(event, "bank_cell_seam_states", BankGameTests::cellSeamStates, env, 60);
 
 		reg(event, "parallel_changed_inputs", ParallelProcessingGameTests::changedInputs, env, 60);
 		reg(event, "parallel_processing", ParallelProcessingGameTests::processing, env, 60);
@@ -66,6 +68,7 @@ public class FTBICGameTests {
 		reg(event, "side_configuration_cardandpackets", SideConfigurationGameTests::cardAndPackets, env, 60);
 
 		reg(event, "reactor_design_fill", ReactorDesignGameTests::fillsWithoutReplacingOrLosingData, env, 40);
+		reg(event, "reactor_fuel_rod_base_output", ReactorDesignGameTests::fuelRodBaseOutput, env, 40);
 		reg(event, "reactor_design_requirements", ReactorDesignGameTests::enforcesBuildRequirements, env, 40);
 		reg(event, "reactor_design_persistence", ReactorDesignGameTests::persistsBlueprintAndPreview, env, 40);
 		reg(event, "reactor_design_validation", ReactorDesignGameTests::rejectsInvalidDesigns, env, 40);

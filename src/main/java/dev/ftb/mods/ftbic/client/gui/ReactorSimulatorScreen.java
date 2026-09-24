@@ -4,6 +4,7 @@ import com.mojang.blaze3d.platform.InputConstants;
 import dev.ftb.mods.ftbic.FTBIC;
 import dev.ftb.mods.ftbic.block.entity.machine.ReactorSimulatorBlockEntity;
 import dev.ftb.mods.ftbic.FTBICConfig;
+import dev.ftb.mods.ftbic.item.ReactorBlueprintItem;
 import dev.ftb.mods.ftbic.item.reactor.CoolantItem;
 import dev.ftb.mods.ftbic.item.reactor.FuelRodItem;
 import dev.ftb.mods.ftbic.item.reactor.HeatExchangerItem;
@@ -94,6 +95,7 @@ public class ReactorSimulatorScreen extends ElectricBlockScreen<ReactorSimulator
 	private boolean saveMode = false;
 	private EditBox saveNameBox;
 	private String saveError = "";
+	private long blueprintErrorUntil;
 
 	public ReactorSimulatorScreen(ReactorSimulatorMenu menu, Inventory inv, Component title) {
 		super(menu, inv, title, TOTAL_W, PANEL_TOP + PANEL_H + 4);
@@ -213,6 +215,10 @@ public class ReactorSimulatorScreen extends ElectricBlockScreen<ReactorSimulator
 		}
 
 		if (dropdownOpen) drawDropdownOverlay(g, mouseX, mouseY);
+		if (System.currentTimeMillis() < blueprintErrorUntil) {
+			g.setTooltipForNextFrame(Component.translatable("item.ftbic.reactor_blueprint.need_blank")
+					.withStyle(ChatFormatting.RED), leftPos + BOTTOM_BTN_START_X + 4, topPos + ROW_BUTTONS_Y - 18);
+		}
 
 		if (!pending.isEmpty()) {
 			g.item(pending, mouseX - 8, mouseY - 8);
@@ -822,6 +828,12 @@ public class ReactorSimulatorScreen extends ElectricBlockScreen<ReactorSimulator
 		int startX = leftPos + BOTTOM_BTN_START_X;
 		int gap = BOTTOM_BTN_GAP;
 		if (isIn(mx, my, startX, btnY + 17, 204, BUTTON_H)) {
+			if (Minecraft.getInstance().player != null
+					&& !ReactorBlueprintItem.hasBlank(Minecraft.getInstance().player.getInventory())) {
+				blueprintErrorUntil = System.currentTimeMillis() + 4000L;
+			} else {
+				blueprintErrorUntil = 0L;
+			}
 			ClientPacketDistributor.sendToServer(SimulatorActionPayload.simple(SimulatorActionPayload.WRITE_BLUEPRINT));
 			return true;
 		}

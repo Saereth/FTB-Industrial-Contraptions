@@ -3,6 +3,7 @@ package dev.ftb.mods.ftbic.client.gui;
 import dev.ftb.mods.ftbic.FTBIC;
 import dev.ftb.mods.ftbic.screen.NuclearReactorMenu;
 import dev.ftb.mods.ftbic.block.entity.generator.NuclearReactorBlockEntity;
+import dev.ftb.mods.ftbic.item.ReactorBlueprintItem;
 import dev.ftb.mods.ftbic.item.reactor.ReactorItem;
 import dev.ftb.mods.ftbic.item.reactor.NuclearReactor;
 import dev.ftb.mods.ftbic.net.FTBICNet;
@@ -44,6 +45,7 @@ public class NuclearReactorScreen extends ElectricBlockScreen<NuclearReactorMenu
 	private int materialPage;
 	private ReactorDesign cachedDesign;
 	private ItemStack[] ghosts = new ItemStack[0];
+	private long blueprintErrorUntil;
 	private record Material(Item item, int installed, int available, int required) {}
 
 	public NuclearReactorScreen(NuclearReactorMenu menu, Inventory inv, Component title) {
@@ -321,6 +323,10 @@ public class NuclearReactorScreen extends ElectricBlockScreen<NuclearReactorMenu
 		if (isIn(mouseX, mouseY, leftPos + 94, topPos + 5, 9, 10)) {
 			g.setTooltipForNextFrame(Component.translatable("ftbic.reactor.tooltip.show_jei"), mouseX, mouseY);
 		}
+		if (System.currentTimeMillis() < blueprintErrorUntil) {
+			g.setTooltipForNextFrame(Component.translatable("item.ftbic.reactor_blueprint.need_blank")
+					.withStyle(ChatFormatting.RED), leftPos + PANEL_X + 8, topPos + 65);
+		}
 	}
 
 	@Override
@@ -335,8 +341,11 @@ public class NuclearReactorScreen extends ElectricBlockScreen<NuclearReactorMenu
 			else if (isIn(x, y, 4, 37, 64, 14) && !presets.isEmpty()) loadDesign(presets.get(selectedPreset).design().toJson());
 			else if (isIn(x, y, 72, 37, 64, 14)) loadDesign(Minecraft.getInstance().keyboardHandler.getClipboard());
 			else if (isIn(x, y, 4, 54, 132, 14) && canBuild()) send(2);
-			else if (isIn(x, y, 4, 71, 94, 14) && design() != null) send(4);
-			else if (isIn(x, y, 102, 71, 34, 14) && design() != null) send(3);
+			else if (isIn(x, y, 4, 71, 94, 14) && design() != null) {
+				blueprintErrorUntil = ReactorBlueprintItem.hasBlank(inventory)
+						? 0L : System.currentTimeMillis() + 4000L;
+				send(4);
+			} else if (isIn(x, y, 102, 71, 34, 14) && design() != null) send(3);
 			else if (isIn(x, y, 4, 202, 14, 14)) materialPage = Math.floorMod(materialPage - 1, Math.max(1, (materials().size() + 2) / 3));
 			else if (isIn(x, y, 122, 202, 14, 14)) materialPage = (materialPage + 1) % Math.max(1, (materials().size() + 2) / 3);
 			return true;
