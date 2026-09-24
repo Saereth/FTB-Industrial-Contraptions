@@ -1,7 +1,7 @@
 package dev.ftb.mods.ftbic.integration.guideme;
 
 import dev.ftb.mods.ftbic.FTBICConfig;
-import dev.ftb.mods.ftbic.block.entity.machine.CentrifugeBlockEntity;
+import dev.ftb.mods.ftbic.block.entity.machine.FluidMachineBlockEntity;
 import dev.ftb.mods.ftbic.block.ElectricBlockInstance;
 import dev.ftb.mods.ftbic.block.FTBICElectricBlocks;
 import dev.ftb.mods.ftbic.recipe.AntimatterBoostRecipe;
@@ -11,6 +11,7 @@ import dev.ftb.mods.ftbic.recipe.MachineRecipe;
 import dev.ftb.mods.ftbic.recipe.MachineRecipeType;
 import dev.ftb.mods.ftbic.util.IngredientWithCount;
 import dev.ftb.mods.ftbic.util.StackWithChance;
+import dev.ftb.mods.ftbic.util.RefiningIngredient;
 import guideme.compiler.tags.RecipeTypeMappingSupplier;
 import guideme.document.block.LytParagraph;
 import guideme.document.block.LytSlotGrid;
@@ -18,7 +19,6 @@ import guideme.document.block.recipes.LytStandardRecipeBox;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStackTemplate;
-import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeType;
 
@@ -33,6 +33,8 @@ public class FTBICGuideRecipeTypes implements RecipeTypeMappingSupplier {
 				h -> buildMachineBox(FTBICRecipes.SMELTING, FTBICElectricBlocks.POWERED_FURNACE, h));
 		mappings.add(FTBICRecipes.MACERATING.TYPE.get(),
 				h -> buildMachineBox(FTBICRecipes.MACERATING, FTBICElectricBlocks.MACERATOR, h));
+		mappings.add(FTBICRecipes.WASHING.TYPE.get(),
+				h -> buildMachineBox(FTBICRecipes.WASHING, FTBICElectricBlocks.ORE_WASHER, h));
 		mappings.add(FTBICRecipes.SEPARATING.TYPE.get(),
 				h -> buildMachineBox(FTBICRecipes.SEPARATING, FTBICElectricBlocks.CENTRIFUGE, h));
 		mappings.add(FTBICRecipes.COMPRESSING.TYPE.get(),
@@ -66,13 +68,15 @@ public class FTBICGuideRecipeTypes implements RecipeTypeMappingSupplier {
 		MachineRecipe recipe = holder.value();
 		if (type == FTBICRecipes.SEPARATING && recipe.outputs.size() > 2) machine = FTBICElectricBlocks.ADVANCED_CENTRIFUGE;
 
-		List<Ingredient> inputIngredients = new ArrayList<>();
-		for (IngredientWithCount in : recipe.inputs) {
-			inputIngredients.add(in.ingredient());
+		LytSlotGrid inputGrid = new LytSlotGrid(Math.max(1, recipe.inputs.size()), 1);
+		for (int slot = 0; slot < recipe.inputs.size(); slot++) {
+			IngredientWithCount in = recipe.inputs.get(slot);
+			if (in.ingredient().getCustomIngredient() instanceof RefiningIngredient refining) {
+				inputGrid.setItem(slot, 0, ItemStackTemplate.fromNonEmptyStack(refining.stack(in.count())));
+			} else {
+				inputGrid.setIngredient(slot, 0, in.ingredient());
+			}
 		}
-		LytSlotGrid inputGrid = inputIngredients.isEmpty()
-				? new LytSlotGrid(1, 1)
-				: LytSlotGrid.rowFromIngredients(inputIngredients, true);
 
 		List<ItemStackTemplate> outputTemplates = new ArrayList<>();
 		for (StackWithChance out : recipe.outputs) {
@@ -116,10 +120,10 @@ public class FTBICGuideRecipeTypes implements RecipeTypeMappingSupplier {
 			String names = input.ingredient().fluids().stream()
 					.map(fluid -> fluid.value().getFluidType().getDescription().getString())
 					.collect(Collectors.joining(" / "));
-			builder.addBottom(paragraph(Component.translatable("ftbic.gui.centrifuge.input_tank", names, input.amount(), CentrifugeBlockEntity.TANK_CAPACITY).getString()));
+			builder.addBottom(paragraph(Component.translatable("ftbic.gui.centrifuge.input_tank", names, input.amount(), FluidMachineBlockEntity.TANK_CAPACITY).getString()));
 		}
 		for (var output : recipe.outputFluids) {
-			builder.addBottom(paragraph(Component.translatable("ftbic.gui.centrifuge.output_tank", output.getHoverName(), output.getAmount(), CentrifugeBlockEntity.TANK_CAPACITY).getString()));
+			builder.addBottom(paragraph(Component.translatable("ftbic.gui.centrifuge.output_tank", output.getHoverName(), output.getAmount(), FluidMachineBlockEntity.TANK_CAPACITY).getString()));
 		}
 
 		return builder.build(holder);

@@ -1,6 +1,7 @@
 package dev.ftb.mods.ftbic.integration.jei;
 
 import dev.ftb.mods.ftbic.FTBIC;
+import dev.ftb.mods.ftbic.registry.ModDataComponents;
 import dev.ftb.mods.ftbic.block.FTBICBlocks;
 import dev.ftb.mods.ftbic.block.FTBICElectricBlocks;
 import dev.ftb.mods.ftbic.block.entity.machine.AntimatterConstructorBlockEntity;
@@ -64,6 +65,9 @@ public class FTBICJEIPlugin implements IModPlugin {
 
 	@Override
 	public void registerItemSubtypes(ISubtypeRegistration r) {
+		for (Item item : List.of(FTBICItems.CRUSHED_ORE.get(), FTBICItems.WASHED_ORE.get(), FTBICItems.REFINED_CONCENTRATE.get())) {
+			r.registerSubtypeInterpreter(item, (stack, ctx) -> String.valueOf(stack.get(ModDataComponents.REFINING_MATERIAL.get())));
+		}
 		r.registerSubtypeInterpreter(FTBICItems.FLUID_CELL.get(), (stack, ctx) -> {
 			FluidStack fs = FluidCellItem.getStored(stack);
 			if (fs.isEmpty()) return "empty";
@@ -77,6 +81,7 @@ public class FTBICJEIPlugin implements IModPlugin {
 		var helper = r.getJeiHelpers().getGuiHelper();
 		r.addRecipeCategories(new MachineRecipeCategory(FTBICRecipes.SMELTING, FTBICElectricBlocks.POWERED_FURNACE, helper));
 		r.addRecipeCategories(new MachineRecipeCategory(FTBICRecipes.MACERATING, FTBICElectricBlocks.MACERATOR, helper));
+		r.addRecipeCategories(new MachineRecipeCategory(FTBICRecipes.WASHING, FTBICElectricBlocks.ORE_WASHER, helper));
 		r.addRecipeCategories(new MachineRecipeCategory(FTBICRecipes.SEPARATING, FTBICElectricBlocks.CENTRIFUGE, helper));
 		r.addRecipeCategories(new MachineRecipeCategory(FTBICRecipes.COMPRESSING, FTBICElectricBlocks.COMPRESSOR, helper));
 		r.addRecipeCategories(new MachineRecipeCategory(FTBICRecipes.REPROCESSING, FTBICElectricBlocks.REPROCESSOR, helper));
@@ -271,6 +276,7 @@ public class FTBICJEIPlugin implements IModPlugin {
 	public void registerRecipeCatalysts(IRecipeCatalystRegistration r) {
 		r.addCraftingStation(catalystType(FTBICRecipes.SMELTING), FTBICElectricBlocks.POWERED_FURNACE.block.get(), FTBICElectricBlocks.ADVANCED_POWERED_FURNACE.block.get());
 		r.addCraftingStation(catalystType(FTBICRecipes.MACERATING), FTBICElectricBlocks.MACERATOR.block.get(), FTBICElectricBlocks.ADVANCED_MACERATOR.block.get());
+		r.addCraftingStation(catalystType(FTBICRecipes.WASHING), FTBICElectricBlocks.ORE_WASHER.block.get());
 		r.addCraftingStation(catalystType(FTBICRecipes.SEPARATING), FTBICElectricBlocks.CENTRIFUGE.block.get(), FTBICElectricBlocks.ADVANCED_CENTRIFUGE.block.get());
 		r.addCraftingStation(catalystType(FTBICRecipes.COMPRESSING), FTBICElectricBlocks.COMPRESSOR.block.get(), FTBICElectricBlocks.ADVANCED_COMPRESSOR.block.get());
 		r.addCraftingStation(catalystType(FTBICRecipes.REPROCESSING), FTBICElectricBlocks.REPROCESSOR.block.get());

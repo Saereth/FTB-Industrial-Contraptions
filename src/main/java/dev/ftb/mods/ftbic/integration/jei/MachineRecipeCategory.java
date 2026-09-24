@@ -9,6 +9,7 @@ import dev.ftb.mods.ftbic.recipe.MachineRecipeType;
 import dev.ftb.mods.ftbic.util.FTBICUtils;
 import dev.ftb.mods.ftbic.util.IngredientWithCount;
 import dev.ftb.mods.ftbic.util.StackWithChance;
+import dev.ftb.mods.ftbic.util.RefiningIngredient;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
@@ -39,6 +40,7 @@ public class MachineRecipeCategory extends AbstractRecipeCategory<RecipeHolder<M
 	private final int arrowX;
 	private final int outputX;
 	private final boolean separating;
+	private final boolean fluidProcessing;
 
 	public MachineRecipeCategory(MachineRecipeType type, ElectricBlockInstance machine, IGuiHelper helper) {
 		this(type, machine, helper, 2);
@@ -49,8 +51,9 @@ public class MachineRecipeCategory extends AbstractRecipeCategory<RecipeHolder<M
 				Component.translatable("block.ftbic." + machine.id),
 				helper.createDrawableItemStack(new ItemStack(machine.item.get())),
 				widthFor(maxInputs) + (type == FTBICRecipes.SEPARATING ? 18 : 0),
-				type == FTBICRecipes.SEPARATING ? 64 : HEIGHT);
+				type == FTBICRecipes.SEPARATING || type == FTBICRecipes.WASHING ? 64 : HEIGHT);
 		this.separating = type == FTBICRecipes.SEPARATING;
+		this.fluidProcessing = separating || type == FTBICRecipes.WASHING;
 		this.machine = machine;
 		this.maxInputs = Math.max(1, maxInputs);
 		this.inputXEnd = 22 + Math.max(0, this.maxInputs - 2) * 18;
@@ -70,7 +73,7 @@ public class MachineRecipeCategory extends AbstractRecipeCategory<RecipeHolder<M
 	@Override
 	public void setRecipe(IRecipeLayoutBuilder builder, RecipeHolder<MachineRecipe> holder, IFocusGroup focuses) {
 		MachineRecipe recipe = holder.value();
-		if (separating) {
+		if (fluidProcessing) {
 			for (var input : recipe.inputFluids) {
 				var slot = builder.addInputSlot(inputXEnd, 28).setStandardSlotBackground().setFluidRenderer(input.amount(), false, 16, 16);
 				for (var fluid : input.ingredient().fluids()) slot.add(fluid.value(), input.amount());
@@ -88,7 +91,9 @@ public class MachineRecipeCategory extends AbstractRecipeCategory<RecipeHolder<M
 			int x = inputXEnd - (inputCount - 1 - idx) * 18;
 			var slot = builder.addInputSlot(x, SLOT_Y).setStandardSlotBackground();
 			int cnt = in.count();
-			if (cnt > 1) {
+			if (in.ingredient().getCustomIngredient() instanceof RefiningIngredient refining) {
+				slot.add(refining.stack(cnt));
+			} else if (cnt > 1) {
 				List<ItemStack> stacks = new ArrayList<>();
 				in.ingredient().items().forEach(h -> {
 					ItemStack stack = new ItemStack(h);

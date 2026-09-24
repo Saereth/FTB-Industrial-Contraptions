@@ -142,6 +142,14 @@ public class FTBICLanguageProvider extends LanguageProvider {
 		add("block.ftbic.burnt_cable", "Burnt Cable");
 		add("block.ftbic.burnt_reinforced_cable", "Burnt Reinforced Cable");
 		add("block.ftbic.canning_machine", "Canning Machine");
+		add("block.ftbic.ore_washer", "Ore Washer");
+		add("item.ftbic.ore_washer", "Ore Washer");
+		add("item.ftbic.crushed_ore", "Crushed Ore");
+		add("item.ftbic.washed_ore", "Washed Ore");
+		add("item.ftbic.refined_concentrate", "Refined Concentrate");
+		add("item.ftbic.crushed_ore.material", "Crushed %s");
+		add("item.ftbic.washed_ore.material", "Washed %s");
+		add("item.ftbic.refined_concentrate.material", "Refined %s Concentrate");
 		add("block.ftbic.centrifuge", "Centrifuge");
 		add("block.ftbic.charge_pad", "Charge Pad");
 		add("block.ftbic.compressor", "Compressor");

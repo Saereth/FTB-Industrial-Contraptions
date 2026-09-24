@@ -5,6 +5,9 @@ import dev.ftb.mods.ftbic.block.FTBICElectricBlocks;
 import dev.ftb.mods.ftbic.item.FTBICItems;
 import dev.ftb.mods.ftbic.item.MaterialItem;
 import dev.ftb.mods.ftbic.material.MaterialEntries;
+import dev.ftb.mods.ftbic.material.RefiningCatalog;
+import dev.ftb.mods.ftbic.item.RefiningItem;
+import java.util.List;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
@@ -59,6 +62,11 @@ public final class ModCreativeTabs {
 							}
 						}
 
+						for (var material : RefiningCatalog.materials().keySet().stream().sorted().toList()) {
+							for (var item : List.of(FTBICItems.CRUSHED_ORE.get(), FTBICItems.WASHED_ORE.get(), FTBICItems.REFINED_CONCENTRATE.get())) {
+								out.accept(RefiningItem.stack(item, material, 1));
+							}
+						}
 						MaterialEntries.all().forEach(entry -> out.accept(entry.item().get()));
 
 						out.accept(FTBICItems.SINGLE_USE_BATTERY.get());

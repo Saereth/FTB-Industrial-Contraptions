@@ -14,5 +14,8 @@ public final class FTBICIngredientTypes {
 			REGISTRY.register("fluid_cell",
 					() -> new IngredientType<>(FluidCellIngredient.CODEC, FluidCellIngredient.STREAM_CODEC));
 
+	public static final DeferredHolder<IngredientType<?>, IngredientType<RefiningIngredient>> REFINING =
+			REGISTRY.register("refining", () -> new IngredientType<>(RefiningIngredient.CODEC, RefiningIngredient.STREAM_CODEC));
+
 	private FTBICIngredientTypes() {}
 }

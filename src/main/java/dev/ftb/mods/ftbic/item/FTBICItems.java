@@ -38,6 +38,9 @@ import java.util.function.Supplier;
 
 public interface FTBICItems {
 	DeferredRegister.Items REGISTRY = DeferredRegister.createItems(FTBIC.MOD_ID);
+	DeferredItem<RefiningItem> CRUSHED_ORE = REGISTRY.register("crushed_ore", id -> new RefiningItem(props(id)));
+	DeferredItem<RefiningItem> WASHED_ORE = REGISTRY.register("washed_ore", id -> new RefiningItem(props(id)));
+	DeferredItem<RefiningItem> REFINED_CONCENTRATE = REGISTRY.register("refined_concentrate", id -> new RefiningItem(props(id)));
 	List<MaterialItem> MATERIALS = new ArrayList<>();
 
 	static Item.Properties props(Identifier name) {

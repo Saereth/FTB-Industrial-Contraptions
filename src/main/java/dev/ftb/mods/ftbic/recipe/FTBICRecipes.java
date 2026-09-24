@@ -26,6 +26,11 @@ public final class FTBICRecipes {
 	public static final MachineRecipeType EXTRUDING = new MachineRecipeType("extruding", false, false, TYPES, SERIALIZERS);
 	public static final MachineRecipeType ALLOY_SMELTING = new MachineRecipeType("alloy_smelting", false, false, TYPES, SERIALIZERS);
 
+	public static final MachineRecipeType WASHING = new MachineRecipeType("washing", false, false, TYPES, SERIALIZERS);
+	public static final DeferredHolder<RecipeType<?>, RecipeType<MachineRecipe>> REFINING_MATERIAL = TYPES.register("refining_material", () -> new RecipeType<>() {});
+	public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<RefiningMaterialRecipe>> REFINING_MATERIAL_SERIALIZER = SERIALIZERS.register(
+			"refining_material", () -> new RecipeSerializer<>(RefiningMaterialRecipe.CODEC, RefiningMaterialRecipe.STREAM_CODEC));
+
 	// Basic generator fuel burn-time recipes.
 	public static final DeferredHolder<RecipeType<?>, RecipeType<?>> BASIC_GENERATOR_FUEL = TYPES.register("basic_generator_fuel",
 			() -> new RecipeType<>() { @Override public String toString() { return "ftbic:basic_generator_fuel"; } });

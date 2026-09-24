@@ -6,7 +6,7 @@ import dev.ftb.mods.ftbic.block.entity.machine.ReactorSimulatorBlockEntity;
 import dev.ftb.mods.ftbic.block.entity.machine.MachineBlockEntity;
 import dev.ftb.mods.ftbic.item.ConfigurationCardItem;
 import dev.ftb.mods.ftbic.block.entity.machine.BatchFeederBlockEntity;
-import dev.ftb.mods.ftbic.block.entity.machine.CentrifugeBlockEntity;
+import dev.ftb.mods.ftbic.block.entity.machine.FluidMachineBlockEntity;
 import net.neoforged.neoforge.transfer.fluid.FluidUtil;
 import net.neoforged.neoforge.transfer.access.ItemAccess;
 import net.neoforged.neoforge.capabilities.Capabilities;
@@ -217,7 +217,7 @@ public class ElectricBlock extends Block implements EntityBlock, SprayPaintable 
 				return InteractionResult.SUCCESS;
 			}
 		}
-		if (be instanceof CentrifugeBlockEntity && !stack.isEmpty() && player.mayBuild() && level.mayInteract(player, pos)
+		if (be instanceof FluidMachineBlockEntity && !stack.isEmpty() && player.mayBuild() && level.mayInteract(player, pos)
 				&& ItemAccess.forStack(stack).oneByOne().getCapability(Capabilities.Fluid.ITEM) != null) {
 			if (level.isClientSide() || FluidUtil.interactWithFluidHandler(player, hand, level, pos, hit.getDirection())) {
 				return InteractionResult.SUCCESS;

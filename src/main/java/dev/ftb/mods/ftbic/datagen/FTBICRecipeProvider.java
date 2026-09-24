@@ -835,6 +835,7 @@ public class FTBICRecipeProvider extends RecipeProvider {
 		shaped("carbon_fibers", ftbicStack("carbon_fibers", 1), new String[] {"DD", "DD"}, 'D', commonOrTag("c:dusts/coal"));
 		shaped("carbon_helmet", ftbicStack("carbon_helmet", 1), new String[] {"CEC", "CAC"}, 'C', i("ftbic:carbon_plate"), 'E', i("ftbic:energy_crystal"), 'A', i("minecraft:netherite_helmet"));
 		shaped("carbon_leggings", ftbicStack("carbon_leggings", 1), new String[] {"CEC", "CAC", "C C"}, 'C', i("ftbic:carbon_plate"), 'E', i("ftbic:energy_crystal"), 'A', i("minecraft:netherite_leggings"));
+		shaped("ore_washer", ftbicStack("ore_washer", 1), new String[] {"GPG", "CMC", "WBW"}, 'G', commonTag("glass_blocks/colorless"), 'P', i("minecraft:piston"), 'C', i("ftbic:electronic_circuit"), 'M', i("ftbic:machine_block"), 'W', i("ftbic:copper_coil"), 'B', i("minecraft:bucket"));
 		shaped("centrifuge", ftbicStack("centrifuge", 1), new String[] {"GMG", "GCG"}, 'G', i("minecraft:glass_bottle"), 'M', i("ftbic:machine_block"), 'C', i("ftbic:electronic_circuit"));
 		shaped("charge_pad", ftbicStack("charge_pad", 1), new String[] {"WWW", "CMC"}, 'M', i("ftbic:machine_block"), 'C', i("ftbic:advanced_circuit"), 'W', i("ftbic:copper_coil"));
 		shaped("coal_ball", ftbicStack("coal_ball", 1), new String[] {"CCC", "CFC", "CCC"}, 'C', commonOrTag("minecraft:coals"), 'F', i("minecraft:flint"));

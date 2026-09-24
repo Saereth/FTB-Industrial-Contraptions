@@ -9,6 +9,7 @@ import dev.ftb.mods.ftbic.block.FTBICElectricBlocks;
 import dev.ftb.mods.ftbic.block.SprayPaintable;
 import dev.ftb.mods.ftbic.item.ElectricBlockItem;
 import dev.ftb.mods.ftbic.item.FTBICItems;
+import dev.ftb.mods.ftbic.item.RefiningItem;
 import dev.ftb.mods.ftbic.material.MaterialComponent;
 import dev.ftb.mods.ftbic.material.MaterialEntries;
 import net.minecraft.client.data.models.BlockModelGenerators;
@@ -105,7 +106,7 @@ public class FTBICModelProvider extends ModelProvider {
 			Item item = holder.get();
 			String id = holder.getId().getPath();
 
-			if (item instanceof ElectricBlockItem) continue;
+			if (item instanceof ElectricBlockItem || item instanceof RefiningItem) continue;
 
 			if (item instanceof BlockItem) {
 				if (CUSTOM_CABLE_ITEMS.contains(id)) {

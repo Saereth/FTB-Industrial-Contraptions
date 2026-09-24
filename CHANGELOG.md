@@ -27,6 +27,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+* Ore refining: macerate ore blocks into three raw ore, then crush, wash, centrifuge, and smelt for five ingots per raw ore or fifteen per ore block.
+* Ore Washer with fluid tanks, side configuration, upgrades, and the shared industrial machine UI.
+* Automatic modded-metal discovery, colored intermediates, JEI recipes and ghost filters, and datapack overrides for materials and processing. The in-game guide explains the full chain.
+
 * Superconducting Cables carry unlimited zaps and show a fast emissive cyan pulse that loops seamlessly during energy transfer.
 * Industrial battery banks with connected EV-style steel casings: storage cells add configurable capacity, and ports provide configurable energy transfer. Adjacent ports on the same flat face combine into larger emissive gauges showing the whole bank's fill level.
 * Battery Bank Ports can cycle between the default port symbol, a shared charge gauge, and plain cell-style steel with sneak-right-click. Each port remembers its style.

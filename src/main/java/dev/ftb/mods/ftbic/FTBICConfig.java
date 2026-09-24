@@ -148,6 +148,8 @@ public final class FTBICConfig {
 		public final ModConfigSpec.DoubleValue POWERED_FURNACE_USE;
 		public final ModConfigSpec.DoubleValue MACERATOR_CAPACITY;
 		public final ModConfigSpec.DoubleValue MACERATOR_USE;
+		public final ModConfigSpec.DoubleValue ORE_WASHER_CAPACITY;
+		public final ModConfigSpec.DoubleValue ORE_WASHER_USE;
 		public final ModConfigSpec.DoubleValue CENTRIFUGE_CAPACITY;
 		public final ModConfigSpec.DoubleValue CENTRIFUGE_USE;
 		public final ModConfigSpec.DoubleValue COMPRESSOR_CAPACITY;
@@ -234,6 +236,8 @@ public final class FTBICConfig {
 			POWERED_FURNACE_USE = b.defineInRange("powered_furnace_use", 3D, 0D, 100_000D);
 			MACERATOR_CAPACITY = b.defineInRange("macerator_capacity", 1_200D, 1D, 100_000D);
 			MACERATOR_USE = b.defineInRange("macerator_use", 2D, 0D, 100_000D);
+			ORE_WASHER_CAPACITY = b.defineInRange("ore_washer_capacity", 4_000D, 1D, 100_000D);
+			ORE_WASHER_USE = b.defineInRange("ore_washer_use", 4D, 0D, 100_000D);
 			CENTRIFUGE_CAPACITY = b.defineInRange("centrifuge_capacity", 1_200D, 1D, 100_000D);
 			CENTRIFUGE_USE = b.defineInRange("centrifuge_use", 2D, 0D, 100_000D);
 			COMPRESSOR_CAPACITY = b.defineInRange("compressor_capacity", 1_200D, 1D, 100_000D);

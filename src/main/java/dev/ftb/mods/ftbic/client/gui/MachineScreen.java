@@ -2,7 +2,7 @@ package dev.ftb.mods.ftbic.client.gui;
 
 import dev.ftb.mods.ftbic.block.entity.machine.BasicMachineBlockEntity;
 import dev.ftb.mods.ftbic.block.entity.machine.ChargePadBlockEntity;
-import dev.ftb.mods.ftbic.block.entity.machine.CentrifugeBlockEntity;
+import dev.ftb.mods.ftbic.block.entity.machine.FluidMachineBlockEntity;
 import dev.ftb.mods.ftbic.integration.jei.ClientRecipeCache;
 import dev.ftb.mods.ftbic.screen.MachineMenu;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -27,7 +27,7 @@ public class MachineScreen extends ElectricBlockScreen<MachineMenu> {
 	protected void drawBase(GuiGraphicsExtractor g) {
 		super.drawBase(g);
 		if (drawDefaultArrow) {
-			if (menu.blockEntity instanceof CentrifugeBlockEntity) {
+			if (menu.blockEntity instanceof FluidMachineBlockEntity) {
 				IndustrialGui.readout(g, leftPos + 51, topPos + 23, 55, 44);
 			} else {
 				IndustrialGui.readout(g, leftPos + 30, topPos + 23, 116, 44);
@@ -55,7 +55,7 @@ public class MachineScreen extends ElectricBlockScreen<MachineMenu> {
 			g.centeredText(font, Component.translatable("ftbic.gui.machine.parallel", menu.runningOperations.get(), menu.parallelCapacity.get()),
 					leftPos + 92, topPos + 55, 0xFF294C53);
 		}
-		boolean centrifuge = menu.blockEntity instanceof CentrifugeBlockEntity;
+		boolean centrifuge = menu.blockEntity instanceof FluidMachineBlockEntity;
 		int outputCols = centrifuge ? 1 : Math.max(1, Math.min(2, outputs));
 		int outputRows = Math.max(1, (int) Math.ceil(outputs / (double) outputCols));
 		int oyStart = 35 - ((outputRows - 1) * 9);
@@ -64,9 +64,9 @@ public class MachineScreen extends ElectricBlockScreen<MachineMenu> {
 			int row = i / outputCols;
 			drawSlot(g, leftPos + 107 + col * 18, topPos + oyStart - 1 + row * 18);
 		}
-		if (menu.blockEntity instanceof CentrifugeBlockEntity machine) {
-			drawTank(g, leftPos + 30, topPos + 17, machine.getInputFluid(), CentrifugeBlockEntity.TANK_CAPACITY);
-			drawTank(g, leftPos + 130, topPos + 17, machine.getOutputFluid(), CentrifugeBlockEntity.TANK_CAPACITY);
+		if (menu.blockEntity instanceof FluidMachineBlockEntity machine) {
+			drawTank(g, leftPos + 30, topPos + 17, machine.getInputFluid(), FluidMachineBlockEntity.TANK_CAPACITY);
+			drawTank(g, leftPos + 130, topPos + 17, machine.getOutputFluid(), FluidMachineBlockEntity.TANK_CAPACITY);
 			g.fill(leftPos + 31, topPos + 70, leftPos + 47, topPos + 72, 0xFF66BBFF);
 			g.fill(leftPos + 131, topPos + 70, leftPos + 147, topPos + 72, 0xFFFFBB55);
 		}
@@ -83,7 +83,7 @@ public class MachineScreen extends ElectricBlockScreen<MachineMenu> {
 	protected void extractOverlayTooltips(GuiGraphicsExtractor g, int mouseX, int mouseY) {
 		super.extractOverlayTooltips(g, mouseX, mouseY);
 
-		if (menu.blockEntity instanceof CentrifugeBlockEntity machine) {
+		if (menu.blockEntity instanceof FluidMachineBlockEntity machine) {
 			centrifugeTankTooltip(g, mouseX, mouseY, 30, "ftbic.gui.centrifuge.input_tank", machine.getInputFluid());
 			centrifugeTankTooltip(g, mouseX, mouseY, 130, "ftbic.gui.centrifuge.output_tank", machine.getOutputFluid());
 		}
@@ -99,7 +99,7 @@ public class MachineScreen extends ElectricBlockScreen<MachineMenu> {
 	private void centrifugeTankTooltip(GuiGraphicsExtractor g, int mouseX, int mouseY, int x, String key, FluidStack fluid) {
 		if (isIn(mouseX, mouseY, leftPos + x, topPos + 17, 18, 55)) {
 			Component name = fluid.isEmpty() ? Component.translatable("ftbic.jade.fluid_empty") : fluid.getHoverName();
-			g.setTooltipForNextFrame(Component.translatable(key, name, fluid.getAmount(), CentrifugeBlockEntity.TANK_CAPACITY), mouseX, mouseY);
+			g.setTooltipForNextFrame(Component.translatable(key, name, fluid.getAmount(), FluidMachineBlockEntity.TANK_CAPACITY), mouseX, mouseY);
 		}
 	}
 

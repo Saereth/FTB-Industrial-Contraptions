@@ -33,6 +33,10 @@ public class FTBICGameTests {
 		Holder<TestEnvironmentDefinition<?>> env = event.registerEnvironment(
 				FTBIC.id("default"),
 				new TestEnvironmentDefinition.AllOf());
+		reg(event, "refining_full_chain", RefiningGameTests::fullChain, env, 60);
+		reg(event, "refining_blocking_identity", RefiningGameTests::blockingAndIdentity, env, 60);
+		reg(event, "refining_discovery_overrides", RefiningGameTests::discoveryAndOverrides, env, 60);
+		reg(event, "refining_colors", RefiningGameTests::colors, env, 60);
 		reg(event, "bank_connected_storage", BankGameTests::connectedStorage, env, 60);
 		reg(event, "bank_cell_seam_states", BankGameTests::cellSeamStates, env, 60);
 		reg(event, "bank_charge_display", BankGameTests::chargeDisplayTracksBank, env, 60);

@@ -1,6 +1,11 @@
 package dev.ftb.mods.ftbic.integration.jei;
 
 import dev.ftb.mods.ftbic.FTBIC;
+import dev.ftb.mods.ftbic.material.RefiningCatalog;
+import dev.ftb.mods.ftbic.item.FTBICItems;
+import dev.ftb.mods.ftbic.item.RefiningItem;
+import mezz.jei.api.constants.VanillaTypes;
+import dev.ftb.mods.ftbic.recipe.RefiningMaterialRecipe;
 import dev.ftb.mods.ftbic.FTBICConfig;
 import dev.ftb.mods.ftbic.recipe.FTBICRecipes;
 import dev.ftb.mods.ftbic.recipe.MachineRecipe;
@@ -9,8 +14,11 @@ import dev.ftb.mods.ftbic.util.StackWithChance;
 import mezz.jei.api.recipe.types.IRecipeHolderType;
 import mezz.jei.api.recipe.types.IRecipeType;
 import mezz.jei.api.runtime.IJeiRuntime;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemStackTemplate;
+import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.item.crafting.SingleRecipeInput;
@@ -23,9 +31,12 @@ import java.util.Map;
 
 public final class ClientRecipeCache {
 	private static IJeiRuntime runtime;
+	private static long syncVersion;
+	private static final List<ItemStack> variants = new ArrayList<>();
 	private static final Map<RecipeType<?>, List<RecipeHolder<?>>> CACHE = new HashMap<>();
 
 	public static synchronized void setRuntime(IJeiRuntime jeiRuntime) {
+		if (runtime == jeiRuntime) return;
 		runtime = jeiRuntime;
 		pushToJei();
 	}
@@ -36,10 +47,20 @@ public final class ClientRecipeCache {
 
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	public static synchronized void applySyncedRecipes(List<RecipeHolder<?>> recipes) {
+		removeFromJei();
+		syncVersion++;
+		RefiningCatalog.update(recipes);
+		variants.clear();
+		for (var id : RefiningCatalog.materials().keySet().stream().sorted().toList()) {
+			for (var item : List.of(FTBICItems.CRUSHED_ORE.get(), FTBICItems.WASHED_ORE.get(), FTBICItems.REFINED_CONCENTRATE.get())) {
+				variants.add(RefiningItem.stack(item, id, 1));
+			}
+		}
 		CACHE.clear();
 		RecipeType<?> ftbicSmelting = FTBICRecipes.SMELTING.TYPE.get();
 		double baseTicks = FTBICConfig.MACHINES.MACHINE_RECIPE_BASE_TICKS.get();
 		for (RecipeHolder<?> h : recipes) {
+			if (h.value() instanceof RefiningMaterialRecipe) continue;
 			if (h.value() instanceof SmeltingRecipe sr) {
 				ItemStack result = sr.assemble(new SingleRecipeInput(ItemStack.EMPTY));
 				if (result.isEmpty()) continue;
@@ -53,10 +74,10 @@ public final class ClientRecipeCache {
 						List.of(),
 						sr.cookingTime() / baseTicks,
 						false);
-				CACHE.computeIfAbsent(ftbicSmelting, k -> new ArrayList<>()).add(new RecipeHolder(h.id(), mr));
+				CACHE.computeIfAbsent(ftbicSmelting, k -> new ArrayList<>()).add(new RecipeHolder(jeiKey(h), mr));
 			} else {
 				RecipeType<?> t = h.value().getType();
-				CACHE.computeIfAbsent(t, k -> new ArrayList<>()).add(h);
+				CACHE.computeIfAbsent(t, k -> new ArrayList<>()).add(new RecipeHolder(jeiKey(h), h.value()));
 			}
 		}
 		pushToJei();
@@ -91,6 +112,7 @@ public final class ClientRecipeCache {
 			return;
 		}
 
+		runtime.getIngredientManager().addIngredientsAtRuntime(VanillaTypes.ITEM_STACK, variants);
 		for (Map.Entry<RecipeType<?>, List<RecipeHolder<?>>> entry : CACHE.entrySet()) {
 			RecipeType<?> vanillaType = entry.getKey();
 			List<RecipeHolder<?>> holders = entry.getValue();
@@ -103,6 +125,28 @@ public final class ClientRecipeCache {
 				FTBIC.LOGGER.warn("ClientRecipeCache.pushToJei: failed for {}: {}", vanillaType, t.toString());
 			}
 		}
+	}
+
+	@SuppressWarnings({"unchecked", "rawtypes"})
+	private static void removeFromJei() {
+		if (runtime == null) return;
+		runtime.getIngredientManager().removeIngredientsAtRuntime(VanillaTypes.ITEM_STACK, variants);
+		for (var entry : CACHE.entrySet()) {
+			runtime.getRecipeManager().hideRecipes((IRecipeType) IRecipeHolderType.create((RecipeType) entry.getKey()), (List) entry.getValue());
+		}
+	}
+
+	// JEI can hide recipes but cannot remove them. RecipeHolder equality uses only its ID,
+	// so each synced snapshot needs fresh presentation IDs to replace changed recipes.
+	private static ResourceKey<Recipe<?>> jeiKey(RecipeHolder<?> holder) {
+		return ResourceKey.create(Registries.RECIPE, holder.id().identifier().withSuffix("/ftbic_jei_" + syncVersion));
+	}
+
+	public static synchronized void disconnect() {
+		runtime = null;
+		CACHE.clear();
+		variants.clear();
+		RefiningCatalog.update(List.of());
 	}
 
 	private ClientRecipeCache() {}

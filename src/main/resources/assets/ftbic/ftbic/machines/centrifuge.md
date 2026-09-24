@@ -57,3 +57,7 @@ Use fluid pipes or use a bucket or Fluid Cell on the machine to transfer fluids.
 Processing waits until every required input is available and all item and fluid results fit. A full output tank or a different fluid already in that tank blocks processing. Existing item-only recipes work with empty tanks.
 
 The **Advanced Centrifuge** separates **1,000 mB of lava** (one bucket) into **2 <ItemLink id="ftbic:tin_nugget" />**, **1 <ItemLink id="minecraft:copper_nugget" />**, and a **25% chance of 1 <ItemLink id="minecraft:gold_nugget" />**. No item input is needed. Craft nine tin nuggets into one tin ingot, or split an ingot back into nine nuggets.
+
+## Ore refining
+
+Process **3 washed ore into 5 refined concentrate**, then smelt each concentrate into one ingot. See [Ore Refining](ore_refining.md) for the full chain and automation.

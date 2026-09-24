@@ -2,7 +2,7 @@ package dev.ftb.mods.ftbic.screen;
 
 import dev.ftb.mods.ftbic.block.entity.ElectricBlockEntity;
 import dev.ftb.mods.ftbic.block.entity.machine.MachineBlockEntity;
-import dev.ftb.mods.ftbic.block.entity.machine.CentrifugeBlockEntity;
+import dev.ftb.mods.ftbic.block.entity.machine.FluidMachineBlockEntity;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.crafting.RecipeType;
@@ -20,7 +20,7 @@ public class MachineMenu extends ElectricBlockMenu {
 
 	@Override
 	protected void addMachineSlots(Inventory playerInv) {
-		if (blockEntity instanceof CentrifugeBlockEntity) {
+		if (blockEntity instanceof FluidMachineBlockEntity) {
 			var container = new ElectricBlockEntityContainer(blockEntity);
 			addSlot(new InputSlot(container, 0, 60, 35));
 			int outputs = blockEntity.outputItems.length;

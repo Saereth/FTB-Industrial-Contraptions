@@ -78,5 +78,8 @@ public final class ModDataComponents {
 					.persistent(MachineConfiguration.CODEC)
 					.networkSynchronized(ByteBufCodecs.fromCodec(MachineConfiguration.CODEC)));
 
+	public static final DeferredHolder<DataComponentType<?>, DataComponentType<Identifier>> REFINING_MATERIAL =
+			DATA_COMPONENTS.registerComponentType("refining_material", b -> b.persistent(Identifier.CODEC).networkSynchronized(Identifier.STREAM_CODEC));
+
 	private ModDataComponents() {}
 }

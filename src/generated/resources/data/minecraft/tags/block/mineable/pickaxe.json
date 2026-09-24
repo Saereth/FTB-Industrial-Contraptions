@@ -47,6 +47,7 @@
     "ftbic:batch_feeder",
     "ftbic:powered_furnace",
     "ftbic:macerator",
+    "ftbic:ore_washer",
     "ftbic:centrifuge",
     "ftbic:compressor",
     "ftbic:reprocessor",

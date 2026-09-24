@@ -106,6 +106,13 @@ public interface FTBICElectricBlocks {
 			.energyUsage(FTBICConfig.MACHINES.MACERATOR_USE)
 			.io(1, 2);
 
+	ElectricBlockInstance ORE_WASHER = register("ore_washer", OreWasherBlockEntity::new)
+			.canBurn()
+			.energyCapacity(FTBICConfig.MACHINES.ORE_WASHER_CAPACITY)
+			.maxEnergyInput(FTBICConfig.ENERGY.LV_TRANSFER_RATE)
+			.energyUsage(FTBICConfig.MACHINES.ORE_WASHER_USE)
+			.io(1, 1);
+
 	ElectricBlockInstance CENTRIFUGE = register("centrifuge", CentrifugeBlockEntity::new)
 			.canBurn()
 			.energyCapacity(FTBICConfig.MACHINES.CENTRIFUGE_CAPACITY)

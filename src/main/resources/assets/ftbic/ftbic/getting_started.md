@@ -76,7 +76,7 @@ Build a <ItemLink id="basic_generator" />, connect it with <ItemLink id="lv_cabl
 
 <RecipeFor id="basic_generator" />
 
-Ore doubling via the macerator is the single biggest early-game payoff — every raw ingot becomes **2 dusts**, which smelt back into ingots.
+Macerate each supported raw ore into **2 crushed ore**, then smelt it for two ingots. Add an [Ore Washer and Centrifuge](machines/ore_refining.md) to reach **5 ingots per raw ore**, or **15 per ore block**.
 
 <ItemImage id="minecraft:air" scale="0.25"/>
 
