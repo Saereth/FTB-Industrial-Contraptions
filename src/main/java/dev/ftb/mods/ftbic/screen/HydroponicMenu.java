@@ -9,6 +9,12 @@ import net.minecraft.world.inventory.DataSlot;
 import net.minecraft.world.inventory.Slot;
 
 public final class HydroponicMenu extends ElectricBlockMenu {
+	public static final int WIDTH = 214;
+	public boolean isAdvanced() { return blockEntity instanceof HydroponicBlockEntity machine && machine.isAdvanced(); }
+	public int laneY(int lane) { return isAdvanced() ? 35 + lane * 22 : 53; }
+	public int inventoryY() { return isAdvanced() ? 156 : 122; }
+	public int hotbarY() { return inventoryY() + 58; }
+	public int screenHeight() { return hotbarY() + 24; }
 	private final DataSlot mode = DataSlot.standalone();
 	private final DataSlot[] laneProgress = new DataSlot[4];
 	private final DataSlot[] laneDuration = new DataSlot[4];
@@ -31,33 +37,41 @@ public final class HydroponicMenu extends ElectricBlockMenu {
 		ElectricBlockEntityContainer container = new ElectricBlockEntityContainer(machine);
 		if (machine.isAdvanced()) {
 			for (int lane = 0; lane < 4; lane++) {
-				int y = 35 + lane * 22;
+				int y = laneY(lane);
 				addSlot(new InputSlot(container, lane * 2, 48, y));
-				addSlot(new InputSlot(container, lane * 2 + 1, 68, y));
+				addSlot(new InputSlot(container, lane * 2 + 1, 66, y));
 			}
 			for (int lane = 0; lane < 4; lane++) {
-				int y = 35 + lane * 22;
-				for (int kind = 0; kind < 3; kind++) addSlot(new OutputSlot(container, 8 + lane * 3 + kind, 149 + kind * 19, y));
+				int y = laneY(lane);
+				for (int kind = 0; kind < 3; kind++) addSlot(new OutputSlot(container, 8 + lane * 3 + kind, 122 + kind * 18, y));
 			}
 			machineSlotCount = 20;
 		} else {
-			addSlot(new InputSlot(container, 0, 48, 56));
-			addSlot(new InputSlot(container, 1, 68, 56));
-			for (int i = 0; i < 3; i++) addSlot(new OutputSlot(container, 2 + i, 158 + i * 19, 56));
+			addSlot(new InputSlot(container, 0, 48, laneY(0)));
+			addSlot(new InputSlot(container, 1, 66, laneY(0)));
+			for (int i = 0; i < 3; i++) addSlot(new OutputSlot(container, 2 + i, 122 + i * 18, laneY(0)));
 			machineSlotCount = 5;
 		}
-		addBatterySlot(221, 106);
-		addUpgradeSlots(221, 30);
+		if (machine.isAdvanced()) {
+			addBatterySlot(188, 106);
+			addUpgradeSlots(188, 30);
+		} else {
+			addBatterySlot(44, 85);
+			UpgradeInventoryContainer upgrades = new UpgradeInventoryContainer(machine.upgradeInventory);
+			for (int i = 0; i < 4; i++) {
+				addSlot(new UpgradeSlot(upgrades, i, 106 + i * 18, 85));
+				machineSlotCount++;
+			}
+		}
 	}
 
 	@Override protected void addPlayerInventorySlots(Inventory inv) {
-		boolean advanced = blockEntity instanceof HydroponicBlockEntity machine && machine.isAdvanced();
-		int inventoryY = advanced ? 151 : 116;
-		int hotbarY = advanced ? 209 : 174;
+		int inventoryY = inventoryY();
+		int hotbarY = hotbarY();
 		for (int row = 0; row < 3; row++) {
-			for (int col = 0; col < 9; col++) addSlot(new Slot(inv, col + row * 9 + 9, 42 + col * 18, inventoryY + row * 18));
+			for (int col = 0; col < 9; col++) addSlot(new Slot(inv, col + row * 9 + 9, 26 + col * 18, inventoryY + row * 18));
 		}
-		for (int col = 0; col < 9; col++) addSlot(new Slot(inv, col, 42 + col * 18, hotbarY));
+		for (int col = 0; col < 9; col++) addSlot(new Slot(inv, col, 26 + col * 18, hotbarY));
 	}
 
 	@Override public void broadcastChanges() {

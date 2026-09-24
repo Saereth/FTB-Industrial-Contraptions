@@ -48,6 +48,13 @@ public class FTBICLanguageProvider extends LanguageProvider {
 		add("ftbic.hydro.byproduct", "Chanced byproduct");
 		add("ftbic.hydro.soil_speed", "Soil speed: %sx");
 		add("ftbic.hydro.mutation_failure", "Failed mutation returns both parent seeds");
+		add("ftbic.jei.hydroponic_growth", "Hydroponic Growth");
+		add("ftbic.jei.hydroponic_mutation", "Hydroponic Mutation");
+		add("ftbic.jei.parents", "Parents");
+		add("ftbic.jei.mutation_result", "Result");
+		add("ftbic.jei.mutation_failed", "On failure:");
+		add("ftbic.jei.mutation_returns", "Both seeds returned");
+		add("ftbic.jei.mutation_cost", "%ss | %s zaps/t");
 		add("ftbic.jei.advanced_centrifuge_required", "Advanced Centrifuge only");
 		add("ftbic.sides.title", "Side Configuration");
 		add("block.ftbic.batch_feeder", "Batch Feeder");

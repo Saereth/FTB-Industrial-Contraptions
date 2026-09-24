@@ -194,6 +194,8 @@ public class GeneratorBlockEntity extends ElectricBlockEntity {
 		double remaining = maxEnergyOutputTransfer;
 		for (Direction dir : FTBICUtils.DIRECTIONS) {
 			if (!isValidEnergyOutputSide(dir)) continue;
+			// Native cable output below already handles these routes and voltage rules.
+			if (level.getBlockState(worldPosition.relative(dir)).getBlock() instanceof CableBlock) continue;
 			if (zapPushCache(serverLevel, dir).getCapability() != null) continue;
 			EnergyHandler fe = fePushCache(serverLevel, dir).getCapability();
 			if (fe == null) continue;

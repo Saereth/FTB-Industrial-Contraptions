@@ -4,6 +4,5 @@ import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
 
 public class SuperconductingCableRenderState extends BlockEntityRenderState {
 	public int connections;
-	public float phase;
 	public float strength;
 }

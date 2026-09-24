@@ -16,6 +16,7 @@ import dev.ftb.mods.ftbic.block.entity.machine.TeleporterBlockEntity;
 import dev.ftb.mods.ftbic.block.entity.storage.EnergyRectifierBlockEntity;
 import dev.ftb.mods.ftbic.item.FTBICItems;
 import dev.ftb.mods.ftbic.util.ElectricBlockEnergyHandler;
+import dev.ftb.mods.ftbic.util.CableFEHandler;
 import dev.ftb.mods.ftbic.util.ElectricBlockResourceHandler;
 import dev.ftb.mods.ftbic.util.EnergyRectifierFEHandler;
 import dev.ftb.mods.ftbic.util.FTBICCapabilities;
@@ -30,6 +31,7 @@ import dev.ftb.mods.ftbic.util.TeleporterFluidPassthroughHandler;
 import dev.ftb.mods.ftbic.util.TeleporterItemPassthroughHandler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
@@ -46,6 +48,18 @@ public final class CapabilityRegistrar {
 	@SubscribeEvent
 	public static void register(RegisterCapabilitiesEvent event) {
 		boolean fullFE = FTBICConfig.ENERGY.FULL_FE_MODE.get();
+		if (fullFE) {
+			for (var cable : FTBICBlocks.CABLES) {
+				event.registerBlock(Capabilities.Energy.BLOCK,
+						(level, pos, state, be, side) -> level instanceof ServerLevel server
+								? new CableFEHandler(server, pos, side) : null, cable.get());
+			}
+			for (var cable : FTBICBlocks.REINFORCED_CABLES) {
+				event.registerBlock(Capabilities.Energy.BLOCK,
+						(level, pos, state, be, side) -> level instanceof ServerLevel server
+								? new CableFEHandler(server, pos, side) : null, cable.get());
+			}
+		}
 
 		for (var instance : FTBICElectricBlocks.ALL) {
 			@SuppressWarnings("unchecked")

@@ -11,17 +11,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * Upgrade slots now limit each upgrade type separately, so four transformers can coexist with overclockers and ejectors. Excess items remain in the player's inventory when shift-clicking.
 * Sneak-right-clicking a machine with an upgrade now installs it, including a stack of up to four, without opening the UI.
-* Hydroponic Accelerator screens now use compact, aligned readouts with visible inventory slots and unobstructed water and mode controls. Mutation mode is available only on the advanced machine.
-* Hydroponic Accelerator faces now share the exact casing borders and tier textures of the other machines.
 * Teleporter destination lists stay inside the machine screen above the inventory, with scrolling for longer lists. Its controls now match the industrial machine UI.
-* Industrial Battery Bank casing has clean corner joins and plain steel cell faces, and Jade shows the connected bank's total charge and capacity.
 * Jade's energy bar now uses the entire Industrial Battery Bank's stored energy and capacity when looking at either a cell or a port.
 * LV, MV, HV, and EV Battery Boxes can output energy from any configured face, with input/output textures that follow each face's energy setting and use the correct face lighting.
 * Solar panels no longer generate through a directly adjacent opaque block.
-* Missing Reactor Blueprint feedback now appears over the open planner or reactor screen instead of being hidden behind it.
 * Lapis Lazuli ore can be macerated into dust again.
 * clipped button labels, component names, and material counts in the Reactor Design panel.
-* I/O configuration forgetting the selected tab when reopened.
 * Reactor components and fuel rods now stack when their data matches, with reactor and planner slots limited to one item.
 * Carbon and Quantum armor now render their own textures when equipped. {#12410}
 * Charge Pads now accept four rechargeable items in their UI while continuing to charge carried and worn items when stood on. ([Issue 2123](https://github.com/FTBTeam/FTB-Mods-Issues/issues/2123))

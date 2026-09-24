@@ -51,6 +51,8 @@ public class FTBICGameTests {
 		reg(event, "superconducting_unlimited_transfer", SuperconductingCableGameTests::unlimitedTransfer, env, 60);
 		reg(event, "superconducting_active_routes", SuperconductingCableGameTests::onlyUsedRoutesPulse, env, 60);
 		reg(event, "superconducting_connections", SuperconductingCableGameTests::connectionsAndRemoval, env, 60);
+		reg(event, "cable_fe_external_input", CableFEGameTests::externalInput, env, 60);
+		reg(event, "cable_fe_variants", CableFEGameTests::cableVariants, env, 60);
 
 		reg(event, "parallel_changed_inputs", ParallelProcessingGameTests::changedInputs, env, 60);
 		reg(event, "parallel_processing", ParallelProcessingGameTests::processing, env, 60);
