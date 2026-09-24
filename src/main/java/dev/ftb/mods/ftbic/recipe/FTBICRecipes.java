@@ -27,6 +27,8 @@ public final class FTBICRecipes {
 	public static final MachineRecipeType ALLOY_SMELTING = new MachineRecipeType("alloy_smelting", false, false, TYPES, SERIALIZERS);
 
 	public static final MachineRecipeType WASHING = new MachineRecipeType("washing", false, false, TYPES, SERIALIZERS);
+	public static final MachineRecipeType HYDROPONIC_GROWTH = new MachineRecipeType("hydroponic_growth", false, true, TYPES, SERIALIZERS);
+	public static final MachineRecipeType HYDROPONIC_MUTATION = new MachineRecipeType("hydroponic_mutation", true, false, TYPES, SERIALIZERS);
 	public static final DeferredHolder<RecipeType<?>, RecipeType<MachineRecipe>> REFINING_MATERIAL = TYPES.register("refining_material", () -> new RecipeType<>() {});
 	public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<RefiningMaterialRecipe>> REFINING_MATERIAL_SERIALIZER = SERIALIZERS.register(
 			"refining_material", () -> new RecipeSerializer<>(RefiningMaterialRecipe.CODEC, RefiningMaterialRecipe.STREAM_CODEC));

@@ -41,6 +41,8 @@ public class MachineRecipeCategory extends AbstractRecipeCategory<RecipeHolder<M
 	private final int outputX;
 	private final boolean separating;
 	private final boolean fluidProcessing;
+	private final boolean hydroponic;
+	private final boolean mutation;
 
 	public MachineRecipeCategory(MachineRecipeType type, ElectricBlockInstance machine, IGuiHelper helper) {
 		this(type, machine, helper, 2);
@@ -50,10 +52,13 @@ public class MachineRecipeCategory extends AbstractRecipeCategory<RecipeHolder<M
 		super(jeiRecipeType(type),
 				Component.translatable("block.ftbic." + machine.id),
 				helper.createDrawableItemStack(new ItemStack(machine.item.get())),
-				widthFor(maxInputs) + (type == FTBICRecipes.SEPARATING ? 18 : 0),
-				type == FTBICRecipes.SEPARATING || type == FTBICRecipes.WASHING ? 64 : HEIGHT);
+				widthFor(maxInputs) + (type == FTBICRecipes.SEPARATING || type == FTBICRecipes.HYDROPONIC_GROWTH ? 36 : 0),
+				type == FTBICRecipes.SEPARATING || type == FTBICRecipes.WASHING
+						|| type == FTBICRecipes.HYDROPONIC_GROWTH || type == FTBICRecipes.HYDROPONIC_MUTATION ? 64 : HEIGHT);
 		this.separating = type == FTBICRecipes.SEPARATING;
-		this.fluidProcessing = separating || type == FTBICRecipes.WASHING;
+		this.hydroponic = type == FTBICRecipes.HYDROPONIC_GROWTH || type == FTBICRecipes.HYDROPONIC_MUTATION;
+		this.mutation = type == FTBICRecipes.HYDROPONIC_MUTATION;
+		this.fluidProcessing = separating || type == FTBICRecipes.WASHING || hydroponic;
 		this.machine = machine;
 		this.maxInputs = Math.max(1, maxInputs);
 		this.inputXEnd = 22 + Math.max(0, this.maxInputs - 2) * 18;
@@ -85,6 +90,13 @@ public class MachineRecipeCategory extends AbstractRecipeCategory<RecipeHolder<M
 		}
 
 		int inputCount = Math.min(maxInputs, recipe.inputs.size());
+		if (hydroponic && !mutation && !recipe.soilOptions.isEmpty()) {
+			var soilSlot = builder.addInputSlot(4, 28).setStandardSlotBackground();
+			for (var soil : recipe.soilOptions) soilSlot.add(soil.ingredient());
+			soilSlot.addRichTooltipCallback((view, tooltip) -> {
+				for (var soil : recipe.soilOptions) tooltip.add(Component.translatable("ftbic.hydro.soil_speed", FTBICUtils.fmtDouble(soil.speed(), 2)));
+			});
+		}
 		int idx = 0;
 		for (IngredientWithCount in : recipe.inputs) {
 			if (idx >= maxInputs) break;
@@ -137,6 +149,8 @@ public class MachineRecipeCategory extends AbstractRecipeCategory<RecipeHolder<M
 			builder.addText(Component.translatable("ftbic.jei.advanced_centrifuge_required"), getWidth(), 12)
 					.setPosition(0, 50).setColor(0xFF404040);
 		}
+		if (mutation) builder.addText(Component.translatable("ftbic.hydro.mutation_failure"), getWidth(), 12)
+				.setPosition(0, 50).setColor(0xFF404040);
 	}
 
 	@Override

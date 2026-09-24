@@ -113,6 +113,20 @@ public interface FTBICElectricBlocks {
 			.energyUsage(FTBICConfig.MACHINES.ORE_WASHER_USE)
 			.io(1, 1);
 
+	ElectricBlockInstance HYDROPONIC_ACCELERATOR = register("hydroponic_accelerator", HydroponicBlockEntity::new)
+			.canBurn()
+			.energyCapacity(FTBICConfig.MACHINES.HYDROPONIC_ACCELERATOR_CAPACITY)
+			.maxEnergyInput(FTBICConfig.ENERGY.LV_TRANSFER_RATE)
+			.energyUsage(FTBICConfig.MACHINES.HYDROPONIC_ACCELERATOR_USE)
+			.io(2, 3);
+
+	ElectricBlockInstance ADVANCED_HYDROPONIC_ACCELERATOR = register("advanced_hydroponic_accelerator", HydroponicBlockEntity::advanced)
+			.advanced().canBurn()
+			.energyCapacity(FTBICConfig.MACHINES.ADVANCED_HYDROPONIC_ACCELERATOR_CAPACITY)
+			.maxEnergyInput(FTBICConfig.ENERGY.MV_TRANSFER_RATE)
+			.energyUsage(FTBICConfig.MACHINES.ADVANCED_HYDROPONIC_ACCELERATOR_USE)
+			.io(8, 12);
+
 	ElectricBlockInstance CENTRIFUGE = register("centrifuge", CentrifugeBlockEntity::new)
 			.canBurn()
 			.energyCapacity(FTBICConfig.MACHINES.CENTRIFUGE_CAPACITY)

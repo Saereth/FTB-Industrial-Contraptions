@@ -3,6 +3,7 @@ package dev.ftb.mods.ftbic.events;
 import dev.ftb.mods.ftbic.FTBIC;
 import dev.ftb.mods.ftbic.block.entity.machine.BatchFeederBlockEntity;
 import dev.ftb.mods.ftbic.block.entity.machine.FluidMachineBlockEntity;
+import dev.ftb.mods.ftbic.block.entity.machine.HydroponicBlockEntity;
 import dev.ftb.mods.ftbic.FTBICConfig;
 import dev.ftb.mods.ftbic.block.ElectricBlockInstance;
 import dev.ftb.mods.ftbic.block.FTBICBlocks;
@@ -70,6 +71,11 @@ public final class CapabilityRegistrar {
 				event.registerBlockEntity(Capabilities.Fluid.BLOCK, type,
 						(be, side) -> new SidedResourceHandler<>(be, side, SideConfiguration.Resource.FLUIDS,
 								((FluidMachineBlockEntity) be).fluidHandler));
+			}
+			if (instance == FTBICElectricBlocks.HYDROPONIC_ACCELERATOR || instance == FTBICElectricBlocks.ADVANCED_HYDROPONIC_ACCELERATOR) {
+				event.registerBlockEntity(Capabilities.Fluid.BLOCK, type,
+						(be, side) -> new SidedResourceHandler<>(be, side, SideConfiguration.Resource.FLUIDS,
+								((HydroponicBlockEntity) be).fluidHandler));
 			}
 
 			if (fullFE && instance.feCapMode != ElectricBlockInstance.FECapMode.INSERT_ONLY) {

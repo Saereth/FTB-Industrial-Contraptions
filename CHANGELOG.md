@@ -9,7 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-* Machine upgrade slots now enforce a shared limit of four upgrades; shift-clicking keeps excess upgrades in the player's inventory.
+* Upgrade slots now limit each upgrade type separately, so four transformers can coexist with overclockers and ejectors. Excess items remain in the player's inventory when shift-clicking.
+* Sneak-right-clicking a machine with an upgrade now installs it, including a stack of up to four, without opening the UI.
+* Hydroponic Accelerator screens now use compact, aligned readouts with visible inventory slots and unobstructed water and mode controls. Mutation mode is available only on the advanced machine.
+* Hydroponic Accelerator faces now share the exact casing borders and tier textures of the other machines.
 * Teleporter destination lists stay inside the machine screen above the inventory, with scrolling for longer lists. Its controls now match the industrial machine UI.
 * Industrial Battery Bank casing has clean corner joins and plain steel cell faces, and Jade shows the connected bank's total charge and capacity.
 * Jade's energy bar now uses the entire Industrial Battery Bank's stored energy and capacity when looking at either a cell or a port.
@@ -28,6 +31,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+* Hydroponic Accelerator and Advanced Hydroponic Accelerator grow crops with reusable, crop-compatible soil and soil-dependent speed. The advanced machine runs four independent seed and soil pairs with separate output buffers and ghost locks.
+* Hydroponic Mutation mode combines two parent plants for a chance at a new seed, returning the parents when a cross fails. Added water use, side configuration, JEI recipes, and an in-game guide.
 * Sneak-right-click a machine with upgrades to install up to four at once without opening its UI, respecting the machine's supported upgrade types and remaining capacity.
 * Ore refining: macerate ore blocks into three raw ore, then crush, wash, centrifuge, and smelt for five ingots per raw ore or fifteen per ore block.
 * Ore Washer with fluid tanks, side configuration, upgrades, and the shared industrial machine UI.

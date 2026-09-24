@@ -150,6 +150,10 @@ public final class FTBICConfig {
 		public final ModConfigSpec.DoubleValue MACERATOR_USE;
 		public final ModConfigSpec.DoubleValue ORE_WASHER_CAPACITY;
 		public final ModConfigSpec.DoubleValue ORE_WASHER_USE;
+		public final ModConfigSpec.DoubleValue HYDROPONIC_ACCELERATOR_CAPACITY;
+		public final ModConfigSpec.DoubleValue HYDROPONIC_ACCELERATOR_USE;
+		public final ModConfigSpec.DoubleValue ADVANCED_HYDROPONIC_ACCELERATOR_CAPACITY;
+		public final ModConfigSpec.DoubleValue ADVANCED_HYDROPONIC_ACCELERATOR_USE;
 		public final ModConfigSpec.DoubleValue CENTRIFUGE_CAPACITY;
 		public final ModConfigSpec.DoubleValue CENTRIFUGE_USE;
 		public final ModConfigSpec.DoubleValue COMPRESSOR_CAPACITY;
@@ -238,6 +242,10 @@ public final class FTBICConfig {
 			MACERATOR_USE = b.defineInRange("macerator_use", 2D, 0D, 100_000D);
 			ORE_WASHER_CAPACITY = b.defineInRange("ore_washer_capacity", 4_000D, 1D, 100_000D);
 			ORE_WASHER_USE = b.defineInRange("ore_washer_use", 4D, 0D, 100_000D);
+			HYDROPONIC_ACCELERATOR_CAPACITY = b.defineInRange("hydroponic_accelerator_capacity", 4_000D, 1D, 100_000D);
+			HYDROPONIC_ACCELERATOR_USE = b.defineInRange("hydroponic_accelerator_use", 8D, 0D, 100_000D);
+			ADVANCED_HYDROPONIC_ACCELERATOR_CAPACITY = b.defineInRange("advanced_hydroponic_accelerator_capacity", 16_000D, 1D, 100_000D);
+			ADVANCED_HYDROPONIC_ACCELERATOR_USE = b.defineInRange("advanced_hydroponic_accelerator_use_per_lane", 8D, 0D, 100_000D);
 			CENTRIFUGE_CAPACITY = b.defineInRange("centrifuge_capacity", 1_200D, 1D, 100_000D);
 			CENTRIFUGE_USE = b.defineInRange("centrifuge_use", 2D, 0D, 100_000D);
 			COMPRESSOR_CAPACITY = b.defineInRange("compressor_capacity", 1_200D, 1D, 100_000D);

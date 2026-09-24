@@ -28,6 +28,7 @@ public class MachineRecipe implements Recipe<NoInput> {
 	public final List<FluidStack> outputFluids;
 	public final double processingTime;
 	public final boolean hideFromJEI;
+	public final List<SoilOption> soilOptions;
 
 	public MachineRecipe(MachineRecipeType machineType,
 			List<IngredientWithCount> inputs,
@@ -43,6 +44,21 @@ public class MachineRecipe implements Recipe<NoInput> {
 		this.outputFluids = outputFluids;
 		this.processingTime = processingTime;
 		this.hideFromJEI = hideFromJEI;
+		this.soilOptions = List.of();
+	}
+
+	public MachineRecipe(MachineRecipeType machineType,
+			List<IngredientWithCount> inputs, List<SizedFluidIngredient> inputFluids,
+			List<StackWithChance> outputs, List<FluidStack> outputFluids,
+			double processingTime, boolean hideFromJEI, List<SoilOption> soilOptions) {
+		this.machineType = machineType;
+		this.inputs = inputs;
+		this.inputFluids = inputFluids;
+		this.outputs = outputs;
+		this.outputFluids = outputFluids;
+		this.processingTime = processingTime;
+		this.hideFromJEI = hideFromJEI;
+		this.soilOptions = List.copyOf(soilOptions);
 	}
 
 	@Override

@@ -7,6 +7,7 @@ import dev.ftb.mods.ftbic.block.FTBICElectricBlocks;
 import dev.ftb.mods.ftbic.block.entity.machine.AntimatterConstructorBlockEntity;
 import dev.ftb.mods.ftbic.client.gui.ReactorSimulatorScreen;
 import dev.ftb.mods.ftbic.client.gui.MachineScreen;
+import dev.ftb.mods.ftbic.client.gui.HydroponicScreen;
 import dev.ftb.mods.ftbic.client.gui.BasicGeneratorScreen;
 import dev.ftb.mods.ftbic.client.gui.GeothermalGeneratorScreen;
 import dev.ftb.mods.ftbic.client.gui.AntimatterConstructorScreen;
@@ -82,6 +83,8 @@ public class FTBICJEIPlugin implements IModPlugin {
 		r.addRecipeCategories(new MachineRecipeCategory(FTBICRecipes.SMELTING, FTBICElectricBlocks.POWERED_FURNACE, helper));
 		r.addRecipeCategories(new MachineRecipeCategory(FTBICRecipes.MACERATING, FTBICElectricBlocks.MACERATOR, helper));
 		r.addRecipeCategories(new MachineRecipeCategory(FTBICRecipes.WASHING, FTBICElectricBlocks.ORE_WASHER, helper));
+		r.addRecipeCategories(new MachineRecipeCategory(FTBICRecipes.HYDROPONIC_GROWTH, FTBICElectricBlocks.HYDROPONIC_ACCELERATOR, helper, 1));
+		r.addRecipeCategories(new MachineRecipeCategory(FTBICRecipes.HYDROPONIC_MUTATION, FTBICElectricBlocks.ADVANCED_HYDROPONIC_ACCELERATOR, helper, 2));
 		r.addRecipeCategories(new MachineRecipeCategory(FTBICRecipes.SEPARATING, FTBICElectricBlocks.CENTRIFUGE, helper));
 		r.addRecipeCategories(new MachineRecipeCategory(FTBICRecipes.COMPRESSING, FTBICElectricBlocks.COMPRESSOR, helper));
 		r.addRecipeCategories(new MachineRecipeCategory(FTBICRecipes.REPROCESSING, FTBICElectricBlocks.REPROCESSOR, helper));
@@ -207,6 +210,7 @@ public class FTBICJEIPlugin implements IModPlugin {
 	public void registerGuiHandlers(IGuiHandlerRegistration r) {
 		r.addGhostIngredientHandler(IronFurnaceScreen.class, new IronFurnaceGhostIngredientHandler());
 		r.addGhostIngredientHandler(MachineScreen.class, new MachineGhostIngredientHandler<>());
+		r.addGhostIngredientHandler(HydroponicScreen.class, new MachineGhostIngredientHandler<>());
 		r.addGhostIngredientHandler(BasicGeneratorScreen.class, new MachineGhostIngredientHandler<>());
 		r.addGhostIngredientHandler(GeothermalGeneratorScreen.class, new MachineGhostIngredientHandler<>());
 		r.addGhostIngredientHandler(AntimatterConstructorScreen.class, new MachineGhostIngredientHandler<>());
@@ -277,6 +281,8 @@ public class FTBICJEIPlugin implements IModPlugin {
 		r.addCraftingStation(catalystType(FTBICRecipes.SMELTING), FTBICElectricBlocks.POWERED_FURNACE.block.get(), FTBICElectricBlocks.ADVANCED_POWERED_FURNACE.block.get());
 		r.addCraftingStation(catalystType(FTBICRecipes.MACERATING), FTBICElectricBlocks.MACERATOR.block.get(), FTBICElectricBlocks.ADVANCED_MACERATOR.block.get());
 		r.addCraftingStation(catalystType(FTBICRecipes.WASHING), FTBICElectricBlocks.ORE_WASHER.block.get());
+		r.addCraftingStation(catalystType(FTBICRecipes.HYDROPONIC_GROWTH), FTBICElectricBlocks.HYDROPONIC_ACCELERATOR.block.get(), FTBICElectricBlocks.ADVANCED_HYDROPONIC_ACCELERATOR.block.get());
+		r.addCraftingStation(catalystType(FTBICRecipes.HYDROPONIC_MUTATION), FTBICElectricBlocks.ADVANCED_HYDROPONIC_ACCELERATOR.block.get());
 		r.addCraftingStation(catalystType(FTBICRecipes.SEPARATING), FTBICElectricBlocks.CENTRIFUGE.block.get(), FTBICElectricBlocks.ADVANCED_CENTRIFUGE.block.get());
 		r.addCraftingStation(catalystType(FTBICRecipes.COMPRESSING), FTBICElectricBlocks.COMPRESSOR.block.get(), FTBICElectricBlocks.ADVANCED_COMPRESSOR.block.get());
 		r.addCraftingStation(catalystType(FTBICRecipes.REPROCESSING), FTBICElectricBlocks.REPROCESSOR.block.get());

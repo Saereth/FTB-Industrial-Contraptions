@@ -12,7 +12,7 @@ import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 
 public class UpgradeInventory {
-	public static final int MAX_TOTAL_UPGRADES = 4;
+	public static final int MAX_PER_TYPE_UPGRADES = 4;
 	public final ElectricBlockEntity entity;
 	public final int limit;
 	private final NonNullList<ItemStack> stacks;
@@ -49,15 +49,15 @@ public class UpgradeInventory {
 
 	public int getSlotLimit(int slot, ItemStack stack) {
 		if (!isItemValid(slot, stack)) return 0;
-		int elsewhere = 0;
+		int sameTypeElsewhere = 0;
 		int parallelElsewhere = 0;
 		for (int i = 0; i < stacks.size(); i++) {
 			if (i == slot) continue;
 			ItemStack existing = stacks.get(i);
-			elsewhere += existing.getCount();
+			if (existing.is(stack.getItem())) sameTypeElsewhere += existing.getCount();
 			if (existing.is(FTBICItems.PARALLEL_PROCESSING_UPGRADE.get())) parallelElsewhere += existing.getCount();
 		}
-		int available = Math.max(0, Math.min(limit, MAX_TOTAL_UPGRADES - elsewhere));
+		int available = Math.max(0, Math.min(limit, MAX_PER_TYPE_UPGRADES - sameTypeElsewhere));
 		if (stack.is(FTBICItems.QUARRY_FILTER_UPGRADE.get())) {
 			for (int i = 0; i < stacks.size(); i++) {
 				if (i != slot && stacks.get(i).is(stack.getItem())) return 0;

@@ -7,8 +7,8 @@ import dev.ftb.mods.ftbic.block.entity.machine.MachineBlockEntity;
 import dev.ftb.mods.ftbic.item.ConfigurationCardItem;
 import dev.ftb.mods.ftbic.block.entity.machine.BatchFeederBlockEntity;
 import dev.ftb.mods.ftbic.block.entity.machine.FluidMachineBlockEntity;
+import dev.ftb.mods.ftbic.block.entity.machine.HydroponicBlockEntity;
 import dev.ftb.mods.ftbic.block.entity.machine.BasicMachineBlockEntity;
-import dev.ftb.mods.ftbic.item.UpgradeItem;
 import net.neoforged.neoforge.transfer.fluid.FluidUtil;
 import net.neoforged.neoforge.transfer.access.ItemAccess;
 import net.neoforged.neoforge.capabilities.Capabilities;
@@ -213,26 +213,14 @@ public class ElectricBlock extends Block implements EntityBlock, SprayPaintable 
 			}
 			return InteractionResult.SUCCESS;
 		}
-		if (be instanceof BasicMachineBlockEntity machine && player.isShiftKeyDown()
-				&& stack.getItem() instanceof UpgradeItem && player.mayBuild() && level.mayInteract(player, pos)) {
-			if (!level.isClientSide()) {
-				int inserted = machine.upgradeInventory.insert(stack);
-				if (inserted > 0) {
-					if (!player.isCreative()) stack.shrink(inserted);
-					level.playSound(null, pos, SoundEvents.STONE_BUTTON_CLICK_ON, SoundSource.BLOCKS, 0.3F, 1.2F);
-				} else {
-					player.sendOverlayMessage(Component.translatable("ftbic.upgrade.cannot_insert"));
-				}
-			}
-			return InteractionResult.SUCCESS;
-		}
 		if (be instanceof BatchFeederBlockEntity feeder && !stack.isEmpty() && player.mayBuild() && level.mayInteract(player, pos)
 				&& ItemAccess.forStack(stack).oneByOne().getCapability(Capabilities.Fluid.ITEM) != null) {
 			if (level.isClientSide() || FluidUtil.interactWithFluidHandler(player, hand, pos, feeder.fluidHandler.manualAccess)) {
 				return InteractionResult.SUCCESS;
 			}
 		}
-		if (be instanceof FluidMachineBlockEntity && !stack.isEmpty() && player.mayBuild() && level.mayInteract(player, pos)
+		if ((be instanceof FluidMachineBlockEntity || be instanceof HydroponicBlockEntity)
+				&& !stack.isEmpty() && player.mayBuild() && level.mayInteract(player, pos)
 				&& ItemAccess.forStack(stack).oneByOne().getCapability(Capabilities.Fluid.ITEM) != null) {
 			if (level.isClientSide() || FluidUtil.interactWithFluidHandler(player, hand, level, pos, hit.getDirection())) {
 				return InteractionResult.SUCCESS;

@@ -10,6 +10,7 @@ import dev.ftb.mods.ftbic.recipe.BasicGeneratorFuelRecipe;
 import dev.ftb.mods.ftbic.recipe.FTBICRecipes;
 import dev.ftb.mods.ftbic.recipe.MachineRecipe;
 import dev.ftb.mods.ftbic.recipe.MachineRecipeType;
+import dev.ftb.mods.ftbic.recipe.SoilOption;
 import dev.ftb.mods.ftbic.util.FluidCellIngredient;
 import dev.ftb.mods.ftbic.util.IngredientWithCount;
 import dev.ftb.mods.ftbic.util.StackWithChance;
@@ -79,6 +80,7 @@ public class FTBICRecipeProvider extends RecipeProvider {
 	@Override
 	protected void buildRecipes() {
 		basicGeneratorFuels();
+		hydroponicRecipes();
 		maceratingRecipes();
 		extrudingRecipes();
 		rollingRecipes();
@@ -785,6 +787,40 @@ public class FTBICRecipeProvider extends RecipeProvider {
 		output.accept(recipeKey(path), recipe, null);
 	}
 
+	private void hydroponicRecipes() {
+		grow("wheat", Items.WHEAT_SEEDS, Items.WHEAT, Items.WHEAT_SEEDS, 0.10D);
+		grow("beetroot", Items.BEETROOT_SEEDS, Items.BEETROOT, Items.BEETROOT_SEEDS, 0.10D);
+		grow("carrot", Items.CARROT, Items.CARROT, Items.CARROT, 0.05D);
+		grow("potato", Items.POTATO, Items.POTATO, Items.POTATO, 0.05D);
+		grow("melon", Items.MELON_SEEDS, Items.MELON_SLICE, Items.MELON_SEEDS, 0.05D);
+		grow("pumpkin", Items.PUMPKIN_SEEDS, Items.PUMPKIN, Items.PUMPKIN_SEEDS, 0.05D);
+		mutate("wheat_beetroot_to_melon", Items.WHEAT_SEEDS, Items.BEETROOT_SEEDS, Items.MELON_SEEDS, 0.15D);
+		mutate("carrot_potato_to_beetroot", Items.CARROT, Items.POTATO, Items.BEETROOT_SEEDS, 0.15D);
+	}
+
+	private void grow(String id, Item seed, Item product, Item returnedSeed, double bonusChance) {
+		MachineRecipe recipe = new MachineRecipe(FTBICRecipes.HYDROPONIC_GROWTH,
+				List.of(new IngredientWithCount(Ingredient.of(seed), 1)),
+				List.of(SizedFluidIngredient.of(Fluids.WATER, 250)),
+				List.of(new StackWithChance(stack(product, 2), 1D),
+						new StackWithChance(stack(returnedSeed, 2), 1D),
+						new StackWithChance(stack(returnedSeed, 1), bonusChance)),
+				List.of(), 1D, false,
+				List.of(new SoilOption(Ingredient.of(Items.DIRT), 1D),
+						new SoilOption(Ingredient.of(Items.MOSS_BLOCK), 1.25D)));
+		output.accept(recipeKey("hydroponic_growth/" + id), recipe, null);
+	}
+
+	private void mutate(String id, Item first, Item second, Item result, double chance) {
+		MachineRecipe recipe = new MachineRecipe(FTBICRecipes.HYDROPONIC_MUTATION,
+				List.of(new IngredientWithCount(Ingredient.of(first), 1),
+						new IngredientWithCount(Ingredient.of(second), 1)),
+				List.of(SizedFluidIngredient.of(Fluids.WATER, 500)),
+				List.of(new StackWithChance(stack(result, 1), chance)),
+				List.of(), 2D, false);
+		output.accept(recipeKey("hydroponic_mutation/" + id), recipe, null);
+	}
+
 	private static ItemStackTemplate stack(Item item, int count) {
 		return new ItemStackTemplate(item, count);
 	}
@@ -836,6 +872,8 @@ public class FTBICRecipeProvider extends RecipeProvider {
 		shaped("carbon_helmet", ftbicStack("carbon_helmet", 1), new String[] {"CEC", "CAC"}, 'C', i("ftbic:carbon_plate"), 'E', i("ftbic:energy_crystal"), 'A', i("minecraft:netherite_helmet"));
 		shaped("carbon_leggings", ftbicStack("carbon_leggings", 1), new String[] {"CEC", "CAC", "C C"}, 'C', i("ftbic:carbon_plate"), 'E', i("ftbic:energy_crystal"), 'A', i("minecraft:netherite_leggings"));
 		shaped("ore_washer", ftbicStack("ore_washer", 1), new String[] {"GPG", "CMC", "WBW"}, 'G', commonTag("glass_blocks/colorless"), 'P', i("minecraft:piston"), 'C', i("ftbic:electronic_circuit"), 'M', i("ftbic:machine_block"), 'W', i("ftbic:copper_coil"), 'B', i("minecraft:bucket"));
+		shaped("hydroponic_accelerator", ftbicStack("hydroponic_accelerator", 1), new String[] {"GPG", "CWC", "BMB"}, 'G', commonTag("glass_blocks/colorless"), 'P', i("minecraft:piston"), 'C', i("ftbic:electronic_circuit"), 'W', i("minecraft:water_bucket"), 'B', i("ftbic:copper_coil"), 'M', i("ftbic:machine_block"));
+		shaped("advanced_hydroponic_accelerator", ftbicStack("advanced_hydroponic_accelerator", 1), new String[] {"GHG", "CAC", "WMW"}, 'G', commonTag("glass_blocks/colorless"), 'H', i("ftbic:hydroponic_accelerator"), 'C', i("ftbic:advanced_circuit"), 'A', i("ftbic:advanced_machine_block"), 'W', i("ftbic:copper_coil"), 'M', i("minecraft:water_bucket"));
 		shaped("centrifuge", ftbicStack("centrifuge", 1), new String[] {"GMG", "GCG"}, 'G', i("minecraft:glass_bottle"), 'M', i("ftbic:machine_block"), 'C', i("ftbic:electronic_circuit"));
 		shaped("charge_pad", ftbicStack("charge_pad", 1), new String[] {"WWW", "CMC"}, 'M', i("ftbic:machine_block"), 'C', i("ftbic:advanced_circuit"), 'W', i("ftbic:copper_coil"));
 		shaped("coal_ball", ftbicStack("coal_ball", 1), new String[] {"CCC", "CFC", "CCC"}, 'C', commonOrTag("minecraft:coals"), 'F', i("minecraft:flint"));

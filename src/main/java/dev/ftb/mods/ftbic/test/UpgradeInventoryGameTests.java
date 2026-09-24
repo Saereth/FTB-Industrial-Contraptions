@@ -5,10 +5,15 @@ import dev.ftb.mods.ftbic.block.entity.machine.BasicMachineBlockEntity;
 import dev.ftb.mods.ftbic.item.FTBICItems;
 import dev.ftb.mods.ftbic.screen.MachineMenu;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.GameType;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.Vec3;
 
 final class UpgradeInventoryGameTests {
 	private static final BlockPos POS = new BlockPos(2, 2, 2);
@@ -21,18 +26,18 @@ final class UpgradeInventoryGameTests {
 		player.getInventory().setItem(9, new ItemStack(FTBICItems.OVERCLOCKER_UPGRADE.get(), 12));
 		int playerSlot = menu.slots.size() - 36;
 		menu.quickMoveStack(player, playerSlot);
-		h.assertValueEqual(4, machine.upgradeInventory.countUpgrades(FTBICItems.OVERCLOCKER_UPGRADE.get()), "Shift-click inserts only four upgrades total");
+		h.assertValueEqual(4, machine.upgradeInventory.countUpgrades(FTBICItems.OVERCLOCKER_UPGRADE.get()), "Shift-click inserts only four overclockers");
 		h.assertValueEqual(8, player.getInventory().getItem(9).getCount(), "Excess upgrades remain in the player's stack");
 		menu.quickMoveStack(player, playerSlot);
 		h.assertValueEqual(8, player.getInventory().getItem(9).getCount(), "Further shift-clicks cannot fill other upgrade slots");
 		player.getInventory().setItem(10, new ItemStack(FTBICItems.TRANSFORMER_UPGRADE.get(), 4));
 		menu.quickMoveStack(player, playerSlot + 1);
-		h.assertValueEqual(4, player.getInventory().getItem(10).getCount(), "Mixed upgrades share the four-upgrade capacity");
-		h.assertValueEqual(0, machine.upgradeInventory.getSlotLimit(1, new ItemStack(FTBICItems.TRANSFORMER_UPGRADE.get())), "Other slots expose no space when full");
-		machine.upgradeInventory.setStackInSlot(0, new ItemStack(FTBICItems.OVERCLOCKER_UPGRADE.get(), 2));
-		menu.quickMoveStack(player, playerSlot + 1);
-		h.assertValueEqual(2, machine.upgradeInventory.countUpgrades(FTBICItems.TRANSFORMER_UPGRADE.get()), "Freed capacity accepts only two transformers");
-		h.assertValueEqual(2, player.getInventory().getItem(10).getCount(), "Partial insertion keeps the remaining transformers");
+		h.assertValueEqual(4, machine.upgradeInventory.countUpgrades(FTBICItems.TRANSFORMER_UPGRADE.get()), "Transformers have their own four-upgrade limit");
+		h.assertValueEqual(0, player.getInventory().getItem(10).getCount(), "Different upgrade types can coexist");
+		h.assertValueEqual(0, machine.upgradeInventory.getSlotLimit(2, new ItemStack(FTBICItems.TRANSFORMER_UPGRADE.get())), "A fifth transformer cannot enter another slot");
+		player.getInventory().setItem(11, new ItemStack(FTBICItems.EJECTOR_UPGRADE.get(), 4));
+		menu.quickMoveStack(player, playerSlot + 2);
+		h.assertValueEqual(4, machine.upgradeInventory.countUpgrades(FTBICItems.EJECTOR_UPGRADE.get()), "Ejectors can coexist with full transformer and overclocker stacks");
 		h.succeed();
 	}
 
@@ -42,20 +47,25 @@ final class UpgradeInventoryGameTests {
 		var player = h.makeMockPlayer(GameType.SURVIVAL);
 		player.setShiftKeyDown(true);
 		player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(FTBICItems.OVERCLOCKER_UPGRADE.get(), 6));
-		h.useBlock(POS, player);
+		useHeldUpgrade(machine, player);
 		h.assertValueEqual(4, machine.upgradeInventory.countUpgrades(FTBICItems.OVERCLOCKER_UPGRADE.get()), "Sneak-use inserts a stack of four at once");
 		h.assertValueEqual(2, player.getMainHandItem().getCount(), "Sneak-use consumes only installed upgrades");
-		h.useBlock(POS, player);
+		useHeldUpgrade(machine, player);
 		h.assertValueEqual(2, player.getMainHandItem().getCount(), "Full machine rejects extra upgrades without consuming them");
-		machine.upgradeInventory.setStackInSlot(0, new ItemStack(FTBICItems.OVERCLOCKER_UPGRADE.get(), 2));
 		player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(FTBICItems.TRANSFORMER_UPGRADE.get(), 4));
-		h.useBlock(POS, player);
-		h.assertValueEqual(2, machine.upgradeInventory.countUpgrades(FTBICItems.TRANSFORMER_UPGRADE.get()), "Sneak-use fills remaining capacity with another upgrade type");
-		h.assertValueEqual(2, player.getMainHandItem().getCount(), "Mixed insertion consumes only available space");
+		useHeldUpgrade(machine, player);
+		h.assertValueEqual(4, machine.upgradeInventory.countUpgrades(FTBICItems.TRANSFORMER_UPGRADE.get()), "Sneak-use accepts four of a different upgrade type");
+		h.assertTrue(player.getMainHandItem().isEmpty(), "Mixed insertion consumes the installed stack");
 		player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(FTBICItems.PARALLEL_PROCESSING_UPGRADE.get(), 3));
-		h.useBlock(POS, player);
+		useHeldUpgrade(machine, player);
 		h.assertValueEqual(3, player.getMainHandItem().getCount(), "Unsupported upgrades are not consumed");
 		h.succeed();
+	}
+
+	private static void useHeldUpgrade(BasicMachineBlockEntity machine, Player player) {
+		BlockPos pos = machine.getBlockPos();
+		BlockHitResult hit = new BlockHitResult(Vec3.atCenterOf(pos), Direction.UP, pos, false);
+		player.getMainHandItem().onItemUseFirst(new UseOnContext(player, InteractionHand.MAIN_HAND, hit));
 	}
 
 	private UpgradeInventoryGameTests() {}

@@ -56,9 +56,10 @@ public final class MachineRecipeType {
 				StackWithChance.CODEC.listOf().optionalFieldOf("outputs", List.of()).forGetter(r -> r.outputs),
 				FluidStack.CODEC.listOf().optionalFieldOf("output_fluids", List.of()).forGetter(r -> r.outputFluids),
 				Codec.DOUBLE.optionalFieldOf("processing_time", 1D).forGetter(r -> r.processingTime),
-				Codec.BOOL.optionalFieldOf("hide_from_jei", false).forGetter(r -> r.hideFromJEI)
-		).apply(i, (ins, inF, outs, outF, time, hide) ->
-				new MachineRecipe(this, ins, inF, outs, outF, time, hide)));
+				Codec.BOOL.optionalFieldOf("hide_from_jei", false).forGetter(r -> r.hideFromJEI),
+				SoilOption.CODEC.listOf().optionalFieldOf("soil_options", List.of()).forGetter(r -> r.soilOptions)
+		).apply(i, (ins, inF, outs, outF, time, hide, soils) ->
+				new MachineRecipe(this, ins, inF, outs, outF, time, hide, soils)));
 	}
 
 	private StreamCodec<RegistryFriendlyByteBuf, MachineRecipe> buildStreamCodec() {
@@ -69,6 +70,7 @@ public final class MachineRecipeType {
 				FluidStack.STREAM_CODEC.apply(ByteBufCodecs.list()), r -> r.outputFluids,
 				ByteBufCodecs.DOUBLE, r -> r.processingTime,
 				ByteBufCodecs.BOOL, r -> r.hideFromJEI,
-				(ins, inF, outs, outF, time, hide) -> new MachineRecipe(this, ins, inF, outs, outF, time, hide));
+				SoilOption.STREAM_CODEC.apply(ByteBufCodecs.list()), r -> r.soilOptions,
+				(ins, inF, outs, outF, time, hide, soils) -> new MachineRecipe(this, ins, inF, outs, outF, time, hide, soils));
 	}
 }
