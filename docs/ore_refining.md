@@ -1,6 +1,6 @@
 # Ore refining materials
 
-FTBIC discovers conventional metals when the loaded item tags contain matching `c:raw_materials/<material>` and `c:ingots/<material>` families. Every accepted raw item must have an ordinary smelting recipe yielding one ingot from that ingot tag. `c:ores/<material>` adds the optional ore-block entry. Gems, materials without a raw form, incomplete mappings, and overlapping raw-material tags are not automatically processed. Skipped materials are logged with the reason.
+FTBIC discovers conventional metals when the loaded item tags contain matching `c:raw_materials/<material>` and `c:ingots/<material>` families. Every accepted raw item must have an ordinary smelting recipe yielding one ingot from that ingot tag. `c:ores/<material>` adds the optional ore-block entry, and `c:storage_blocks/raw_<material>` adds the optional raw-block entry. Gems, materials without a raw form, incomplete mappings, and overlapping raw-material tags are not automatically processed. Skipped materials are logged with the reason.
 
 The selected output is deterministic: Minecraft items first, FTBIC items next, then other namespaces; ties use the complete item ID. An explicit `raw_output` or `ingot` overrides this choice. Each stage produces that chosen item. Accepted input tags can contain equivalent items from multiple mods.
 
@@ -10,11 +10,12 @@ The selected output is deterministic: Minecraft items first, FTBIC items next, t
 |---|---|---|
 | Macerating ore | 1 ore block | 3 raw ore |
 | Macerating raw | 1 raw ore | 2 crushed ore |
+| Macerating raw block | 1 raw storage block | 18 crushed ore |
 | Washing | 2 crushed ore + 1,000 mB water | 3 washed ore |
 | Separating | 3 washed ore | 5 refined concentrate |
 | Smelting | 1 crushed, washed, or refined item | 1 ingot |
 
-The complete chain produces **15 ingots per ore block** or **5 per raw ore**. Fortune affects the raw items collected before processing. Unpack raw storage blocks into nine raw items to process them. Primary yields are guaranteed; byproducts are additional.
+The complete chain produces **15 ingots per ore block** or **5 per raw ore**. Fortune affects the raw items collected before processing. A raw storage block counts as nine raw items: it yields nine times the crushed ore of one raw item and takes nine times as long, so yield and energy per raw item stay the same. Primary yields are guaranteed; byproducts are additional.
 
 Each intermediate carries `ftbic:refining_material`, an identifier such as `c:iron`. Stages use component-aware ingredients. Ordinary dust and ingots cannot enter the multiplication chain. Do not add all component variants to a common material-specific item tag: item tags cannot distinguish the components.
 
@@ -30,6 +31,7 @@ Place a recipe JSON at `data/<pack_namespace>/recipe/refining/<name>.json`:
     "name": "Osmium",
     "color": 8636888,
     "raw_input": "#c:raw_materials/osmium",
+    "raw_block_input": "#c:storage_blocks/raw_osmium",
     "ore_input": "#c:ores/osmium",
     "raw_output": "examplemod:raw_osmium",
     "ingot": "examplemod:osmium_ingot",
@@ -59,16 +61,16 @@ Replace the example item IDs with registered items. Only `material` is required;
 
 - Definitions override automatic profiles for the same material ID. More than one active definition for the same material is an error; override the same JSON path to replace an existing definition.
 - `material`: stable namespaced identity. Automatically discovered families use `c:<material>`. Changing it changes the identity stored on existing stacks.
-- `ore_input` / `raw_input`: an item ID or a tag prefixed with `#`. Empty selectors use `#c:ores/<material path>` and `#c:raw_materials/<material path>` respectively.
+- `ore_input` / `raw_input` / `raw_block_input`: an item ID or a tag prefixed with `#`. Empty selectors use `#c:ores/<material path>`, `#c:raw_materials/<material path>` and `#c:storage_blocks/raw_<material path>` respectively.
 - `raw_output`: the ore-crushing output. It must be included in `raw_input`.
 - `ingot`: the final output item. Supplying it explicitly bypasses automatic raw-smelting inference, allowing unusual materials to opt in.
 - `name`: display label, otherwise derived from the material path.
 - `color`: a decimal RGB integer (`0` through `16777215`), or `-1` for automatic color. It has priority over built-in colors and texture sampling.
-- Yield counts accept `1` through `64`. Final ingots per raw equal `raw_to_crushed * wash_output / wash_input * refine_output / refine_input`; batches must be complete. Multiply by `ore_to_raw` for the yield per ore block.
-- Times multiply the configured base machine recipe duration (200 ticks by default). Machine energy usage and upgrades determine energy cost. Default times are 10 seconds for crushing, 20 for washing, and 30 for separating before upgrades.
+- Yield counts accept `1` through `64`. Final ingots per raw equal `raw_to_crushed * wash_output / wash_input * refine_output / refine_input`; batches must be complete. Multiply by `ore_to_raw` for the yield per ore block. The raw block stage outputs `9 * raw_to_crushed` crushed ore and is skipped with a log warning when that exceeds one stack; supply a recipe at its generated ID to handle larger yields.
+- Times multiply the configured base machine recipe duration (200 ticks by default). Machine energy usage and upgrades determine energy cost. Default times are 10 seconds for crushing (90 for a raw block), 20 for washing, and 30 for separating before upgrades.
 - `wash_fluid` accepts a fluid ID or a fluid tag prefixed with `#`; `fluid_amount` accepts `1` through `16000` mB per wash batch.
 - Up to two byproduct entries are supported. Use valid item stacks and chance values from `0` to `1`. Primary concentrate plus two byproducts requires the Advanced Centrifuge's three output slots.
-- Missing mappings are skipped with a log warning. Narrow conflicting raw-input definitions or disable the unwanted material family to resolve overlaps.
+- Missing mappings are skipped with a log warning. Narrow conflicting raw-input definitions or disable the unwanted material family to resolve overlaps. A raw block claimed by more than one material only skips that material's raw block stage.
 
 To disable automatic refining of one material:
 
@@ -88,6 +90,7 @@ The generator creates ordinary recipes with stable IDs:
 ```text
 ftbic:refining/c/iron/ore_to_raw
 ftbic:refining/c/iron/crushing
+ftbic:refining/c/iron/raw_block_crushing
 ftbic:refining/c/iron/washing
 ftbic:refining/c/iron/centrifuging
 ftbic:refining/c/iron/smelting/crushed_ore

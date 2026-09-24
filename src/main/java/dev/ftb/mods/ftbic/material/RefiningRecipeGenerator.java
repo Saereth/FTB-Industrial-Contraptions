@@ -26,6 +26,7 @@ import net.neoforged.neoforge.common.conditions.ICondition;
 import net.neoforged.neoforge.event.ModifyRecipeJsonsEvent;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -33,6 +34,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.function.Function;
 
 /** Expands material profiles into normal server recipes using the tags staged for this reload. */
 @EventBusSubscriber(modid = FTBIC.MOD_ID)
@@ -79,18 +81,8 @@ public final class RefiningRecipeGenerator {
 						.ifPresent(output -> smelting.add(new SmeltInput(json.get("ingredient"), output.item().value(), output.count())));
 			}
 		}
-		Map<Item, Identifier> rawOwners = new HashMap<>();
-		Set<Identifier> ambiguous = new HashSet<>();
-		for (var definition : definitions.values()) {
-			if (!definition.enabled()) continue;
-			for (Item raw : select(tags, definition.selector("raw_materials", definition.rawInput()))) {
-				Identifier previous = rawOwners.putIfAbsent(raw, definition.material());
-				if (previous != null && !previous.equals(definition.material())) {
-					ambiguous.add(previous);
-					ambiguous.add(definition.material());
-				}
-			}
-		}
+		Set<Identifier> ambiguous = conflicts(definitions.values(), tags, d -> d.selector("raw_materials/", d.rawInput()));
+		Set<Identifier> ambiguousBlocks = conflicts(definitions.values(), tags, d -> d.selector("storage_blocks/raw_", d.rawBlockInput()));
 		int generated = 0;
 		for (var definition : definitions.values()) {
 			Identifier material = definition.material();
@@ -99,7 +91,7 @@ public final class RefiningRecipeGenerator {
 				FTBIC.LOGGER.warn("Skipping refining {}: raw input belongs to multiple materials; narrow or disable a profile", material);
 				continue;
 			}
-			List<Item> raws = select(tags, definition.selector("raw_materials", definition.rawInput()));
+			List<Item> raws = select(tags, definition.selector("raw_materials/", definition.rawInput()));
 			List<Item> ingots = select(tags, "#c:ingots/" + material.getPath());
 			Item raw = choose(tags, raws, definition.rawOutput());
 			Item ingot = choose(tags, ingots, definition.ingot());
@@ -117,7 +109,9 @@ public final class RefiningRecipeGenerator {
 			JsonObject metadata = RefiningMaterialRecipe.CODEC.codec().encodeStart(event.getOps(), new RefiningMaterialRecipe(resolved)).getOrThrow().getAsJsonObject();
 			metadata.addProperty("type", "ftbic:refining_material");
 			jsons.put(profileId, metadata);
-			generate(jsons, resolved, tags, event.getOps());
+			boolean rawBlocks = !ambiguousBlocks.contains(material);
+			if (!rawBlocks) FTBIC.LOGGER.warn("Skipping raw block crushing for {}: raw block input belongs to multiple materials", material);
+			generate(jsons, resolved, tags, event.getOps(), rawBlocks);
 			generated++;
 		}
 		FTBIC.LOGGER.info("Loaded {} refining material chains", generated);
@@ -125,6 +119,22 @@ public final class RefiningRecipeGenerator {
 
 	private record MaterialLookup(HolderGetter<Item> getter, ICondition.IContext context) {}
 	private record SmeltInput(JsonElement input, Item output, int count) {}
+
+	private static Set<Identifier> conflicts(Collection<RefiningDefinition> definitions, MaterialLookup tags, Function<RefiningDefinition, String> selector) {
+		Map<Item, Identifier> owners = new HashMap<>();
+		Set<Identifier> ambiguous = new HashSet<>();
+		for (var definition : definitions) {
+			if (!definition.enabled()) continue;
+			for (Item item : select(tags, selector.apply(definition))) {
+				Identifier previous = owners.putIfAbsent(item, definition.material());
+				if (previous != null && !previous.equals(definition.material())) {
+					ambiguous.add(previous);
+					ambiguous.add(definition.material());
+				}
+			}
+		}
+		return ambiguous;
+	}
 
 	private static boolean ingredientMatches(JsonElement input, Item raw, MaterialLookup tags) {
 		if (input.isJsonPrimitive()) return select(tags, input.getAsString()).contains(raw);
@@ -167,17 +177,26 @@ public final class RefiningRecipeGenerator {
 		return FTBIC.id("refining/" + material.getNamespace() + "/" + material.getPath() + "/" + stage);
 	}
 
-	private static void generate(Map<Identifier, JsonElement> recipes, RefiningDefinition d, MaterialLookup tags, RegistryOps<JsonElement> ops) {
+	private static void generate(Map<Identifier, JsonElement> recipes, RefiningDefinition d, MaterialLookup tags, RegistryOps<JsonElement> ops, boolean rawBlocks) {
 		var y = d.yields();
 		var c = d.costs();
-		String ore = d.selector("ores", d.oreInput());
-		String raw = d.selector("raw_materials", d.rawInput());
+		String ore = d.selector("ores/", d.oreInput());
+		String raw = d.selector("raw_materials/", d.rawInput());
+		String rawBlock = d.selector("storage_blocks/raw_", d.rawBlockInput());
 		// Retire only FTBIC's old generated shortcuts for supported materials. Explicit replacement IDs win below.
 		for (String prefix : List.of("ores/", "raw_materials/", "storage_blocks/raw_")) {
 			recipes.remove(FTBIC.id("macerating/" + prefix + d.material().getPath() + "_to_dust"));
 		}
 		if (!select(tags, ore).isEmpty()) add(recipes, d, "ore_to_raw", machine("macerating", new JsonPrimitive(ore), 1, stack(d.rawOutput(), y.oreToRaw(), null), c.crushTime()));
 		add(recipes, d, "crushing", machine("macerating", new JsonPrimitive(raw), 1, intermediate("crushed_ore", y.rawToCrushed(), d), c.crushTime()));
+		if (rawBlocks && !select(tags, rawBlock).isEmpty()) {
+			int blockCrushed = y.rawToCrushed() * 9;
+			if (blockCrushed <= Item.DEFAULT_MAX_STACK_SIZE) {
+				add(recipes, d, "raw_block_crushing", machine("macerating", new JsonPrimitive(rawBlock), 1, intermediate("crushed_ore", blockCrushed, d), c.crushTime() * 9));
+			} else if (!recipes.containsKey(recipeId(d.material(), "raw_block_crushing"))) {
+				FTBIC.LOGGER.warn("Skipping raw block crushing for {}: {} crushed ore per block exceeds one stack; supply {} explicitly", d.material(), blockCrushed, recipeId(d.material(), "raw_block_crushing"));
+			}
+		}
 		JsonObject washing = machine("washing", ingredient("crushed_ore", d), y.washInput(), intermediate("washed_ore", y.washOutput(), d), c.washTime());
 		JsonObject fluid = new JsonObject();
 		fluid.addProperty("ingredient", c.washFluid());

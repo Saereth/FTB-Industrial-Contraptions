@@ -29,7 +29,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Hydroponic Accelerator and Advanced Hydroponic Accelerator grow crops with reusable, crop-compatible soil and soil-dependent speed. The advanced machine runs four independent seed and soil pairs with separate output buffers and ghost locks.
 * Hydroponic Mutation mode combines two parent plants for a chance at a new seed, returning the parents when a cross fails. Added water use, side configuration, JEI recipes, and an in-game guide.
 * Sneak-right-click a machine with upgrades to install up to four at once without opening its UI, respecting the machine's supported upgrade types and remaining capacity.
-* Ore refining: macerate ore blocks into three raw ore, then crush, wash, centrifuge, and smelt for five ingots per raw ore or fifteen per ore block.
+* Ore refining: macerate ore blocks into three raw ore, then crush, wash, centrifuge, and smelt for five ingots per raw ore or fifteen per ore block. Blocks of raw ore macerate straight into eighteen crushed ore.
 * Ore Washer with fluid tanks, side configuration, upgrades, and the shared industrial machine UI.
 * Automatic modded-metal discovery, colored intermediates, JEI recipes and ghost filters, and datapack overrides for materials and processing. The in-game guide explains the full chain.
 

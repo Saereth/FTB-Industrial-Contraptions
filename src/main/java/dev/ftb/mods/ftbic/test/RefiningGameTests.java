@@ -88,6 +88,9 @@ final class RefiningGameTests {
 		ItemStack singleWashed = process(h, FTBICElectricBlocks.ORE_WASHER, singleRaw, 1000);
 		ItemStack five = process(h, FTBICElectricBlocks.ADVANCED_CENTRIFUGE, singleWashed, 0);
 		h.assertTrue(five.getCount() == 5 && COPPER.equals(five.get(ModDataComponents.REFINING_MATERIAL.get())), "One raw yields five concentrate using advanced machines");
+		ItemStack blockCrushed = process(h, FTBICElectricBlocks.MACERATOR, new ItemStack(Items.RAW_IRON_BLOCK), 0);
+		h.assertTrue(blockCrushed.is(FTBICItems.CRUSHED_ORE.get()) && blockCrushed.getCount() == 18, "One raw block yields eighteen crushed");
+		h.assertTrue(IRON.equals(blockCrushed.get(ModDataComponents.REFINING_MATERIAL.get())), "Material survives raw block crushing");
 		h.succeed();
 	}
 
@@ -124,10 +127,12 @@ final class RefiningGameTests {
 		TagKey<Item> raw = TagKey.create(Registries.ITEM, Identifier.parse("c:raw_materials/testium"));
 		TagKey<Item> ingot = TagKey.create(Registries.ITEM, Identifier.parse("c:ingots/testium"));
 		TagKey<Item> ore = TagKey.create(Registries.ITEM, Identifier.parse("c:ores/testium"));
+		TagKey<Item> rawBlock = TagKey.create(Registries.ITEM, Identifier.parse("c:storage_blocks/raw_testium"));
 		Map<TagKey<?>, List<Holder<Item>>> staged = new HashMap<>();
 		staged.put(raw, List.of(Items.RAW_IRON.builtInRegistryHolder()));
 		staged.put(ingot, List.of(Items.IRON_INGOT.builtInRegistryHolder()));
 		staged.put(ore, List.of(Items.IRON_ORE.builtInRegistryHolder()));
+		staged.put(rawBlock, List.of(Items.RAW_IRON_BLOCK.builtInRegistryHolder()));
 		HolderLookup.RegistryLookup<Item> lookup = new HolderLookup.RegistryLookup.Delegate<>() {
 			@Override public HolderLookup.RegistryLookup<Item> parent() { return actual; }
 			@Override public Stream<HolderSet.Named<Item>> listTags() {
@@ -152,15 +157,20 @@ final class RefiningGameTests {
 		MachineRecipe wash = (MachineRecipe) Recipe.CODEC.parse(ops, generated.get(washId)).getOrThrow();
 		h.assertTrue(wash.inputs.getFirst().count() == 2 && wash.outputs.getFirst().stack().getCount() == 3, "Generated washer recipe decodes with exact batches");
 		h.assertTrue(wash.inputs.getFirst().ingredient().test(RefiningItem.stack(FTBICItems.CRUSHED_ORE.get(), id, 2)), "Generated ingredient includes material identity");
+		Identifier blockId = RefiningRecipeGenerator.recipeId(id, "raw_block_crushing");
+		JsonObject blockCrush = generated.get(blockId).getAsJsonObject();
+		h.assertValueEqual("#c:storage_blocks/raw_testium", blockCrush.getAsJsonArray("inputs").get(0).getAsJsonObject().get("ingredient").getAsString(), "Raw block stage uses the raw block tag");
+		h.assertValueEqual(18, blockCrush.getAsJsonArray("outputs").get(0).getAsJsonObject().getAsJsonObject("item").get("count").getAsInt(), "Raw block crushes to nine raw items of crushed ore");
 		JsonObject profile = new JsonObject(); profile.addProperty("type", "ftbic:refining_material");
 		JsonObject definition = new JsonObject(); definition.addProperty("material", id.toString());
-		JsonObject yields = new JsonObject(); yields.addProperty("refine_output", 7); definition.add("yields", yields);
+		JsonObject yields = new JsonObject(); yields.addProperty("refine_output", 7); yields.addProperty("raw_to_crushed", 8); definition.add("yields", yields);
 		definition.addProperty("color", 0x123456); definition.addProperty("name", "Test Metal"); profile.add("definition", definition);
 		source.put(FTBIC.id("test/profile"), profile);
 		generated = new HashMap<>(source);
 		RefiningRecipeGenerator.recipes(new ModifyRecipeJsonsEvent(ops, generated));
 		MachineRecipe refine = (MachineRecipe) Recipe.CODEC.parse(ops, generated.get(RefiningRecipeGenerator.recipeId(id, "centrifuging"))).getOrThrow();
 		h.assertValueEqual(7, refine.outputs.getFirst().stack().getCount(), "Datapack overrides automatic yield");
+		h.assertTrue(!generated.containsKey(blockId), "Raw block stage is skipped when its output exceeds one stack");
 		definition.add("byproducts", JsonParser.parseString("[{\"item\":{\"id\":\"minecraft:iron_nugget\"},\"chance\":0.25},{\"item\":{\"id\":\"minecraft:gold_nugget\"},\"chance\":0.5}]"));
 		generated = new HashMap<>(source);
 		RefiningRecipeGenerator.recipes(new ModifyRecipeJsonsEvent(ops, generated));

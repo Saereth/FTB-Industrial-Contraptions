@@ -14,7 +14,7 @@ item_ids:
 <Column alignItems="center" fullWidth={true}>
   <ItemImage id="macerator" scale="2" />
 
-  Starts the [ore refining chain](ore_refining.md): supported ore blocks become **3 raw ore**, and each raw ore becomes **2 crushed ore**. It also grinds ingots into dust and cobblestone into sand.
+  Starts the [ore refining chain](ore_refining.md): supported ore blocks become **3 raw ore**, each raw ore becomes **2 crushed ore**, and each block of raw ore becomes **18 crushed ore**. It also grinds ingots into dust and cobblestone into sand.
 </Column>
 
 <ItemImage id="minecraft:air" scale="0.25"/>

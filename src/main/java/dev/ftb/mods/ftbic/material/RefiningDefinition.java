@@ -9,7 +9,7 @@ import java.util.List;
 
 /** A datapack material profile. Empty selectors use the corresponding common material tag. */
 public record RefiningDefinition(Identifier material, boolean enabled, String name, int color,
-		String oreInput, String rawInput, String rawOutput, String ingot,
+		String oreInput, String rawInput, String rawBlockInput, String rawOutput, String ingot,
 		Yields yields, Costs costs, List<StackWithChance> byproducts) {
 	public static final Codec<RefiningDefinition> CODEC = RecordCodecBuilder.create(i -> i.group(
 			Identifier.CODEC.fieldOf("material").forGetter(RefiningDefinition::material),
@@ -18,6 +18,7 @@ public record RefiningDefinition(Identifier material, boolean enabled, String na
 			Codec.intRange(-1, 0xFFFFFF).optionalFieldOf("color", -1).forGetter(RefiningDefinition::color),
 			Codec.STRING.optionalFieldOf("ore_input", "").forGetter(RefiningDefinition::oreInput),
 			Codec.STRING.optionalFieldOf("raw_input", "").forGetter(RefiningDefinition::rawInput),
+			Codec.STRING.optionalFieldOf("raw_block_input", "").forGetter(RefiningDefinition::rawBlockInput),
 			Codec.STRING.optionalFieldOf("raw_output", "").forGetter(RefiningDefinition::rawOutput),
 			Codec.STRING.optionalFieldOf("ingot", "").forGetter(RefiningDefinition::ingot),
 			Yields.CODEC.optionalFieldOf("yields", Yields.DEFAULT).forGetter(RefiningDefinition::yields),
@@ -26,15 +27,15 @@ public record RefiningDefinition(Identifier material, boolean enabled, String na
 	).apply(i, RefiningDefinition::new));
 
 	public static RefiningDefinition automatic(Identifier id) {
-		return new RefiningDefinition(id, true, "", -1, "", "", "", "", Yields.DEFAULT, Costs.DEFAULT, List.of());
+		return new RefiningDefinition(id, true, "", -1, "", "", "", "", "", Yields.DEFAULT, Costs.DEFAULT, List.of());
 	}
 
 	public RefiningDefinition resolved(String raw, String output) {
-		return new RefiningDefinition(material, enabled, name, color, oreInput, rawInput, raw, output, yields, costs, byproducts);
+		return new RefiningDefinition(material, enabled, name, color, oreInput, rawInput, rawBlockInput, raw, output, yields, costs, byproducts);
 	}
 
-	public String selector(String form, String override) {
-		return override.isEmpty() ? "#c:" + form + "/" + material.getPath() : override;
+	public String selector(String prefix, String override) {
+		return override.isEmpty() ? "#c:" + prefix + material.getPath() : override;
 	}
 
 	public record Yields(int oreToRaw, int rawToCrushed, int washInput, int washOutput, int refineInput, int refineOutput) {

@@ -23,6 +23,8 @@ The full line produces **5 ingots per raw ore**, or **15 ingots per ore block** 
 4. **Centrifuge:** **3 washed ore** become **5 refined concentrate**.
 5. **Any furnace:** 1 concentrate becomes **1 ingot**.
 
+Blocks of raw ore go straight into the Macerator too. One block becomes **18 crushed ore**, the same as crushing its nine raw ore one at a time.
+
 Starting with one ore block gives **3 raw, 6 crushed, 9 washed, 15 concentrate, and 15 ingots**. Washing that complete batch uses three buckets of water.
 
 Crushed ore and washed ore can also be smelted directly, one item per ingot. These shorter routes yield **2 ingots per raw** after crushing, or **3 per raw** after washing. Ingots and ordinary dust cannot reenter the refining chain.
@@ -33,13 +35,13 @@ Crushed ore and washed ore can also be smelted directly, one item per ingot. The
 
 The washer accepts LV power and holds **16,000 mB** in each tank. Its default recipes use the left input tank; the right tank supports fluid outputs in custom recipes. Insert water with a bucket, fluid cell, or fluid automation. Set fluid and item faces independently with **I/O**.
 
-By default it uses **4 zaps/t** and takes **20 seconds** per wash, before upgrades. The basic macerator takes 10 seconds per crushing operation; the basic centrifuge takes 30 seconds per refining batch. Machine configuration and material definitions can change these values.
+By default it uses **4 zaps/t** and takes **20 seconds** per wash, before upgrades. The basic macerator takes 10 seconds per crushing operation, or 90 seconds for a block of raw ore; the basic centrifuge takes 30 seconds per refining batch. Machine configuration and material definitions can change these values.
 
 Processing waits for a complete item batch, enough fluid and power, and space for every output. Use a [Batch Feeder](batch_feeder.md) to deliver two crushed ore with one bucket of water together.
 
 ## Materials and automation
 
-FTBIC discovers metals from common raw-material and ingot tags and validates their smelting relationship. An ore tag enables the ore-to-raw entry recipe. Incomplete or conflicting mappings need a pack author's material definition. Gems and unusual processing systems are not automatically converted into metals.
+FTBIC discovers metals from common raw-material and ingot tags and validates their smelting relationship. An ore tag enables the ore-to-raw entry recipe, and a raw storage block tag enables block crushing. Incomplete or conflicting mappings need a pack author's material definition. Gems and unusual processing systems are not automatically converted into metals.
 
 Each material has separate named, colored intermediates. Matching materials stack normally; different materials stay separate. JEI shows the detected variants and their recipes. Drag the exact variant into machine input locks or Batch Feeder ghost slots.
 
