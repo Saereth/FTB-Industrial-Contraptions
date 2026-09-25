@@ -48,6 +48,7 @@ public class FTBICGameTests {
 		reg(event, "bank_port_face_styles", BankGameTests::portFaceStyles, env, 60);
 		reg(event, "bank_sustained_cable_charging", BankGameTests::sustainedCableCharging, env, 60);
 		reg(event, "bank_jade_energy_bar", BankJadeGameTests::combinedEnergyBar, env, 60);
+		reg(event, "jade_hides_default_energy_bar", BankJadeGameTests::electricBlocksHideDefaultBar, env, 60);
 		reg(event, "superconducting_unlimited_transfer", SuperconductingCableGameTests::unlimitedTransfer, env, 60);
 		reg(event, "superconducting_active_routes", SuperconductingCableGameTests::onlyUsedRoutesPulse, env, 60);
 		reg(event, "superconducting_connections", SuperconductingCableGameTests::connectionsAndRemoval, env, 60);
@@ -55,6 +56,9 @@ public class FTBICGameTests {
 		reg(event, "cable_fe_variants", CableFEGameTests::cableVariants, env, 60);
 		reg(event, "cable_fe_cached_lookup", CableFEGameTests::cachedLookupSeesPlacedCable, env, 60);
 		reg(event, "rectifiers_follow_energy_mode", EnergyModeGameTests::rectifiersFollowEnergyMode, env, 60);
+		reg(event, "energy_mode_direct_fe_input_clamps", EnergyModeGameTests::directFEInputClamps, env, 60);
+		reg(event, "energy_mode_display_follows_mode", EnergyModeGameTests::energyDisplayFollowsMode, env, 60);
+		reg(event, "energy_mode_reactor_exposes_fe", EnergyModeGameTests::reactorExposesFE, env, 60);
 
 		reg(event, "parallel_changed_inputs", ParallelProcessingGameTests::changedInputs, env, 60);
 		reg(event, "parallel_processing", ParallelProcessingGameTests::processing, env, 60);

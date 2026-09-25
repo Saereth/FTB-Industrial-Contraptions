@@ -549,14 +549,14 @@ public class FTBICRecipeProvider extends RecipeProvider {
 			canning(food, foodIng, emptyCanIng, cannedFood);
 		}
 
-		// Spray paint cans — use a FluidCellIngredient (water).
+		// Spray paint cans: use a FluidCellIngredient (water).
 		Ingredient waterCell = fluidCell(Fluids.WATER);
 		canning("light_spray_can", waterCell, commonTag("dyes/white"),
 				new ItemStackTemplate(FTBICItems.LIGHT_SPRAY_PAINT_CAN.get(), 1));
 		canning("dark_spray_can", waterCell, commonTag("dyes/black"),
 				new ItemStackTemplate(FTBICItems.DARK_SPRAY_PAINT_CAN.get(), 1));
 
-		// Uranium fuel rod — water cell + uranium dust.
+		// Uranium fuel rod: water cell + uranium dust.
 		canning("uranium_fuel_rod", waterCell, commonTag("dusts/uranium"),
 				new ItemStackTemplate(FTBICItems.URANIUM_FUEL_ROD.get(), 1));
 	}

@@ -42,6 +42,6 @@ item_ids:
   ### <Color id="aqua">Advanced Macerator</Color>
 </Row>
 
-HV version: 10,000 zap buffer, 16 zap/t, much faster recipe ticks.
+HV version: <Energy config="machines.advanced_macerator_capacity" /> buffer, <Energy config="machines.advanced_macerator_use" rate="true" />, much faster recipe ticks.
 
 <RecipeFor id="advanced_macerator" />

@@ -6,6 +6,7 @@ import dev.ftb.mods.ftbic.block.FTBICElectricBlocks;
 import dev.ftb.mods.ftbic.recipe.FTBICRecipes;
 import dev.ftb.mods.ftbic.recipe.MachineRecipe;
 import dev.ftb.mods.ftbic.recipe.MachineRecipeType;
+import dev.ftb.mods.ftbic.util.EnergyDisplay;
 import dev.ftb.mods.ftbic.util.FTBICUtils;
 import dev.ftb.mods.ftbic.util.IngredientWithCount;
 import dev.ftb.mods.ftbic.util.StackWithChance;
@@ -162,7 +163,7 @@ public class MachineRecipeCategory extends AbstractRecipeCategory<RecipeHolder<M
 			builder.addText(Component.translatable("ftbic.jei.mutation_returns"), 120, 10).setPosition(32, 58).setColor(0xFF404040);
 			double seconds = holder.value().processingTime * FTBICConfig.MACHINES.MACHINE_RECIPE_BASE_TICKS.get() / 20;
 			builder.addText(Component.translatable("ftbic.jei.mutation_cost", FTBICUtils.fmtDouble(seconds, 1),
-					FTBICUtils.fmtDouble(machine.energyUsage.get(), 0)), 150, 10).setPosition(4, 74).setColor(0xFF404040);
+					EnergyDisplay.perTick(machine.energyUsage.get())), 150, 10).setPosition(4, 74).setColor(0xFF404040);
 		}
 	}
 
@@ -176,9 +177,8 @@ public class MachineRecipeCategory extends AbstractRecipeCategory<RecipeHolder<M
 			double energyPerTick = (separating && recipe.value().outputs.size() > 2 ? FTBICElectricBlocks.ADVANCED_CENTRIFUGE : machine).energyUsage.get();
 			long zaps = Math.round(ticks * energyPerTick);
 			double seconds = ticks / 20.0D;
-			tooltip.add(Component.translatable("ftbic.jei.recipe_time_energy", FTBICUtils.fmtDouble(seconds, 1), FTBICUtils.fmtInt(zaps)));
-			tooltip.add(Component.translatable("ftbic.jei.energy_per_tick", FTBICUtils.fmtDouble(energyPerTick, 0))
-					.withStyle(ChatFormatting.DARK_GRAY));
+			tooltip.add(Component.translatable("ftbic.jei.recipe_time_energy", FTBICUtils.fmtDouble(seconds, 1), EnergyDisplay.amount(zaps)));
+			tooltip.add(EnergyDisplay.perTick(energyPerTick).withStyle(ChatFormatting.DARK_GRAY));
 		}
 	}
 }

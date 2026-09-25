@@ -2,6 +2,7 @@ package dev.ftb.mods.ftbic.item;
 
 import dev.ftb.mods.ftbic.FTBICConfig;
 import dev.ftb.mods.ftbic.registry.ModDataComponents;
+import dev.ftb.mods.ftbic.util.EnergyDisplay;
 import dev.ftb.mods.ftbic.util.EnergyItemHandler;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
@@ -79,7 +80,7 @@ public class MechanicalElytraItem extends Item implements EnergyItemHandler {
 		double energy = getEnergy(stack);
 		double cap = getEnergyCapacity(stack);
 		tooltip.accept(Component.translatable("item.ftbic.tooltip.energy",
-						EnergyItemHandler.formatEnergy(energy), EnergyItemHandler.formatEnergy(cap))
+						EnergyDisplay.compactNumber(energy), EnergyDisplay.compactAmount(cap))
 				.withStyle(ChatFormatting.GRAY));
 	}
 }

@@ -73,7 +73,7 @@ Base operating values: basic 8 zaps/t, advanced 8 zaps/t **per active lane or cr
 
 Expose item, fluid, and energy faces through the existing side-configuration screen. Seed and soil inputs must remain distinct to automation; soil is never extracted as a recipe ingredient. Output ejection respects the configured output sides. A comparator can report overall output-buffer fullness using the established machine behavior.
 
-The basic screen shows its single growth lane in a compact panel. The advanced screen labels lanes 1–4, shows each lane's progress, and groups its three output slots beside that lane. Mutation mode labels the crosses 1+2 and 3+4. The dedicated screens keep their controls and tooltips within the machine panel.
+The basic screen shows its single growth lane in a compact panel. The advanced screen labels lanes 1 to 4, shows each lane's progress, and groups its three output slots beside that lane. Mutation mode labels the crosses 1+2 and 3+4. The dedicated screens keep their controls and tooltips within the machine panel.
 
 ## Acceptance checks
 

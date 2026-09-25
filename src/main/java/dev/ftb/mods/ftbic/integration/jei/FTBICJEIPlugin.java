@@ -25,6 +25,7 @@ import dev.ftb.mods.ftbic.recipe.BasicGeneratorFuelRecipe;
 import dev.ftb.mods.ftbic.recipe.FTBICRecipes;
 import dev.ftb.mods.ftbic.recipe.MachineRecipe;
 import dev.ftb.mods.ftbic.recipe.MachineRecipeType;
+import dev.ftb.mods.ftbic.util.EnergyDisplay;
 import dev.ftb.mods.ftbic.util.FTBICUtils;
 import dev.ftb.mods.ftbic.util.IngredientWithCount;
 import mezz.jei.api.IModPlugin;
@@ -106,7 +107,7 @@ public class FTBICJEIPlugin implements IModPlugin {
 		r.addItemStackInfo(
 				new ItemStack(FTBICItems.ANTIMATTER.item.get()),
 				Component.translatable("ftbic.jei.antimatter.line1"),
-				Component.translatable("ftbic.jei.antimatter.line2", FTBICUtils.fmtInt(zapsPer)),
+				Component.translatable("ftbic.jei.antimatter.line2", EnergyDisplay.amount(zapsPer)),
 				Component.translatable("ftbic.jei.antimatter.line3"),
 				Component.translatable("ftbic.jei.antimatter.line4"));
 
@@ -149,7 +150,7 @@ public class FTBICJEIPlugin implements IModPlugin {
 		r.addItemStackInfo(new ItemStack(item),
 				Component.translatable("ftbic.jei.rod.title"),
 				Component.translatable("ftbic.jei.rod.desc", FTBICUtils.fmtInt(rods), FTBICUtils.fmtInt(pulses)),
-				Component.translatable("ftbic.jei.rod.energy", fmt(baseEnergy)),
+				Component.translatable("ftbic.jei.rod.energy", EnergyDisplay.precisePerTick(baseEnergy)),
 				Component.translatable("ftbic.jei.rod.heat", fmt(baseHeat)),
 				Component.translatable("ftbic.jei.rod.durability", FTBICUtils.fmtInt(durability)));
 	}

@@ -15,6 +15,7 @@ import dev.ftb.mods.ftbic.item.reactor.ReactorItem;
 import dev.ftb.mods.ftbic.item.reactor.ReactorPlatingItem;
 import dev.ftb.mods.ftbic.net.SimulatorActionPayload;
 import dev.ftb.mods.ftbic.screen.ReactorSimulatorMenu;
+import dev.ftb.mods.ftbic.util.EnergyDisplay;
 import dev.ftb.mods.ftbic.util.ReactorDesign;
 import dev.ftb.mods.ftbic.util.ReactorPresetLibrary;
 import net.minecraft.ChatFormatting;
@@ -236,7 +237,7 @@ public class ReactorSimulatorScreen extends ElectricBlockScreen<ReactorSimulator
 			out.add(Component.empty());
 			out.add(Component.translatable("ftbic.gui.reactor_sim.item.fuel_rod.title").withStyle(ChatFormatting.YELLOW));
 			out.add(Component.translatable("ftbic.gui.reactor_sim.item.fuel_rod.base_pulses", rod.pulses).withStyle(ChatFormatting.GRAY));
-			out.add(Component.translatable("ftbic.gui.reactor_sim.item.fuel_rod.energy", fmt(rod.energyMultiplier)).withStyle(ChatFormatting.AQUA));
+			out.add(Component.translatable("ftbic.gui.reactor_sim.item.fuel_rod.energy", EnergyDisplay.precisePerTick(rod.energyMultiplier)).withStyle(ChatFormatting.AQUA));
 			out.add(Component.translatable("ftbic.gui.reactor_sim.item.fuel_rod.heat", fmt(rod.heatMultiplier)).withStyle(ChatFormatting.RED));
 			out.add(Component.translatable("ftbic.gui.reactor_sim.item.fuel_rod.spread").withStyle(ChatFormatting.DARK_GRAY));
 			int heatP1 = (int) Math.round(rod.heatMultiplier * rod.pulses * (rod.pulses + 1));
@@ -695,7 +696,7 @@ public class ReactorSimulatorScreen extends ElectricBlockScreen<ReactorSimulator
 		long total = menu.getTotalEnergy();
 		int perTick = menu.getLastEnergy();
 		long cycle = menu.getElapsedCycles();
-		String stats = Component.translatable("ftbic.gui.reactor_sim.stats", perTick, formatShort(total), cycle).getString();
+		String stats = Component.translatable("ftbic.gui.reactor_sim.stats", EnergyDisplay.perTick(perTick), EnergyDisplay.compactAmount(total), cycle).getString();
 		g.text(font, Component.literal(stats), leftPos + 10, y, 0xFF404040, false);
 	}
 
@@ -713,13 +714,6 @@ public class ReactorSimulatorScreen extends ElectricBlockScreen<ReactorSimulator
 		g.fill(x, y, x + w, y + BUTTON_H, 0xFF333333);
 		g.fill(x + 1, y + 1, x + w - 1, y + BUTTON_H - 1, hover ? 0xFFBCE0FF : 0xFFE0E0E0);
 		textCenter(g, label, x + w / 2, y + 3, 0xFF000000);
-	}
-
-	private static String formatShort(long n) {
-		if (n < 1_000) return String.valueOf(n);
-		if (n < 1_000_000) return String.format("%.1fk", n / 1000D);
-		if (n < 1_000_000_000) return String.format("%.1fM", n / 1_000_000D);
-		return String.format("%.1fB", n / 1_000_000_000D);
 	}
 
 	@Override

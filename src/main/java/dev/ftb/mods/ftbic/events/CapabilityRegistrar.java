@@ -93,8 +93,11 @@ public final class CapabilityRegistrar {
 			}
 
 			if (fullFE && instance.feCapMode != ElectricBlockInstance.FECapMode.INSERT_ONLY) {
-				boolean canInsert = instance.maxEnergyInput.get() > 0D;
-				boolean canExtract = instance.maxEnergyOutput.get() > 0D;
+				boolean canInsert = instance.maxEnergyInput.get() > 0D
+						|| instance.feCapMode == ElectricBlockInstance.FECapMode.INSERT_AND_EXTRACT;
+				boolean canExtract = instance.maxEnergyOutput.get() > 0D
+						|| instance.feCapMode == ElectricBlockInstance.FECapMode.EXTRACT_ONLY
+						|| instance.feCapMode == ElectricBlockInstance.FECapMode.INSERT_AND_EXTRACT;
 				if (canInsert || canExtract) {
 					final boolean ci = canInsert;
 					final boolean ce = canExtract;

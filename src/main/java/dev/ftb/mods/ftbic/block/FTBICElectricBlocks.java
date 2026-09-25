@@ -328,7 +328,7 @@ public interface FTBICElectricBlocks {
 			.maxEnergyInput(FTBICConfig.ENERGY.IV_TRANSFER_RATE)
 			.maxEnergyOutput(FTBICConfig.ENERGY.EV_TRANSFER_RATE);
 
-	// Energy Rectifiers — one-way FE → zaps converters. Input on facing direction; output on the other 5 sides. //
+	// Energy Rectifiers: one-way FE → zaps converters. Input on facing direction; output on the other 5 sides. //
 
 	ElectricBlockInstance LV_RECTIFIER = register("lv_rectifier", LVRectifierBlockEntity::new)
 			.name("LV Energy Rectifier").rotate3D().cantBeActive()

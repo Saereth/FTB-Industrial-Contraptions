@@ -81,6 +81,7 @@ public interface EnergyItemHandler {
 	}
 
 	static String formatEnergy(double value) {
+		if (value >= 1_000_000_000D) return String.format("%.1fB", value / 1_000_000_000D);
 		if (value >= 1_000_000D) return String.format("%.1fM", value / 1_000_000D);
 		if (value >= 1_000D) return String.format("%.1fk", value / 1_000D);
 		return String.format("%.0f", value);

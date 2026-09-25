@@ -1,6 +1,7 @@
 package dev.ftb.mods.ftbic.integration.jade;
 
 import dev.ftb.mods.ftbic.FTBIC;
+import dev.ftb.mods.ftbic.FTBICConfig;
 import dev.ftb.mods.ftbic.block.CableBlock;
 import dev.ftb.mods.ftbic.block.entity.ElectricBlockEntity;
 import dev.ftb.mods.ftbic.block.entity.generator.GeothermalGeneratorBlockEntity;
@@ -38,15 +39,14 @@ public class FTBICJadePlugin implements IWailaPlugin {
 	@Override
 	public void register(IWailaCommonRegistration registration) {
 		registration.registerBlockDataProvider(EnergyServerDataProvider.INSTANCE, ElectricBlockEntity.class);
-		registration.registerEnergyStorage(BankEnergyStorageProvider.INSTANCE, BankCellBlockEntity.class);
-		registration.registerEnergyStorage(BankEnergyStorageProvider.INSTANCE, BankPortBlockEntity.class);
+		registration.registerEnergyStorage(FTBICEnergyStorageProvider.INSTANCE, ElectricBlockEntity.class);
 	}
 
 	@Override
 	public void registerClient(IWailaClientRegistration registration) {
 		registration.registerBlockComponent(EnergyClientProvider.INSTANCE, Block.class);
 		registration.registerBlockComponent(CableTierProvider.INSTANCE, CableBlock.class);
-		registration.registerEnergyStorageClient(BankEnergyStorageProvider.INSTANCE);
+		registration.registerEnergyStorageClient(FTBICEnergyStorageProvider.INSTANCE);
 	}
 
 	public static final class CableTierProvider implements IBlockComponentProvider {
@@ -110,7 +110,7 @@ public class FTBICJadePlugin implements IWailaPlugin {
 				if (be instanceof NuclearReactorBlockEntity reactor) {
 					data.putInt("ftbic_reactor_heat", reactor.reactor.heat);
 					data.putInt("ftbic_reactor_max_heat", Math.max(1, reactor.reactor.maxHeat));
-					data.putDouble("ftbic_reactor_output", reactor.reactor.energyOutput);
+					data.putDouble("ftbic_reactor_output", reactor.reactor.energyOutput * FTBICConfig.MACHINES.NUCLEAR_GENERATOR_OUTPUT.get());
 					data.putBoolean("ftbic_reactor_paused", reactor.reactor.paused);
 				}
 				if (be instanceof TeleporterBlockEntity tele) {

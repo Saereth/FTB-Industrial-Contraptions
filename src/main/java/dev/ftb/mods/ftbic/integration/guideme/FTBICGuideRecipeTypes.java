@@ -9,6 +9,7 @@ import dev.ftb.mods.ftbic.recipe.BasicGeneratorFuelRecipe;
 import dev.ftb.mods.ftbic.recipe.FTBICRecipes;
 import dev.ftb.mods.ftbic.recipe.MachineRecipe;
 import dev.ftb.mods.ftbic.recipe.MachineRecipeType;
+import dev.ftb.mods.ftbic.util.EnergyDisplay;
 import dev.ftb.mods.ftbic.util.IngredientWithCount;
 import dev.ftb.mods.ftbic.util.StackWithChance;
 import dev.ftb.mods.ftbic.util.RefiningIngredient;
@@ -101,7 +102,7 @@ public class FTBICGuideRecipeTypes implements RecipeTypeMappingSupplier {
 			double seconds = ticks / 20.0D;
 			if (energyPerTick > 0D) {
 				long totalZaps = Math.round(ticks * energyPerTick);
-				builder.addBottom(paragraph(String.format("%.1fs · %,d zaps · %.0f z/t", seconds, totalZaps, energyPerTick)));
+				builder.addBottom(paragraph(String.format("%.1fs · %s · %s", seconds, EnergyDisplay.amount(totalZaps).getString(), EnergyDisplay.perTick(energyPerTick).getString())));
 			} else {
 				builder.addBottom(paragraph(String.format("%.1fs", seconds)));
 			}
@@ -146,8 +147,8 @@ public class FTBICGuideRecipeTypes implements RecipeTypeMappingSupplier {
 				.title(FTBICElectricBlocks.BASIC_GENERATOR.name)
 				.input(inputGrid)
 				.output(new LytSlotGrid(1, 1))
-				.addBottom(paragraph(String.format("%.1fs @ %.0f z/t", seconds, zapsPerTick)))
-				.addBottom(paragraph(String.format("= %,d zaps", totalZaps)))
+				.addBottom(paragraph(String.format("%.1fs @ %s", seconds, EnergyDisplay.perTick(zapsPerTick).getString())))
+				.addBottom(paragraph("= " + EnergyDisplay.amount(totalZaps).getString()))
 				.build(holder);
 	}
 
@@ -159,7 +160,7 @@ public class FTBICGuideRecipeTypes implements RecipeTypeMappingSupplier {
 				.title(FTBICElectricBlocks.ANTIMATTER_CONSTRUCTOR.name)
 				.input(inputGrid)
 				.output(new LytSlotGrid(1, 1))
-				.addBottom(paragraph(String.format("+%.0f boost", recipe.boost())))
+				.addBottom(paragraph("+" + EnergyDisplay.amount(recipe.boost()).getString() + " boost"))
 				.build(holder);
 	}
 }

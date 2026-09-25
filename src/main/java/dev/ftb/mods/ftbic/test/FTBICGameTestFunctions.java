@@ -2221,7 +2221,7 @@ public class FTBICGameTestFunctions {
 				handler.insert(1, ItemResource.of(Items.COAL), 4, inner);
 				inner.commit();
 			}
-			// Outer aborts: everything — outer writes AND inner's committed-into-outer writes — rolls back.
+			// Outer aborts: everything (outer writes AND inner's committed-into-outer writes) rolls back.
 		}
 
 		CanningMachineBlockEntity after = helper.getBlockEntity(CENTER, CanningMachineBlockEntity.class);

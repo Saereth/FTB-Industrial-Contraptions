@@ -288,11 +288,12 @@ public class ReactorSimulatorBlockEntity extends ElectricBlockEntityRef {
 		for (int i = 0; i < cyclesThisTick; i++) {
 			boolean stop = simReactor.tick();
 			elapsedCycles++;
-			if (simReactor.energyOutput > 0D) {
-				totalEnergy += simReactor.energyOutput;
+			double produced = simReactor.energyOutput * FTBICConfig.MACHINES.NUCLEAR_GENERATOR_OUTPUT.get();
+			if (produced > 0D) {
+				totalEnergy += produced;
 			}
 			if (simReactor.heat > peakHeat) peakHeat = simReactor.heat;
-			lastEnergyOutput = simReactor.energyOutput;
+			lastEnergyOutput = produced;
 			if (stop || simReactor.heat >= simReactor.maxHeat) {
 				running = false;
 				break;

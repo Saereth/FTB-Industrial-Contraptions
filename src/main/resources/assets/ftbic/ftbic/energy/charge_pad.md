@@ -28,7 +28,7 @@ item_ids:
 </Column>
 
 * Wire power into any face. The pad accepts up to **IV** input.
-* Internal buffer: 1,000,000 zaps.
+* Internal buffer: <Energy config="machines.charge_pad_capacity" />.
 * Stand on top to recharge worn armor (<ItemLink id="carbon_chestplate" />, <ItemLink id="quantum_chestplate" />, <ItemLink id="mechanical_elytra" />) and any batteries in the inventory.
 * Open the pad to charge up to four inserted rechargeable items, including Carbon and Quantum chestplates.
 * Standing on the pad and charging inserted items both draw from its energy buffer.

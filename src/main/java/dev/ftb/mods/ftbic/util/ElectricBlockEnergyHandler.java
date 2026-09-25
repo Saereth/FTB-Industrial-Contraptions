@@ -38,11 +38,6 @@ public class ElectricBlockEnergyHandler extends SnapshotJournal<Double> implemen
 		double maxInput = be.getMaxInputEnergy();
 		if (maxInput <= 0D) return 0;
 		double asZaps = ZapFEConversion.feToZapsFloor(amount);
-		if (asZaps > maxInput && be.canBurn()) {
-			updateSnapshots(transaction);
-			be.setBurnt(true);
-			return amount;
-		}
 		double acceptable = Math.min(Math.min(asZaps, maxInput), be.getEnergyCapacity() - be.getEnergy());
 		if (acceptable <= 0D) return 0;
 		updateSnapshots(transaction);

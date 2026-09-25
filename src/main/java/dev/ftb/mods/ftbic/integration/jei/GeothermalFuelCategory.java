@@ -4,7 +4,7 @@ import dev.ftb.mods.ftbic.FTBIC;
 import dev.ftb.mods.ftbic.FTBICConfig;
 import dev.ftb.mods.ftbic.block.FTBICElectricBlocks;
 import dev.ftb.mods.ftbic.item.FTBICItems;
-import dev.ftb.mods.ftbic.util.FTBICUtils;
+import dev.ftb.mods.ftbic.util.EnergyDisplay;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.widgets.IRecipeExtrasBuilder;
 import mezz.jei.api.helpers.IGuiHelper;
@@ -47,11 +47,11 @@ public class GeothermalFuelCategory extends AbstractRecipeCategory<GeothermalFue
 		long zapsPerTank = Math.round(zapsPerMb * tankCap);
 
 		builder.addText(Component.translatable("ftbic.jei.zaps_per_mb",
-						FTBICUtils.fmtDouble(zapsPerMb, 0), FTBICUtils.fmtInt(zapsPerBucket)), 120, 9)
+						EnergyDisplay.amount(zapsPerMb), EnergyDisplay.amount(zapsPerBucket)), 120, 9)
 				.setPosition(26, 3)
 				.setColor(0xFF404040);
 		builder.addText(Component.translatable("ftbic.jei.zaps_per_tank",
-						FTBICUtils.fmtInt(zapsPerTank), String.valueOf(tankCap)), 120, 9)
+						EnergyDisplay.amount(zapsPerTank), String.valueOf(tankCap)), 120, 9)
 				.setPosition(26, 14)
 				.setColor(0xFF0A7F0A);
 	}

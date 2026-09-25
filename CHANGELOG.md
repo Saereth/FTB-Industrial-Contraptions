@@ -23,6 +23,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Scrap Boxes now give a random reward when used. Reward selection is based on [PR 56](https://github.com/FTBTeam/FTB-Industrial-Contraptions/pull/56) by @jshipley. ([Issue 2124](https://github.com/FTBTeam/FTB-Mods-Issues/issues/2124))
 * The Fluid Cell guide now correctly explains that filled cells with identical contents can stack. ([Issue 2125](https://github.com/FTBTeam/FTB-Mods-Issues/issues/2125))
 * Charged Quantum Chestplates now enable hovering flight with a double tap of jump. Flight stops when the chestplate is removed or runs out of zaps. ([Issue 2128](https://github.com/FTBTeam/FTB-Mods-Issues/issues/2128))
+* Other mods' FE generators and storage not powering FTBIC cable networks in full FE mode.
+* FE sources from other mods burning out FTBIC machines, even when only testing a transfer.
+* The Nuclear Reactor offering no FE to other mods in full FE mode.
+* Reactor screen, Jade and Reactor Simulator output ignoring the reactor output multiplier.
+* Jade showing a duplicate energy bar on FTBIC machines.
+* Mystical Agriculture erroring on FTBIC recipes that use custom ingredients.
+* Wrong solar panel buffer, geothermal output and energy storage upgrade figures in the guide.
 
 ### Added
 
@@ -59,6 +66,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Canned Food now uses the standard item remainder behavior to return its empty can after eating.
 * Carbon and Quantum armor sets no longer have item durability or permanent armor defense. The chestplate spends zaps to absorb damage, and an empty chestplate leaves the set without protection.
 * Quantum Chestplates now support powered gliding with jump to boost and sneak to slow down. Mechanical Elytra uses a visible wing texture and shares the same flight energy handling. Adapted from [PR 55](https://github.com/FTBTeam/FTB-Industrial-Contraptions/pull/55) by @jshipley.
+* Full FE mode shows FE instead of zaps in GUIs, tooltips, JEI, Jade and the guide.
+* Energy Rectifiers are hidden and uncraftable in full FE mode.
+* Guide energy figures follow the active energy mode and the config values.
+* Four Transformer Upgrades let a machine accept any amount of power without burning out.
 
 ## [26.1.2.10]
 
@@ -70,7 +81,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-* **Japanese (ja_jp) translation** — 454 entries covering every block, item, tooltip and config string. Thanks to [@Nia1111](https://github.com/Nia1111) ([FTBTeam/FTB-Industrial-Contraptions#48](https://github.com/FTBTeam/FTB-Industrial-Contraptions/pull/48)).
+* **Japanese (ja_jp) translation**: 454 entries covering every block, item, tooltip and config string. Thanks to [@Nia1111](https://github.com/Nia1111) ([FTBTeam/FTB-Industrial-Contraptions#48](https://github.com/FTBTeam/FTB-Industrial-Contraptions/pull/48)).
 * **Chinese (zh_cn) translation** expanded from 142 to 424 entries, covering the newly translatable GUI and JEI text plus the reactor simulator. Thanks to [@xingluo01](https://github.com/xingluo01) for the translation and for the original localization work in [FTBTeam/FTB-Industrial-Contraptions#50](https://github.com/FTBTeam/FTB-Industrial-Contraptions/pull/50).
 
 ## [26.1.2.9]
@@ -89,15 +100,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-* **Alloy Smelter** — new MV machine with 3 unique input slots and 1 output. Energy use is 3× the Advanced Powered Furnace (48 z/t). Slot constraint: any item placed in one input slot is rejected by the other two so stacks can't be split across slots. The recipe matcher prefers the highest-input recipe that matches your slots, so a 3-input alloy wins over any 2-input subset. Recipes ship for: bronze (3 copper + 1 tin → 4), electrum (1 silver + 1 gold → 2), invar (2 iron + 1 nickel → 3), constantan (1 copper + 1 nickel → 2), steel (1 industrial grade metal + 1 coal *or* 1 charcoal → 1), netherite (2 gold + 2 netherite scrap → 1 ingot, skips smithing), enderium (3 lead + 1 diamond dust + 2 ender pearls → 2), and three steel-based advanced alloy recipes (steel + 2 bronze + aluminum / steel + electrum + aluminum / steel + 2 invar + aluminum → 1 advanced alloy).
-* **Steel material** — new ingot/dust/plate/rod/gear/wire/block set; gateway ingredient for every advanced alloy path.
-* **Macerator: advanced alloy → mixed metal blend** — recovery loop for the existing mixed_metal_blend → advanced_alloy smelting recipe.
+* **Alloy Smelter**: new MV machine with 3 unique input slots and 1 output. Energy use is 3× the Advanced Powered Furnace (48 z/t). Slot constraint: any item placed in one input slot is rejected by the other two so stacks can't be split across slots. The recipe matcher prefers the highest-input recipe that matches your slots, so a 3-input alloy wins over any 2-input subset. Recipes ship for: bronze (3 copper + 1 tin → 4), electrum (1 silver + 1 gold → 2), invar (2 iron + 1 nickel → 3), constantan (1 copper + 1 nickel → 2), steel (1 industrial grade metal + 1 coal *or* 1 charcoal → 1), netherite (2 gold + 2 netherite scrap → 1 ingot, skips smithing), enderium (3 lead + 1 diamond dust + 2 ender pearls → 2), and three steel-based advanced alloy recipes (steel + 2 bronze + aluminum / steel + electrum + aluminum / steel + 2 invar + aluminum → 1 advanced alloy).
+* **Steel material**: new ingot/dust/plate/rod/gear/wire/block set; gateway ingredient for every advanced alloy path.
+* **Macerator: advanced alloy → mixed metal blend**, a recovery loop for the existing mixed_metal_blend → advanced_alloy smelting recipe.
 * **Smelting + blasting recipes for every material** with both an ingot and a smeltable input (dust / stone_ore / deepslate_ore / raw_ore → ingot). Vanilla-overlap materials (copper, gold, iron) smelt their FTBIC dust to the vanilla ingot.
-* **Obsidian alloy chain** — `obsidian_dust` compresses to `obsidian_plate` (Compressor, 1:1), and extrudes to `obsidian_rod` (Extruder, 1 dust → 2 rods).
-* **Constantan and silicon material set** restored — silicon as GEM (populates `c:silicon` for advanced circuit / energy crystal / lv solar panel), constantan with the full crafted-only set.
-* **Nickel ore worldgen** — middle-band and small-vein placements wired into the existing biome modifier alongside aluminum/lead/tin.
-* **EnderIO alloying compatibility** — 7 conditional alloy smelter recipes (`conductive_alloy`, `redstone_alloy`, `pulsating_alloy`, `energetic_alloy`, `vibrant_alloy`, `dark_steel`, `end_steel`) gated by `neoforge:mod_loaded` on `enderio`.
-* **ConTeX (XFactHD) optional support** — built-in resource pack ships connected-texture variants for reinforced stone, reinforced glass, and all reinforced cables (LV/MV/HV/EV/IV/burnt). Force-loaded only when the `contex` mod is present; uses the `ftbic:reinforced` block tag so all reinforced variants connect.
+* **Obsidian alloy chain**: `obsidian_dust` compresses to `obsidian_plate` (Compressor, 1:1), and extrudes to `obsidian_rod` (Extruder, 1 dust → 2 rods).
+* **Constantan and silicon material set** restored: silicon as GEM (populates `c:silicon` for advanced circuit / energy crystal / lv solar panel), constantan with the full crafted-only set.
+* **Nickel ore worldgen**: middle-band and small-vein placements added to the existing biome modifier alongside aluminum/lead/tin.
+* **EnderIO alloying compatibility**: 7 conditional alloy smelter recipes (`conductive_alloy`, `redstone_alloy`, `pulsating_alloy`, `energetic_alloy`, `vibrant_alloy`, `dark_steel`, `end_steel`) gated by `neoforge:mod_loaded` on `enderio`.
+* **ConTeX (XFactHD) optional support**: built-in resource pack ships connected-texture variants for reinforced stone, reinforced glass, and all reinforced cables (LV/MV/HV/EV/IV/burnt). Force-loaded only when the `contex` mod is present; uses the `ftbic:reinforced` block tag so all reinforced variants connect.
 * GuideME pages: new **Alloy Smelter** machine entry; rewritten **Alloys** materials page covering steel and the new advanced alloy paths.
 
 ### Changed
@@ -158,7 +169,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-* Reduced uranium overworld spawn rate. Removed the y32–256 surface placement (count 50, no air discard) and halved the y-64–32 cave placement from count 4 to count 2. Uranium now stays rare and primarily underground.
+* Reduced uranium overworld spawn rate. Removed the y32 to 256 surface placement (count 50, no air discard) and halved the y-64 to 32 cave placement from count 4 to count 2. Uranium now stays rare and primarily underground.
 * Iridium is ~25% rarer than diamond. Small placement count 7 → 5, buried count 4 → 3, large rarity filter 9 → 12.
 * `data/minecraft/tags/block/{mineable/pickaxe,dragon_immune,wither_immune}` and `data/minecraft/tags/item/arrows` are now emitted from datagen instead of hand-maintained. The pickaxe tag iterates `FTBICElectricBlocks.ALL` so every electric block is auto-tagged on registration.
 

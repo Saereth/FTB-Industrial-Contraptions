@@ -36,6 +36,6 @@ The **running / maximum** counter beneath the progress arrow shows how many oper
 
 Each operation uses the machine's full energy cost per tick. Four operations use **four times the energy per tick**, with the same energy cost per recipe as one operation. <ItemLink id="overclocker_upgrade" /> upgrades still affect both speed and the energy cost of each operation.
 
-For example, a machine using **20 zap/t** uses **80 zap/t** while processing four operations. Make sure its cables, power supply, and energy storage can keep up.
+For example, a machine using **<Energy zaps="20" rate="true" />** uses **<Energy zaps="80" rate="true" />** while processing four operations. Make sure its cables, power supply, and energy storage can keep up.
 
 Blocked outputs pause the cycle without using energy. Running out of power, losing required ingredients, changing recipes, or removing upgrades below the current batch size resets unfinished progress. Unfinished batches consume no ingredients and produce no output. Saving and loading preserves the batch size and progress.

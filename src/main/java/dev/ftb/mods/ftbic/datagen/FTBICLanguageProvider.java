@@ -54,7 +54,7 @@ public class FTBICLanguageProvider extends LanguageProvider {
 		add("ftbic.jei.mutation_result", "Result");
 		add("ftbic.jei.mutation_failed", "On failure:");
 		add("ftbic.jei.mutation_returns", "Both seeds returned");
-		add("ftbic.jei.mutation_cost", "%ss | %s zaps/t");
+		add("ftbic.jei.mutation_cost", "%ss | %s");
 		add("ftbic.jei.advanced_centrifuge_required", "Advanced Centrifuge only");
 		add("ftbic.sides.title", "Side Configuration");
 		add("block.ftbic.batch_feeder", "Batch Feeder");
@@ -406,7 +406,7 @@ public class FTBICLanguageProvider extends LanguageProvider {
 		add("item.ftbic.teleporter", "Teleporter");
 		add("item.ftbic.thick_neutron_reflector", "Thick Neutron Reflector");
 		add("item.ftbic.tooltip.creative_energy", "Infinite Energy");
-		add("item.ftbic.tooltip.energy", "%s / %s zaps");
+		add("item.ftbic.tooltip.energy", "%s / %s");
 		add("item.ftbic.tooltip.tier", "Tier: %s");
 		add("item.ftbic.transformer_upgrade", "Transformer Upgrade");
 		add("item.ftbic.uranium_fuel_rod", "Uranium Fuel Rod");
@@ -428,6 +428,10 @@ public class FTBICLanguageProvider extends LanguageProvider {
 		add("ftbic.energy_usage", "Usage: %s");
 		add("ftbic.fuse_info", "Right-click with a fuse to repair burnt machines.");
 		add("ftbic.max_input", "Max Input: %s");
+		add("ftbic.unit.zaps", "%s zaps");
+		add("ftbic.unit.zaps_per_tick", "%s z/t");
+		add("ftbic.unit.fe", "%s FE");
+		add("ftbic.unit.fe_per_tick", "%s FE/t");
 		add("ftbic.requires_chestplate", "Requires Chestplate to function");
 		add("ftbic.zap_to_fe_conversion", "%s = %s FE");
 
@@ -451,22 +455,21 @@ public class FTBICLanguageProvider extends LanguageProvider {
 		add("ftbic.jade.tele_receive_fluid_empty", "Receive tank: Empty (0 / %s mB)");
 
 		add("ftbic.jei.chance", "Chance: %s%%");
-		add("ftbic.jei.recipe_time_energy", "%ss · %s zaps");
-		add("ftbic.jei.energy_per_tick", "%s z/t");
-		add("ftbic.jei.burn_time", "%ss @ %s z/t");
-		add("ftbic.jei.total_zaps", "= %s zaps");
-		add("ftbic.jei.zaps_per_mb", "%s z/mB @ %s z/bucket");
-		add("ftbic.jei.zaps_per_tank", "= %s zaps / full tank (%s mB)");
-		add("ftbic.jei.boost", "+%s zaps boost");
+		add("ftbic.jei.recipe_time_energy", "%ss · %s");
+		add("ftbic.jei.burn_time", "%ss @ %s");
+		add("ftbic.jei.total_zaps", "= %s");
+		add("ftbic.jei.zaps_per_mb", "%s/mB @ %s/bucket");
+		add("ftbic.jei.zaps_per_tank", "= %s / full tank (%s mB)");
+		add("ftbic.jei.boost", "+%s boost");
 
 		add("ftbic.jei.antimatter.line1", "Produced by the Antimatter Constructor.");
-		add("ftbic.jei.antimatter.line2", "Each antimatter requires %s zaps of progress.");
+		add("ftbic.jei.antimatter.line2", "Each antimatter requires %s of progress.");
 		add("ftbic.jei.antimatter.line3", "Boost items consumed in the input slot accelerate progress.");
 		add("ftbic.jei.antimatter.line4", "See \"Antimatter Constructor\" recipes for boost values.");
 
 		add("ftbic.jei.rod.title", "Nuclear fuel rod");
 		add("ftbic.jei.rod.desc", "%s-rod pack: %s pulse(s) per cycle");
-		add("ftbic.jei.rod.energy", "Energy: %s zap/t base (×(pulses+reflectors))");
+		add("ftbic.jei.rod.energy", "Energy: %s base (×(pulses+reflectors))");
 		add("ftbic.jei.rod.heat", "Heat: %s/cycle base. Distributed into neighboring heat acceptors.");
 		add("ftbic.jei.rod.durability", "Durability: %s cycles before the rod is spent.");
 
@@ -500,10 +503,9 @@ public class FTBICLanguageProvider extends LanguageProvider {
 		add("ftbic.jei.reflector.durability", "Durability: %s pulses before the reflector burns out.");
 
 		add("ftbic.reactor.paused", "Paused");
-		add("ftbic.reactor.energy_output", "%d z/t");
 		add("ftbic.reactor.heat_percentage", "%d%%");
-		add("ftbic.reactor.tooltip.paused", "Paused (%d z/t when active)");
-		add("ftbic.reactor.tooltip.output", "Output: %d z/t");
+		add("ftbic.reactor.tooltip.paused", "Paused (%s when active)");
+		add("ftbic.reactor.tooltip.output", "Output: %s");
 		add("ftbic.reactor.tooltip.resume", "Resume reactor");
 		add("ftbic.reactor.tooltip.pause", "Pause reactor");
 		add("ftbic.reactor.tooltip.redstone_enabled", "Redstone control: enabled");
@@ -568,7 +570,7 @@ public class FTBICLanguageProvider extends LanguageProvider {
 		add("ftbic.gui.reactor_sim.verdict_stable", "Result: STABLE");
 		add("ftbic.gui.reactor_sim.verdict_unstable", "Result: overheats at cycle %d");
 		add("ftbic.gui.reactor_sim.verdict_none", "Result: not analyzed");
-		add("ftbic.gui.reactor_sim.stats", "%d z/t  |  total %s  |  cycle %d");
+		add("ftbic.gui.reactor_sim.stats", "%s  |  total %s  |  cycle %d");
 
 		add("ftbic.gui.reactor_sim.save_name_label", "Name");
 		add("ftbic.gui.reactor_sim.save_error_invalid_name", "Invalid name");
@@ -593,7 +595,7 @@ public class FTBICLanguageProvider extends LanguageProvider {
 
 		add("ftbic.gui.reactor_sim.stats_title", "Simulation stats");
 		add("ftbic.gui.reactor_sim.stats_desc1", "Verdict line: stability analysis result");
-		add("ftbic.gui.reactor_sim.stats_desc2", "N z/t: energy output this cycle");
+		add("ftbic.gui.reactor_sim.stats_desc2", "First value: energy output per tick this cycle");
 		add("ftbic.gui.reactor_sim.stats_desc3", "total: cumulative energy since Start");
 		add("ftbic.gui.reactor_sim.stats_desc4", "cN: cycle counter (1 cycle = 1 reactor tick)");
 		add("ftbic.gui.reactor_sim.stats_desc5", "Speed controls cycles per game tick: 20x = 1/t, 1000x = 50/t");
@@ -612,7 +614,7 @@ public class FTBICLanguageProvider extends LanguageProvider {
 
 		add("ftbic.gui.reactor_sim.item.fuel_rod.title", "Fuel rod");
 		add("ftbic.gui.reactor_sim.item.fuel_rod.base_pulses", "  Base pulses: %d (+1 per adjacent reflector or rod)");
-		add("ftbic.gui.reactor_sim.item.fuel_rod.energy", "  Energy: p x %s zap/t");
+		add("ftbic.gui.reactor_sim.item.fuel_rod.energy", "  Energy: p x %s");
 		add("ftbic.gui.reactor_sim.item.fuel_rod.heat", "  Heat:   p x (p+1) x %s / cycle");
 		add("ftbic.gui.reactor_sim.item.fuel_rod.spread", "    spread over adjacent heat acceptors");
 		add("ftbic.gui.reactor_sim.item.fuel_rod.heat_example", "  p=%d -> %d heat | p=%d -> %d heat");

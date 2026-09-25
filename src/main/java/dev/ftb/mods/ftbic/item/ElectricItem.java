@@ -1,6 +1,7 @@
 package dev.ftb.mods.ftbic.item;
 
 import dev.ftb.mods.ftbic.registry.ModDataComponents;
+import dev.ftb.mods.ftbic.util.EnergyDisplay;
 import dev.ftb.mods.ftbic.util.EnergyItemHandler;
 import dev.ftb.mods.ftbic.util.EnergyTier;
 import net.minecraft.ChatFormatting;
@@ -57,7 +58,7 @@ public class ElectricItem extends Item implements EnergyItemHandler {
 			double energy = getEnergy(stack);
 			double cap = getEnergyCapacity(stack);
 			tooltip.accept(Component.translatable("item.ftbic.tooltip.energy",
-							EnergyItemHandler.formatEnergy(energy), EnergyItemHandler.formatEnergy(cap))
+							EnergyDisplay.compactNumber(energy), EnergyDisplay.compactAmount(cap))
 					.withStyle(ChatFormatting.GRAY));
 			tooltip.accept(Component.translatable("item.ftbic.tooltip.tier", tier.name)
 					.withStyle(ChatFormatting.DARK_GRAY));

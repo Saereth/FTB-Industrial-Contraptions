@@ -26,7 +26,7 @@ item_ids:
 
 Place <ItemLink id="industrial_bank_cell" /> and <ItemLink id="industrial_bank_port" /> face to face to form one bank. Each cell adds storage; each port accepts and supplies energy through its exposed faces. Add more ports for more connections. Right-click any cell or port to see the bank's charge, capacity, and member counts. The side configuration on a port can restrict input and output faces.
 
-The default cell holds 10 million zaps. Each port automatically outputs up to 8,192 zaps per tick and accepts up to that amount in one input transaction. Incoming energy moves into connected cells so the port can keep accepting power. Server config controls both values and the maximum number of blocks searched per bank. Energy remains in each cell if you split the bank, and reconnecting cells restores the shared readout. Bank casings join visually along touching faces.
+Each cell holds <Energy config="energy.bank_cell_capacity" />. Each port automatically outputs up to <Energy config="energy.bank_port_transfer" rate="true" /> and accepts up to that amount in one input transaction. Incoming energy moves into connected cells so the port can keep accepting power. Server config controls both values and the maximum number of blocks searched per bank. Energy remains in each cell if you split the bank, and reconnecting cells restores the shared readout. Bank casings join visually along touching faces.
 
 Sneak and right-click a port to cycle its appearance: **Port** (the default connection symbol), **Gauge**, then **Basic** (plain steel like a cell). The choice belongs to that port and survives a world reload. Changing the appearance does not change energy input or output. The selected style appears briefly above the hotbar.
 
@@ -38,7 +38,7 @@ Gauge shows the whole bank's fill level with a glowing bar. Set neighboring port
 <Column alignItems="center" fullWidth={true}>
   <ItemImage id="hv_battery_box" scale="2" />
 
-  Batteries are portable energy. Battery boxes are network buffers — drop batteries in and they charge, or pull them out charged to power a handheld device.
+  Batteries are portable energy. Battery boxes are network buffers: drop batteries in and they charge, or pull them out charged to power a handheld device.
 </Column>
 
 <ItemImage id="minecraft:air" scale="0.25"/>
@@ -53,7 +53,7 @@ Gauge shows the whole bank's fill level with a glowing bar. Set neighboring port
   ### <Color id="aqua">Single Use Battery</Color>
 </Row>
 
-A cheap throwaway battery. 2,400 zaps. Good for emergencies, useless for infrastructure.
+A cheap throwaway battery. <Energy config="energy.single_use_battery_capacity" />. Good for emergencies, useless for infrastructure.
 
 <RecipeFor id="single_use_battery" />
 
@@ -62,7 +62,7 @@ A cheap throwaway battery. 2,400 zaps. Good for emergencies, useless for infrast
   ### <Color id="aqua">LV Battery</Color>
 </Row>
 
-4,000 zap capacity, LV tier. The first rechargeable battery.
+Holds <Energy config="energy.lv_battery_capacity" />, LV tier. The first rechargeable battery.
 
 <RecipeFor id="lv_battery" />
 
@@ -71,7 +71,7 @@ A cheap throwaway battery. 2,400 zaps. Good for emergencies, useless for infrast
   ### <Color id="aqua">MV Battery</Color>
 </Row>
 
-40,000 zaps. Upgrade from the LV battery using <ItemLink id="energy_crystal" />.
+<Energy config="energy.mv_battery_capacity" />. Upgrade from the LV battery using <ItemLink id="energy_crystal" />.
 
 <RecipeFor id="mv_battery" />
 
@@ -80,7 +80,7 @@ A cheap throwaway battery. 2,400 zaps. Good for emergencies, useless for infrast
   ### <Color id="aqua">HV Battery</Color>
 </Row>
 
-400,000 zaps. Feeds mid- to late-game handheld gear.
+<Energy config="energy.hv_battery_capacity" />. Feeds mid- to late-game handheld gear.
 
 <RecipeFor id="hv_battery" />
 
@@ -89,7 +89,7 @@ A cheap throwaway battery. 2,400 zaps. Good for emergencies, useless for infrast
   ### <Color id="aqua">EV Battery</Color>
 </Row>
 
-10,000,000 zaps. The largest portable battery in the mod.
+<Energy config="energy.ev_battery_capacity" />. The largest portable battery in the mod.
 
 <RecipeFor id="ev_battery" />
 
@@ -113,28 +113,28 @@ Open **I/O**, choose **Energy**, then set any face to **Output** to send power t
 
 <Row>
   <ItemImage id="lv_battery_box" />
-  ### <Color id="aqua">LV Battery Box — 40,000 zaps</Color>
+  ### <Color id="aqua">LV Battery Box (<Energy config="energy.lv_battery_box_capacity" />)</Color>
 </Row>
 
 <RecipeFor id="lv_battery_box" />
 
 <Row>
   <ItemImage id="mv_battery_box" />
-  ### <Color id="aqua">MV Battery Box — 400,000 zaps</Color>
+  ### <Color id="aqua">MV Battery Box (<Energy config="energy.mv_battery_box_capacity" />)</Color>
 </Row>
 
 <RecipeFor id="mv_battery_box" />
 
 <Row>
   <ItemImage id="hv_battery_box" />
-  ### <Color id="aqua">HV Battery Box — 4,000,000 zaps</Color>
+  ### <Color id="aqua">HV Battery Box (<Energy config="energy.hv_battery_box_capacity" />)</Color>
 </Row>
 
 <RecipeFor id="hv_battery_box" />
 
 <Row>
   <ItemImage id="ev_battery_box" />
-  ### <Color id="aqua">EV Battery Box — 40,000,000 zaps</Color>
+  ### <Color id="aqua">EV Battery Box (<Energy config="energy.ev_battery_box_capacity" />)</Color>
 </Row>
 
 <RecipeFor id="ev_battery_box" />

@@ -35,7 +35,7 @@ Crushed ore and washed ore can also be smelted directly, one item per ingot. The
 
 The washer accepts LV power and holds **16,000 mB** in each tank. Its default recipes use the left input tank; the right tank supports fluid outputs in custom recipes. Insert water with a bucket, fluid cell, or fluid automation. Set fluid and item faces independently with **I/O**.
 
-By default it uses **4 zaps/t** and takes **20 seconds** per wash, before upgrades. The basic macerator takes 10 seconds per crushing operation, or 90 seconds for a block of raw ore; the basic centrifuge takes 30 seconds per refining batch. Machine configuration and material definitions can change these values.
+By default it uses **<Energy config="machines.ore_washer_use" rate="true" />** and takes **20 seconds** per wash, before upgrades. The basic macerator takes 10 seconds per crushing operation, or 90 seconds for a block of raw ore; the basic centrifuge takes 30 seconds per refining batch. Machine configuration and material definitions can change these values.
 
 Processing waits for a complete item batch, enough fluid and power, and space for every output. Use a [Batch Feeder](batch_feeder.md) to deliver two crushed ore with one bucket of water together.
 

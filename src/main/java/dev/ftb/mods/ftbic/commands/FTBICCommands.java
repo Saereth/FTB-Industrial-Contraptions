@@ -126,7 +126,7 @@ public final class FTBICCommands {
 		BlockPos reactorPos = new BlockPos(centre.getX() + PLATFORM_HALF - 4, floorTopY + 2, centre.getZ() + PLATFORM_HALF - 4);
 		if (!buildReactor(level, reactorPos, FTBICCommands::populateReactor, false)) return false;
 
-		// Dual and quad rods on a display shelf — this demo only drives single rods.
+		// Dual and quad rods on a display shelf; this demo only drives single rods.
 		BlockPos shelfBase = reactorPos.offset(0, 4, 0);
 		level.setBlock(shelfBase, FTBICBlocks.REINFORCED_STONE.get().defaultBlockState(),
 				Block.UPDATE_CLIENTS | Block.UPDATE_NEIGHBORS);

@@ -1,7 +1,7 @@
 package dev.ftb.mods.ftbic.item;
 
 import dev.ftb.mods.ftbic.block.ElectricBlockInstance;
-import dev.ftb.mods.ftbic.util.EnergyItemHandler;
+import dev.ftb.mods.ftbic.util.EnergyDisplay;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.BlockItem;
@@ -27,25 +27,25 @@ public class ElectricBlockItem extends BlockItem {
 
 		double maxIn = instance.maxEnergyInput.get();
 		if (maxIn > 0D) {
-			tooltip.accept(Component.translatable("ftbic.max_input", EnergyItemHandler.formatEnergy(maxIn))
+			tooltip.accept(Component.translatable("ftbic.max_input", EnergyDisplay.compactPerTick(maxIn))
 					.withStyle(ChatFormatting.GRAY));
 		}
 
 		double maxOut = instance.maxEnergyOutput.get();
 		if (maxOut > 0D) {
-			tooltip.accept(Component.translatable("ftbic.energy_output", EnergyItemHandler.formatEnergy(maxOut))
+			tooltip.accept(Component.translatable("ftbic.energy_output", EnergyDisplay.compactPerTick(maxOut))
 					.withStyle(ChatFormatting.GRAY));
 		}
 
 		double cap = instance.energyCapacity.get();
 		if (cap > 0D) {
-			tooltip.accept(Component.translatable("ftbic.energy_capacity", EnergyItemHandler.formatEnergy(cap))
+			tooltip.accept(Component.translatable("ftbic.energy_capacity", EnergyDisplay.compactAmount(cap))
 					.withStyle(ChatFormatting.GRAY));
 		}
 
 		double use = instance.energyUsage.get();
 		if (use > 0D) {
-			tooltip.accept(Component.translatable("ftbic.energy_usage", EnergyItemHandler.formatEnergy(use))
+			tooltip.accept(Component.translatable("ftbic.energy_usage", EnergyDisplay.compactPerTick(use))
 					.withStyle(ChatFormatting.DARK_GRAY));
 		}
 	}

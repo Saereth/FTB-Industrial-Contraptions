@@ -81,7 +81,7 @@ public class NuclearReactorMenu extends ElectricBlockMenu {
 		if (blockEntity instanceof NuclearReactorBlockEntity reactor) {
 			activeColumns = Math.max(3, Math.min(NuclearReactor.MAX_COLUMNS, reactor.reactor.activeColumns));
 		}
-		// NOTE: do NOT touch activeColumnsSlot here — this method runs from super() before subclass
+		// NOTE: do NOT touch activeColumnsSlot here, this method runs from super() before subclass
 		// field initializers execute, so the DataSlot is still null. broadcastChanges() syncs it.
 
 		for (int row = 0; row < NuclearReactor.ROWS; row++) {
@@ -104,7 +104,8 @@ public class NuclearReactorMenu extends ElectricBlockMenu {
 			int max = Math.max(1, reactor.reactor.maxHeat);
 			heatScaled.set((int) Math.min(1000L, Math.round(1000D * reactor.reactor.heat / max)));
 			maxHeatScaled.set(Math.min(Short.MAX_VALUE, max));
-			energyOutShort.set(Math.min(Short.MAX_VALUE, (int) Math.round(reactor.reactor.energyOutput)));
+			double output = reactor.reactor.energyOutput * FTBICConfig.MACHINES.NUCLEAR_GENERATOR_OUTPUT.get();
+			energyOutShort.set((int) Math.min(Short.MAX_VALUE, Math.round(output)));
 			runningFlag.set(reactor.reactor.energyOutput > 0D ? 1 : 0);
 			activeColumnsSlot.set(Math.max(3, Math.min(NuclearReactor.MAX_COLUMNS, reactor.reactor.activeColumns)));
 			double extraCooling = FTBICConfig.NUCLEAR.WATER_COOLING_MULTIPLIER.get() - 1D;

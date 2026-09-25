@@ -13,7 +13,7 @@ item_ids:
 <Column alignItems="center" fullWidth={true}>
   <ItemImage id="overclocker_upgrade" scale="2" />
 
-  Multiplies recipe speed by **1.45×** and energy use by **1.6×** per upgrade. Throughput scales exponentially with stacked upgrades — at the cost of a much higher power draw.
+  Multiplies recipe speed by **1.45×** and energy use by **1.6×** per upgrade. Throughput scales exponentially with stacked upgrades, at the cost of a much higher power draw.
 </Column>
 
 <ItemImage id="minecraft:air" scale="0.25"/>

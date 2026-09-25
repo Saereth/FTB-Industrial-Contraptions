@@ -143,7 +143,7 @@ public class MachineBlockEntity extends BasicMachineBlockEntity {
 		if (!recipeDirty && cachedRecipe != null && recipeMatchesInputs(cachedRecipe)) {
 			return cachedRecipe;
 		}
-		// Only scan the full recipe map when inputs actually changed — otherwise an idle machine
+		// Only scan the full recipe map when inputs actually changed, otherwise an idle machine
 		// with non-matching inputs would iterate every recipe every tick.
 		if (!recipeDirty) {
 			return null;

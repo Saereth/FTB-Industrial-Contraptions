@@ -41,9 +41,9 @@ Pipes and hoppers can extract from an output face directly. Install an <ItemLink
 
 ## Machine Rules
 
-Side settings preserve the machine's slot restrictions, energy limits, and conversion rules. Battery boxes default to front output and input on the other faces; you can assign input, output, or both to any face. Their face texture follows the selected output role. Transformers retain their front input, and rectifiers retain their front FE input. The remaining electrical faces keep their existing roles; they can be disabled individually.
+Side settings preserve the machine's slot restrictions, energy limits, and conversion rules. Battery boxes default to front output and input on the other faces; you can assign input, output, or both to any face. Their face texture follows the selected output role. Transformers retain their front input<ZapMode>, and rectifiers retain their front FE input</ZapMode>. The remaining electrical faces keep their existing roles; they can be disabled individually.
 
-Energy settings affect both zaps and FE wherever those interfaces are available. **Default** retains the original behavior of your energy compatibility mode.
+Energy settings apply to FTBIC cables and to FE connections from other mods wherever those interfaces are available. **Default** retains the original behavior of your energy compatibility mode.
 
 A pump offers fluid output; a geothermal generator offers fluid input. On teleporters, item/fluid input fills the send inventory/tank and output drains the receive inventory/tank. Side settings control local access, while the link between teleporters continues operating normally.
 

@@ -22,9 +22,9 @@ navigation:
 
 Recipe-processing machines share:
 
-* **Energy buffer** — shown on the right of the GUI
-* **Progress bar** — fills as the recipe ticks; default 200 ticks / recipe
-* **Upgrade slots** — install <ItemLink id="overclocker_upgrade" />, <ItemLink id="energy_storage_upgrade" />, <ItemLink id="transformer_upgrade" />, or <ItemLink id="ejector_upgrade" />
+* **Energy buffer**: shown on the right of the GUI
+* **Progress bar**: fills as the recipe ticks; default 200 ticks / recipe
+* **Upgrade slots**: install <ItemLink id="overclocker_upgrade" />, <ItemLink id="energy_storage_upgrade" />, <ItemLink id="transformer_upgrade" />, or <ItemLink id="ejector_upgrade" />
 * **[Side Configuration](side_configuration.md)**: independent item, fluid, and energy faces from the I/O button
 * **[Input Slot Locks](side_configuration.md)**: persistent ghost assignments from the L button
 

@@ -28,7 +28,7 @@ public record MoveLaserPayload(BlockPos pos, float x, int y, float z) implements
 
 	public static void handleOnClient(MoveLaserPayload payload, IPayloadContext context) {
 		context.enqueueWork(() -> {
-			// Currently no-op — DiggingBeamRenderer derives its beam from the BE's own state +
+			// Currently no-op. DiggingBeamRenderer derives its beam from the BE's own state +
 			// game time without per-tick position sync. This payload is plumbed end-to-end and
 			// available for a future fine-grained laser-cursor renderer if we want it.
 		});

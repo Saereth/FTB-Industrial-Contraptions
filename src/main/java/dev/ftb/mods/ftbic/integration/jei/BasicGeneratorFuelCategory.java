@@ -5,6 +5,7 @@ import dev.ftb.mods.ftbic.block.FTBICElectricBlocks;
 import dev.ftb.mods.ftbic.item.FTBICItems;
 import dev.ftb.mods.ftbic.recipe.BasicGeneratorFuelRecipe;
 import dev.ftb.mods.ftbic.recipe.FTBICRecipes;
+import dev.ftb.mods.ftbic.util.EnergyDisplay;
 import dev.ftb.mods.ftbic.util.FTBICUtils;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.widgets.IRecipeExtrasBuilder;
@@ -51,10 +52,10 @@ public class BasicGeneratorFuelCategory extends AbstractRecipeCategory<RecipeHol
 
 		builder.addAnimatedRecipeFlame(300).setPosition(26, 5);
 
-		builder.addText(Component.translatable("ftbic.jei.burn_time", FTBICUtils.fmtDouble(seconds, 1), FTBICUtils.fmtDouble(zapsPerTick, 0)), 100, 9)
+		builder.addText(Component.translatable("ftbic.jei.burn_time", FTBICUtils.fmtDouble(seconds, 1), EnergyDisplay.perTick(zapsPerTick)), 100, 9)
 				.setPosition(44, 3)
 				.setColor(0xFF404040);
-		builder.addText(Component.translatable("ftbic.jei.total_zaps", FTBICUtils.fmtInt(totalZaps)), 100, 9)
+		builder.addText(Component.translatable("ftbic.jei.total_zaps", EnergyDisplay.amount(totalZaps)), 100, 9)
 				.setPosition(44, 14)
 				.setColor(0xFF0A7F0A);
 	}

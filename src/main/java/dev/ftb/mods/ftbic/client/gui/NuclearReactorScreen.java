@@ -8,6 +8,7 @@ import dev.ftb.mods.ftbic.item.reactor.ReactorItem;
 import dev.ftb.mods.ftbic.item.reactor.NuclearReactor;
 import dev.ftb.mods.ftbic.net.FTBICNet;
 import dev.ftb.mods.ftbic.net.ReactorDesignPayload;
+import dev.ftb.mods.ftbic.util.EnergyDisplay;
 import dev.ftb.mods.ftbic.util.ReactorDesign;
 import dev.ftb.mods.ftbic.util.ReactorPresetLibrary;
 import net.minecraft.ChatFormatting;
@@ -233,7 +234,7 @@ public class NuclearReactorScreen extends ElectricBlockScreen<NuclearReactorMenu
 
 		g.centeredText(font, (this.menu.isPaused()
 				? Component.translatable("ftbic.reactor.paused")
-				: Component.translatable("ftbic.reactor.energy_output", this.menu.getEnergyOutput()))
+				: EnergyDisplay.perTick(this.menu.getEnergyOutput()))
 				.withStyle(ChatFormatting.WHITE),
 				leftPos + 142, topPos + 6, 0xFFFFFF);
 		g.centeredText(font, Component.translatable("ftbic.reactor.heat_percentage",
@@ -300,8 +301,8 @@ public class NuclearReactorScreen extends ElectricBlockScreen<NuclearReactorMenu
 		int stripY = topPos + CONTROL_STRIP_TOP + (CONTROL_STRIP_H - 10) / 2;
 		if (isIn(mouseX, mouseY, leftPos + 115, topPos + 5, 54, 10)) {
 			Component label = this.menu.isPaused()
-					? Component.translatable("ftbic.reactor.tooltip.paused", this.menu.getEnergyOutput())
-					: Component.translatable("ftbic.reactor.tooltip.output", this.menu.getEnergyOutput());
+					? Component.translatable("ftbic.reactor.tooltip.paused", EnergyDisplay.perTick(this.menu.getEnergyOutput()))
+					: Component.translatable("ftbic.reactor.tooltip.output", EnergyDisplay.perTick(this.menu.getEnergyOutput()));
 			g.setTooltipForNextFrame(label, mouseX, mouseY);
 		}
 		if (isIn(mouseX, mouseY, leftPos + 115, stripY, 54, 10)) {

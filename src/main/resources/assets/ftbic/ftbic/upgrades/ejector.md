@@ -25,4 +25,4 @@ item_ids:
 
 * Choose output faces using [Side Configuration](../machines/side_configuration.md). Input-only and disabled item faces do not eject.
 * Pairs well with the <ItemLink id="powered_crafting_table" /> to build automation chains without hopper chains.
-* One ejector upgrade is enough — additional copies do not speed up output.
+* One ejector upgrade is enough. Additional copies do not speed up output.

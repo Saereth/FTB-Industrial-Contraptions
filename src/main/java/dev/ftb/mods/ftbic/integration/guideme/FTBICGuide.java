@@ -2,6 +2,7 @@ package dev.ftb.mods.ftbic.integration.guideme;
 
 import dev.ftb.mods.ftbic.FTBIC;
 import guideme.Guide;
+import guideme.compiler.TagCompiler;
 import net.minecraft.resources.Identifier;
 
 public class FTBICGuide {
@@ -15,6 +16,8 @@ public class FTBICGuide {
 			guide = Guide.builder(GUIDE_ID)
 				.defaultNamespace(FTBIC.MOD_ID)
 				.folder("ftbic")
+				.extension(TagCompiler.EXTENSION_POINT, new EnergyTagCompiler())
+				.extension(TagCompiler.EXTENSION_POINT, new EnergyModeTagCompiler())
 				.build();
 			FTBIC.LOGGER.info("FTBIC GuideME guide registered");
 		} catch (Exception e) {

@@ -42,6 +42,9 @@ public final class FTBICUtils {
 	}
 
 	public static MutableComponent formatEnergy(double energy) {
+		if (EnergyDisplay.isFE()) {
+			return EnergyDisplay.amount(energy);
+		}
 		return Component.literal("").append(formatEnergyValue(energy) + " ").append(FTBICConfig.ENERGY_FORMAT);
 	}
 

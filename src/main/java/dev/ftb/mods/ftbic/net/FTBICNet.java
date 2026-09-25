@@ -61,6 +61,11 @@ public final class FTBICNet {
 				FTBICRecipeSyncPayload.TYPE,
 				FTBICRecipeSyncPayload.STREAM_CODEC,
 				FTBICRecipeSyncPayload::handleOnClient);
+
+		registrar.playToClient(
+				EnergyModePayload.TYPE,
+				EnergyModePayload.STREAM_CODEC,
+				EnergyModePayload::handleOnClient);
 	}
 
 	public static void sendToPlayer(ServerPlayer player, CustomPacketPayload payload) {

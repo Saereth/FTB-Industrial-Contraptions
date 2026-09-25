@@ -155,7 +155,7 @@ public interface FTBICItems {
 	MaterialItem ENDERIUM_WIRE = material("enderium_wire");
 	DeferredItem<BlockItem> ENDERIUM_BLOCK = blockItem("enderium_block", FTBICBlocks.ENDERIUM_BLOCK);
 
-	// Batteries — capacities resolved lazily so datagen can register without a loaded config.
+	// Batteries: capacities resolved lazily so datagen can register without a loaded config.
 	DeferredItem<Item> SINGLE_USE_BATTERY = REGISTRY.register("single_use_battery",
 			name -> new BatteryItem(props(name), BatteryType.SINGLE_USE, EnergyTier.LV, safeGet(FTBICConfig.ENERGY.SINGLE_USE_BATTERY_CAPACITY, 8_000D)));
 	DeferredItem<Item> LV_BATTERY = REGISTRY.register("lv_battery",

@@ -1,9 +1,10 @@
 package dev.ftb.mods.ftbic.test;
 
+import dev.ftb.mods.ftbic.FTBICConfig;
 import dev.ftb.mods.ftbic.block.FTBICElectricBlocks;
 import dev.ftb.mods.ftbic.block.entity.storage.BankCellBlockEntity;
 import dev.ftb.mods.ftbic.block.entity.storage.BankPortBlockEntity;
-import dev.ftb.mods.ftbic.integration.jade.BankEnergyStorageProvider;
+import dev.ftb.mods.ftbic.integration.jade.FTBICEnergyStorageProvider;
 import dev.ftb.mods.ftbic.util.ZapFEConversion;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -28,7 +29,7 @@ final class BankJadeGameTests {
 		west.energyCapacity = 1_000_000_000D;
 		east.energyCapacity = 1_000_000_000D;
 		west.setEnergyRaw(west.getEnergyCapacity());
-		double rate = ZapFEConversion.rate();
+		double rate = FTBICConfig.ENERGY.FULL_FE_MODE.get() ? ZapFEConversion.rate() : 1D;
 		long capacity = (long) ((west.getEnergyCapacity() + east.getEnergyCapacity() + port.getEnergyCapacity()) * rate);
 		for (BlockPos pos : new BlockPos[]{portPos, portPos.west(), portPos.east()}) {
 			EnergyView.Data data = jadeData(helper, pos);
@@ -46,9 +47,26 @@ final class BankJadeGameTests {
 		helper.succeed();
 	}
 
+	static void electricBlocksHideDefaultBar(GameTestHelper helper) {
+		BlockPos pos = new BlockPos(1, 2, 1);
+		helper.setBlock(pos, FTBICElectricBlocks.EV_BATTERY_BOX.block.get());
+		var result = EnergyStorageProvider.BLOCK.streamData(accessor(helper, pos));
+		helper.assertTrue(result != null, "Jade finds an energy provider for the battery box");
+		helper.assertValueEqual(FTBICEnergyStorageProvider.INSTANCE.getUid(), result.getKey(), "FTBIC's provider takes precedence over the FE capability");
+		helper.assertTrue(result.getValue().isEmpty(), "Jade's default bar is hidden where FTBIC shows its own energy line");
+		helper.succeed();
+	}
+
 	private static EnergyView.Data jadeData(GameTestHelper helper, BlockPos relative) {
+		var result = EnergyStorageProvider.BLOCK.streamData(accessor(helper, relative));
+		helper.assertTrue(result != null, "Jade finds an energy provider for the bank");
+		helper.assertValueEqual(FTBICEnergyStorageProvider.INSTANCE.getUid(), result.getKey(), "bank provider takes precedence over the port's FE capability");
+		return result.getValue().getFirst().views.getFirst();
+	}
+
+	private static BlockAccessor accessor(GameTestHelper helper, BlockPos relative) {
 		BlockPos pos = helper.absolutePos(relative);
-		BlockAccessor accessor = (BlockAccessor) Proxy.newProxyInstance(BlockAccessor.class.getClassLoader(),
+		return (BlockAccessor) Proxy.newProxyInstance(BlockAccessor.class.getClassLoader(),
 				new Class<?>[]{BlockAccessor.class}, (proxy, method, arguments) -> switch (method.getName()) {
 					case "getLevel" -> helper.getLevel();
 					case "getPosition" -> pos;
@@ -61,9 +79,5 @@ final class BankJadeGameTests {
 					case "isServersideContent", "showDetails" -> true;
 					default -> throw new UnsupportedOperationException(method.getName());
 				});
-		var result = EnergyStorageProvider.BLOCK.streamData(accessor);
-		helper.assertTrue(result != null, "Jade finds an energy provider for the bank");
-		helper.assertValueEqual(BankEnergyStorageProvider.INSTANCE.getUid(), result.getKey(), "bank provider takes precedence over the port's FE capability");
-		return result.getValue().getFirst().views.getFirst();
 	}
 }
