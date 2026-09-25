@@ -92,6 +92,22 @@ public class GeneratorBlockEntity extends ElectricBlockEntity {
 	public void handleGeneration() {
 	}
 
+	protected List<BatteryInventory> chargeInventories() {
+		return List.of(chargeBatteryInventory);
+	}
+
+	private double chargeItem(ItemStack battery, double remainingOutput) {
+		if (battery.isEmpty()) return 0D;
+		if (battery.getItem() instanceof EnergyItemHandler item) {
+			double transfer = item.isCreativeEnergyItem()
+					? Double.POSITIVE_INFINITY
+					: remainingOutput * FTBICConfig.MACHINES.ITEM_TRANSFER_EFFICIENCY.get();
+			return item.insertEnergy(battery, Math.min(energy, Math.min(transfer, remainingOutput)), false);
+		}
+		double transfer = remainingOutput * FTBICConfig.MACHINES.ITEM_TRANSFER_EFFICIENCY.get();
+		return BatterySlotHelper.chargeForeignItem(battery, Math.min(energy, Math.min(transfer, remainingOutput)));
+	}
+
 	public void handleEnergyOutput() {
 		if (level == null || level.isClientSide()) {
 			return;
@@ -99,18 +115,9 @@ public class GeneratorBlockEntity extends ElectricBlockEntity {
 
 		double remainingOutput = maxEnergyOutputTransfer - pushFEToNeighbours();
 
-		if (energy > 0D) {
-			ItemStack battery = chargeBatteryInventory.getStackInSlot(0);
-			double accepted;
-			if (!battery.isEmpty() && battery.getItem() instanceof EnergyItemHandler item) {
-				double transfer = item.isCreativeEnergyItem()
-						? Double.POSITIVE_INFINITY
-						: remainingOutput * FTBICConfig.MACHINES.ITEM_TRANSFER_EFFICIENCY.get();
-				accepted = item.insertEnergy(battery, Math.min(energy, Math.min(transfer, remainingOutput)), false);
-			} else {
-				double transfer = remainingOutput * FTBICConfig.MACHINES.ITEM_TRANSFER_EFFICIENCY.get();
-				accepted = BatterySlotHelper.chargeForeignItem(battery, Math.min(energy, Math.min(transfer, remainingOutput)));
-			}
+		for (BatteryInventory inventory : chargeInventories()) {
+			if (energy <= 0D || remainingOutput <= 0D) break;
+			double accepted = chargeItem(inventory.getStackInSlot(0), remainingOutput);
 			if (accepted > 0) {
 				energy -= accepted;
 				remainingOutput -= accepted;

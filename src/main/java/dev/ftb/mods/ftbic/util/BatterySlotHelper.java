@@ -50,6 +50,14 @@ public final class BatterySlotHelper {
 		return ItemAccess.forStack(stack).getCapability(Capabilities.Energy.ITEM);
 	}
 
+	public static boolean needsCharge(ItemStack stack) {
+		if (stack.getItem() instanceof EnergyItemHandler item) {
+			return !item.isCreativeEnergyItem() && item.canInsertEnergy() && item.getEnergy(stack) < item.getEnergyCapacity(stack);
+		}
+		EnergyHandler handler = foreignEnergyHandler(stack);
+		return handler != null && handler.getAmountAsLong() < handler.getCapacityAsLong();
+	}
+
 	public static boolean isForeignEnergyItem(ItemStack stack) {
 		return foreignEnergyHandler(stack) != null;
 	}

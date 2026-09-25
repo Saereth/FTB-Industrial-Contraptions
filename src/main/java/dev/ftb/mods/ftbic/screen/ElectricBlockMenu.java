@@ -1,10 +1,13 @@
 package dev.ftb.mods.ftbic.screen;
 
 import dev.ftb.mods.ftbic.block.entity.ElectricBlockEntity;
+import dev.ftb.mods.ftbic.block.entity.generator.GeneratorBlockEntity;
 import dev.ftb.mods.ftbic.block.entity.machine.BasicMachineBlockEntity;
+import dev.ftb.mods.ftbic.block.entity.machine.BatteryInventory;
 import dev.ftb.mods.ftbic.block.entity.machine.ChargePadBlockEntity;
 import dev.ftb.mods.ftbic.block.entity.machine.MachineBlockEntity;
 import dev.ftb.mods.ftbic.item.UpgradeItem;
+import dev.ftb.mods.ftbic.util.BatterySlotHelper;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
@@ -103,6 +106,17 @@ public abstract class ElectricBlockMenu extends AbstractContainerMenu {
 		if (!(blockEntity instanceof BasicMachineBlockEntity bm)) return;
 		BatteryInventoryContainer c = new BatteryInventoryContainer(bm.batteryInventory);
 		addSlot(new BatterySlot(c, 0, x, y));
+		machineSlotCount++;
+	}
+
+	protected void addChargeSlot(int x, int y) {
+		if (blockEntity instanceof GeneratorBlockEntity generator) {
+			addChargeSlot(generator.chargeBatteryInventory, x, y);
+		}
+	}
+
+	protected void addChargeSlot(BatteryInventory inventory, int x, int y) {
+		addSlot(new ChargeSlot(new BatteryInventoryContainer(inventory), 0, x, y));
 		machineSlotCount++;
 	}
 
@@ -218,7 +232,8 @@ public abstract class ElectricBlockMenu extends AbstractContainerMenu {
 			}
 			int inputEnd = blockEntity == null ? 0 : blockEntity.inputItems.length;
 			boolean moved = false;
-			if (batteryStart >= 0 && slots.get(batteryStart).mayPlace(stack)) {
+			if (batteryStart >= 0 && slots.get(batteryStart).mayPlace(stack)
+					&& !(slots.get(batteryStart) instanceof ChargeSlot && !BatterySlotHelper.needsCharge(stack))) {
 				moved = moveItemStackTo(stack, batteryStart, batteryEnd, false);
 			}
 			if (!moved && upgradeStart >= 0 && slots.get(upgradeStart).mayPlace(stack)) {

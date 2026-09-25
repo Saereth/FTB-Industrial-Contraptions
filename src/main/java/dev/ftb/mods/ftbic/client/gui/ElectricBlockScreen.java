@@ -17,6 +17,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
 import net.neoforged.neoforge.fluids.FluidStack;
 import dev.ftb.mods.ftbic.screen.BatterySlot;
+import dev.ftb.mods.ftbic.screen.ChargeSlot;
 import dev.ftb.mods.ftbic.screen.PickaxeSlot;
 import dev.ftb.mods.ftbic.screen.UpgradeSlot;
 import dev.ftb.mods.ftbic.util.FTBICUtils;
@@ -110,6 +111,8 @@ public class ElectricBlockScreen<T extends ElectricBlockMenu> extends AbstractCo
 		if (slot == null || slot.hasItem()) return;
 		if (slot instanceof UpgradeSlot) {
 			graphics.setTooltipForNextFrame(Component.translatable("ftbic.gui.slot.upgrade"), mouseX, mouseY);
+		} else if (slot instanceof ChargeSlot) {
+			graphics.setTooltipForNextFrame(Component.translatable("ftbic.gui.slot.charge"), mouseX, mouseY);
 		} else if (slot instanceof BatterySlot) {
 			graphics.setTooltipForNextFrame(Component.translatable("ftbic.gui.slot.battery"), mouseX, mouseY);
 		} else if (slot instanceof PickaxeSlot) {

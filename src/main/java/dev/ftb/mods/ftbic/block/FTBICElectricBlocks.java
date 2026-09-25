@@ -279,28 +279,28 @@ public interface FTBICElectricBlocks {
 			.energyCapacity(FTBICConfig.ENERGY.LV_BATTERY_BOX_CAPACITY)
 			.maxEnergyInput(FTBICConfig.ENERGY.LV_TRANSFER_RATE)
 			.maxEnergyOutput(FTBICConfig.ENERGY.LV_TRANSFER_RATE)
-			.io(1, 1);
+			.io(1, 0);
 
 	ElectricBlockInstance MV_BATTERY_BOX = register("mv_battery_box", MVBatteryBoxBlockEntity::new)
 			.name("MV Battery Box").rotate3D().cantBeActive().canBurn()
 			.energyCapacity(FTBICConfig.ENERGY.MV_BATTERY_BOX_CAPACITY)
 			.maxEnergyInput(FTBICConfig.ENERGY.MV_TRANSFER_RATE)
 			.maxEnergyOutput(FTBICConfig.ENERGY.MV_TRANSFER_RATE)
-			.io(1, 1);
+			.io(1, 0);
 
 	ElectricBlockInstance HV_BATTERY_BOX = register("hv_battery_box", HVBatteryBoxBlockEntity::new)
 			.advanced().name("HV Battery Box").rotate3D().cantBeActive().canBurn()
 			.energyCapacity(FTBICConfig.ENERGY.HV_BATTERY_BOX_CAPACITY)
 			.maxEnergyInput(FTBICConfig.ENERGY.HV_TRANSFER_RATE)
 			.maxEnergyOutput(FTBICConfig.ENERGY.HV_TRANSFER_RATE)
-			.io(1, 1);
+			.io(1, 0);
 
 	ElectricBlockInstance EV_BATTERY_BOX = register("ev_battery_box", EVBatteryBoxBlockEntity::new)
 			.advanced().name("EV Battery Box").rotate3D().cantBeActive().canBurn()
 			.energyCapacity(FTBICConfig.ENERGY.EV_BATTERY_BOX_CAPACITY)
 			.maxEnergyInput(FTBICConfig.ENERGY.EV_TRANSFER_RATE)
 			.maxEnergyOutput(FTBICConfig.ENERGY.EV_TRANSFER_RATE)
-			.io(1, 1);
+			.io(1, 0);
 
 	// Transformers //
 

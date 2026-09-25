@@ -4,11 +4,15 @@ import dev.ftb.mods.ftbic.FTBIC;
 import dev.ftb.mods.ftbic.FTBICConfig;
 import dev.ftb.mods.ftbic.block.ElectricBlockInstance;
 import dev.ftb.mods.ftbic.block.FTBICElectricBlocks;
+import dev.ftb.mods.ftbic.block.entity.generator.GeneratorBlockEntity;
 import dev.ftb.mods.ftbic.block.entity.machine.BasicMachineBlockEntity;
+import dev.ftb.mods.ftbic.block.entity.storage.BankCellBlockEntity;
+import dev.ftb.mods.ftbic.block.entity.storage.BankPortBlockEntity;
 import dev.ftb.mods.ftbic.item.BatteryItem;
 import dev.ftb.mods.ftbic.item.FTBICItems;
 import dev.ftb.mods.ftbic.recipe.RecipeToggleCondition;
 import dev.ftb.mods.ftbic.registry.ModDataComponents;
+import dev.ftb.mods.ftbic.screen.ChargeSlot;
 import dev.ftb.mods.ftbic.util.GhostItem;
 import dev.ftb.mods.ftbic.util.MachineConfiguration;
 import dev.ftb.mods.ftbic.util.SideConfiguration;
@@ -21,10 +25,14 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.util.ProblemReporter;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.item.enchantment.Enchantments;
+import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.storage.TagValueInput;
@@ -123,5 +131,84 @@ final class ReviewFixGameTests {
 		samples.forEach((path, value) -> helper.assertValueEqual(value.get(),
 				recipes.byKey(ResourceKey.create(Registries.RECIPE, FTBIC.id(path))).isPresent(), path + " loads only when its toggle is on"));
 		helper.succeed();
+	}
+
+	static void batteryBoxesExposeChargeSlot(GameTestHelper helper) {
+		Player player = helper.makeMockPlayer(GameType.SURVIVAL);
+		for (ElectricBlockInstance instance : List.of(FTBICElectricBlocks.BASIC_GENERATOR, FTBICElectricBlocks.GEOTHERMAL_GENERATOR, FTBICElectricBlocks.LV_SOLAR_PANEL)) {
+			helper.setBlock(POS, instance.block.get());
+			AbstractContainerMenu menu = helper.getBlockEntity(POS, GeneratorBlockEntity.class).createMenu(0, player.getInventory());
+			helper.assertFalse(menu.slots.stream().anyMatch(slot -> slot instanceof ChargeSlot), instance.id + " has no charge slot");
+			helper.setBlock(POS, Blocks.AIR);
+		}
+
+		for (ElectricBlockInstance instance : List.of(FTBICElectricBlocks.LV_BATTERY_BOX, FTBICElectricBlocks.EV_BATTERY_BOX)) {
+			helper.setBlock(POS, instance.block.get());
+			GeneratorBlockEntity generator = helper.getBlockEntity(POS, GeneratorBlockEntity.class);
+			AbstractContainerMenu menu = generator.createMenu(0, player.getInventory());
+			helper.assertTrue(menu.slots.stream().anyMatch(slot -> slot instanceof ChargeSlot), instance.id + " shows a charge slot");
+			player.getInventory().setItem(0, new ItemStack(FTBICItems.LV_BATTERY.get()));
+			menu.quickMoveStack(player, playerSlot(menu, player, 0));
+			helper.assertTrue(generator.chargeBatteryInventory.getStackInSlot(0).is(FTBICItems.LV_BATTERY.get()),
+					instance.id + " takes an empty battery into its charge slot on Shift-click");
+			generator.chargeBatteryInventory.setStackInSlot(0, ItemStack.EMPTY);
+			player.getInventory().setItem(0, ItemStack.EMPTY);
+			helper.setBlock(POS, Blocks.AIR);
+		}
+
+		helper.setBlock(POS, FTBICElectricBlocks.LV_BATTERY_BOX.block.get());
+		GeneratorBlockEntity box = helper.getBlockEntity(POS, GeneratorBlockEntity.class);
+		AbstractContainerMenu menu = box.createMenu(0, player.getInventory());
+		ItemStack full = new ItemStack(FTBICItems.LV_BATTERY.get());
+		BatteryItem battery = (BatteryItem) full.getItem();
+		battery.setEnergy(full, battery.getEnergyCapacity(full));
+		player.getInventory().setItem(0, full);
+		menu.quickMoveStack(player, playerSlot(menu, player, 0));
+		helper.assertTrue(box.inputItems[0].is(FTBICItems.LV_BATTERY.get()), "A full battery goes to the battery box discharge slot");
+		helper.assertTrue(box.chargeBatteryInventory.getStackInSlot(0).isEmpty(), "A full battery skips the charge slot");
+		helper.succeed();
+	}
+
+	static void bankPortChargeSlots(GameTestHelper helper) {
+		Player player = helper.makeMockPlayer(GameType.SURVIVAL);
+		helper.setBlock(POS, FTBICElectricBlocks.INDUSTRIAL_BANK_PORT.block.get());
+		helper.setBlock(POS.east(), FTBICElectricBlocks.INDUSTRIAL_BANK_CELL.block.get());
+		BankPortBlockEntity port = helper.getBlockEntity(POS, BankPortBlockEntity.class);
+		BankCellBlockEntity cell = helper.getBlockEntity(POS.east(), BankCellBlockEntity.class);
+
+		AbstractContainerMenu portMenu = port.createMenu(0, player.getInventory());
+		helper.assertValueEqual(BankPortBlockEntity.CHARGE_SLOTS, (int) portMenu.slots.stream().filter(slot -> slot instanceof ChargeSlot).count(), "A bank port shows four charge slots");
+		AbstractContainerMenu cellMenu = cell.createMenu(0, player.getInventory());
+		helper.assertFalse(cellMenu.slots.stream().anyMatch(slot -> slot instanceof ChargeSlot), "A bank cell shows no charge slots");
+
+		player.getInventory().setItem(0, new ItemStack(FTBICItems.LV_BATTERY.get()));
+		portMenu.quickMoveStack(player, playerSlot(portMenu, player, 0));
+		helper.assertTrue(port.chargeSlots.get(0).getStackInSlot(0).is(FTBICItems.LV_BATTERY.get()), "Shift-click fills the first port charge slot");
+		port.chargeSlots.get(3).setStackInSlot(0, new ItemStack(FTBICItems.LV_BATTERY.get()));
+
+		HolderLookup.Provider registries = helper.getLevel().registryAccess();
+		CompoundTag tag = port.saveCustomOnly(registries);
+		port.chargeSlots.get(3).setStackInSlot(0, ItemStack.EMPTY);
+		port.loadCustomOnly(TagValueInput.create(ProblemReporter.DISCARDING, registries, tag));
+		helper.assertTrue(port.chargeSlots.get(3).getStackInSlot(0).is(FTBICItems.LV_BATTERY.get()), "Port charge slots survive a reload");
+
+		cell.setEnergyRaw(cell.getEnergyCapacity());
+		double before = cell.getEnergy();
+		helper.runAfterDelay(20, () -> {
+			for (int slot : new int[] {0, 3}) {
+				ItemStack battery = port.chargeSlots.get(slot).getStackInSlot(0);
+				helper.assertTrue(((BatteryItem) battery.getItem()).getEnergy(battery) > 0D, "Port charge slot " + slot + " charges from the bank");
+			}
+			helper.assertTrue(cell.getEnergy() < before, "Charging draws on the bank's cells");
+			helper.succeed();
+		});
+	}
+
+	private static int playerSlot(AbstractContainerMenu menu, Player player, int inventorySlot) {
+		for (int i = 0; i < menu.slots.size(); i++) {
+			Slot slot = menu.slots.get(i);
+			if (slot.container == player.getInventory() && slot.getContainerSlot() == inventorySlot) return i;
+		}
+		throw new IllegalStateException("Player inventory slot " + inventorySlot + " is not in the menu");
 	}
 }

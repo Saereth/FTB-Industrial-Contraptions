@@ -8,14 +8,14 @@ import net.minecraft.world.entity.player.Inventory;
 
 public class BankScreen extends ElectricBlockScreen<BankMenu> {
 	public BankScreen(BankMenu menu, Inventory inventory, Component title) {
-		super(menu, inventory, Component.translatable("ftbic.bank.title"), 176, 198);
+		super(menu, inventory, Component.translatable("ftbic.bank.title"), 176, 220);
 		drawDefaultArrow = false;
 	}
 
 	@Override
 	protected void init() {
 		super.init();
-		inventoryLabelY = 99;
+		inventoryLabelY = 121;
 	}
 
 	@Override
@@ -32,5 +32,10 @@ public class BankScreen extends ElectricBlockScreen<BankMenu> {
 		graphics.fill(leftPos + 13, topPos + 85, leftPos + 13 + width, topPos + 91, IndustrialGui.CYAN);
 		graphics.text(font, Component.translatable("ftbic.bank.members", menu.cells.get(), menu.ports.get()),
 				leftPos + 15, topPos + 69, 0xFFBAC7C8, false);
+		if (menu.hasChargeSlots()) {
+			graphics.text(font, Component.translatable("ftbic.bank.charge"), leftPos + 10, topPos + 103, IndustrialGui.CYAN, false);
+		} else {
+			graphics.centeredText(font, Component.translatable("ftbic.bank.charge_hint"), leftPos + imageWidth / 2, topPos + 103, 0xFFBAC7C8);
+		}
 	}
 }

@@ -19,6 +19,8 @@ public class FTBICLanguageProvider extends LanguageProvider {
 		add("ftbic.bank.title", "Industrial Battery Bank");
 		add("ftbic.bank.stored", "STORED ENERGY");
 		add("ftbic.bank.members", "Cells: %s    Ports: %s");
+		add("ftbic.bank.charge", "Charge");
+		add("ftbic.bank.charge_hint", "Use a port to charge items");
 		add("ftbic.bank_port.style.port", "Port texture");
 		add("ftbic.bank_port.style.gauge", "Gauge texture");
 		add("ftbic.bank_port.style.basic", "Basic texture");
@@ -523,6 +525,7 @@ public class FTBICLanguageProvider extends LanguageProvider {
 
 		add("ftbic.gui.slot.upgrade", "Upgrade Slot");
 		add("ftbic.gui.slot.battery", "Battery Slot");
+		add("ftbic.gui.slot.charge", "Charge Slot");
 		add("ftbic.gui.slot.pickaxe", "Pickaxe Slot (applies enchantments to mined blocks)");
 
 		add("ftbic.gui.iron_furnace.progress", "Progress: %s%%. Click to show recipes.");

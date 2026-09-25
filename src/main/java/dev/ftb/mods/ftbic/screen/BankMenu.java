@@ -1,6 +1,7 @@
 package dev.ftb.mods.ftbic.screen;
 
 import dev.ftb.mods.ftbic.block.entity.ElectricBlockEntity;
+import dev.ftb.mods.ftbic.block.entity.storage.BankPortBlockEntity;
 import dev.ftb.mods.ftbic.block.entity.storage.BankTopology;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
@@ -9,7 +10,21 @@ import net.minecraft.world.inventory.DataSlot;
 public class BankMenu extends ElectricBlockMenu {
 	@Override
 	protected int getPlayerSlotOffset() {
-		return 112;
+		return 134;
+	}
+
+	@Override
+	protected void addMachineSlots(Inventory playerInv) {
+		machineSlotCount = 0;
+		if (blockEntity instanceof BankPortBlockEntity port) {
+			for (int i = 0; i < port.chargeSlots.size(); i++) {
+				addChargeSlot(port.chargeSlots.get(i), 53 + i * 18, 99);
+			}
+		}
+	}
+
+	public boolean hasChargeSlots() {
+		return blockEntity instanceof BankPortBlockEntity;
 	}
 	public final DataSlot cells = DataSlot.standalone();
 	public final DataSlot ports = DataSlot.standalone();

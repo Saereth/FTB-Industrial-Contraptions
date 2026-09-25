@@ -24,7 +24,7 @@ item_ids:
 
 ## <Color id="gold">Industrial Battery Bank</Color>
 
-Place <ItemLink id="industrial_bank_cell" /> and <ItemLink id="industrial_bank_port" /> face to face to form one bank. Each cell adds storage; each port accepts and supplies energy through its exposed faces. Add more ports for more connections. Right-click any cell or port to see the bank's charge, capacity, and member counts. The side configuration on a port can restrict input and output faces.
+Place <ItemLink id="industrial_bank_cell" /> and <ItemLink id="industrial_bank_port" /> face to face to form one bank. Each cell adds storage; each port accepts and supplies energy through its exposed faces. Add more ports for more connections. Right-click any cell or port to see the bank's charge, capacity, and member counts. A port's screen also has four **charge** slots that charge batteries and other energy items from the bank. The side configuration on a port can restrict input and output faces.
 
 Each cell holds <Energy config="energy.bank_cell_capacity" />. Each port automatically outputs up to <Energy config="energy.bank_port_transfer" rate="true" /> and accepts up to that amount in one input transaction. Incoming energy moves into connected cells so the port can keep accepting power. Server config controls both values and the maximum number of blocks searched per bank. Energy remains in each cell if you split the bank, and reconnecting cells restores the shared readout. Bank casings join visually along touching faces.
 
@@ -107,7 +107,7 @@ Infinite energy. Creative-only.
   ## <Color id="gold">Battery Boxes</Color>
 </Column>
 
-A battery box has four **charge** slots and four **discharge** slots. Place charged batteries in the discharge slots to feed the network; drop empty batteries in the charge slots to refill them. Each box also has an internal buffer matched to its tier.
+A battery box has a **discharge** slot on the left and a **charge** slot on the right. Place a charged battery in the discharge slot to feed the box; put an empty battery or other energy item in the charge slot to refill it. Each box also has an internal buffer matched to its tier.
 
 Open **I/O**, choose **Energy**, then set any face to **Output** to send power there. You can set several faces to Output. Set a face to **Input** to receive power, **Both** to allow both directions, or **Disabled** to disconnect it. **Default** keeps the original arrangement: the front outputs, and the other faces input. Each face changes between the input and output texture when its output role changes. The same controls work on LV, MV, HV, and EV Battery Boxes.
 

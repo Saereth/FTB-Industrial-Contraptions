@@ -54,6 +54,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Wrong tiers, speeds and recharge rules on several guide pages.
 * The `[recipes]` config toggles having no effect.
 * Lag from other mods feeding FE into large cable networks.
+* Battery boxes having no usable charge slot.
 
 ### Added
 
@@ -83,6 +84,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Items with the `ftbic:loot_box` data component can open a chosen loot table. Crouching opens the whole stack at once. Based on [PR 56](https://github.com/FTBTeam/FTB-Industrial-Contraptions/pull/56) by @jshipley.
 * Full FE mode lets other mods charge FTBIC batteries and armour, and FTBIC battery slots and Charge Pads accept other mods' FE items.
 * Battery boxes and Industrial Battery Bank blocks keep their stored energy when broken.
+* Industrial Battery Bank ports have four charge slots for batteries and other energy items.
 
 ### Changed
 

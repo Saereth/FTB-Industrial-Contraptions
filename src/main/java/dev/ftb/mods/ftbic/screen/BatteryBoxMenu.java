@@ -21,9 +21,8 @@ public class BatteryBoxMenu extends ElectricBlockMenu {
 		}
 		ElectricBlockEntityContainer container = new ElectricBlockEntityContainer(blockEntity);
 		int inputs = blockEntity.inputItems.length;
-		int outputs = blockEntity.outputItems.length;
 		if (inputs > 0) addSlot(new FilteredInputSlot(container, 0, 53, 35));
-		if (outputs > 0) addSlot(new OutputSlot(container, inputs, 109, 35));
-		machineSlotCount = inputs + outputs;
+		machineSlotCount = inputs;
+		addChargeSlot(109, 35);
 	}
 }

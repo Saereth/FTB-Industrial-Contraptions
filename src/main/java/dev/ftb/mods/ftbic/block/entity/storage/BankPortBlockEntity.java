@@ -5,6 +5,7 @@ import dev.ftb.mods.ftbic.block.BatteryBankBlock;
 import dev.ftb.mods.ftbic.block.FTBICElectricBlocks;
 import dev.ftb.mods.ftbic.block.entity.ElectricBlockEntity;
 import dev.ftb.mods.ftbic.block.entity.generator.GeneratorBlockEntity;
+import dev.ftb.mods.ftbic.block.entity.machine.BatteryInventory;
 import dev.ftb.mods.ftbic.screen.BankMenu;
 import dev.ftb.mods.ftbic.util.SideConfiguration.Face;
 import dev.ftb.mods.ftbic.util.SideConfiguration.Resource;
@@ -12,11 +13,14 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -31,14 +35,36 @@ public class BankPortBlockEntity extends GeneratorBlockEntity {
 		}
 	}
 
+	public static final int CHARGE_SLOTS = 4;
+
 	private int displayCharge;
 	private FaceStyle faceStyle = FaceStyle.PORT;
 	private long bankWalkTime = Long.MIN_VALUE;
 	private long bankWalkNetwork;
 	private List<ElectricBlockEntity> bankMembers = List.of();
 	private List<BankCellBlockEntity> bankCells = List.of();
+	public final List<BatteryInventory> chargeSlots;
+
 	public BankPortBlockEntity(BlockPos pos, BlockState state) {
 		super(FTBICElectricBlocks.INDUSTRIAL_BANK_PORT, pos, state);
+		List<BatteryInventory> slots = new ArrayList<>();
+		for (int i = 0; i < CHARGE_SLOTS; i++) {
+			slots.add(new BatteryInventory(this, true));
+		}
+		chargeSlots = List.copyOf(slots);
+	}
+
+	@Override
+	protected List<BatteryInventory> chargeInventories() {
+		return chargeSlots;
+	}
+
+	@Override
+	public void onBroken(Level level, BlockPos pos) {
+		super.onBroken(level, pos);
+		for (BatteryInventory slot : chargeSlots) {
+			Block.popResource(level, pos, slot.getStackInSlot(0));
+		}
 	}
 
 	@Override
@@ -163,6 +189,12 @@ public class BankPortBlockEntity extends GeneratorBlockEntity {
 		super.saveAdditional(output);
 		output.putInt("DisplayCharge", displayCharge);
 		output.putString("FaceStyle", faceStyle.name().toLowerCase(Locale.ROOT));
+		for (int i = 0; i < chargeSlots.size(); i++) {
+			ItemStack stack = chargeSlots.get(i).getStackInSlot(0);
+			if (!stack.isEmpty()) {
+				output.store("ChargeSlot" + i, ItemStack.CODEC, stack);
+			}
+		}
 	}
 
 	@Override
@@ -175,6 +207,9 @@ public class BankPortBlockEntity extends GeneratorBlockEntity {
 			case "basic" -> FaceStyle.BASIC;
 			default -> FaceStyle.PORT;
 		};
+		for (int i = 0; i < chargeSlots.size(); i++) {
+			chargeSlots.get(i).loadItem(input.read("ChargeSlot" + i, ItemStack.CODEC).orElse(ItemStack.EMPTY));
+		}
 	}
 
 	@Override

@@ -33,6 +33,9 @@ public class FTBICGameTests {
 		Holder<TestEnvironmentDefinition<?>> env = event.registerEnvironment(
 				FTBIC.id("default"),
 				new TestEnvironmentDefinition.AllOf());
+		Holder<TestEnvironmentDefinition<?>> nightEnv = event.registerEnvironment(
+				FTBIC.id("night"),
+				new TestEnvironmentDefinition.AllOf());
 		reg(event, "upgrade_shift_click_limit", UpgradeInventoryGameTests::shiftClickLimit, env, 60);
 		reg(event, "upgrade_sneak_insert", UpgradeInventoryGameTests::sneakInsert, env, 60);
 		reg(event, "refining_full_chain", RefiningGameTests::fullChain, env, 60);
@@ -64,6 +67,8 @@ public class FTBICGameTests {
 		reg(event, "review_upgraded_energy_survives_reload", ReviewFixGameTests::upgradedEnergySurvivesReload, env, 60);
 		reg(event, "review_configuration_card_syncs_enchanted_items", ReviewFixGameTests::configurationCardSyncsEnchantedItems, env, 60);
 		reg(event, "review_recipe_toggles_follow_config", ReviewFixGameTests::recipeTogglesFollowConfig, env, 60);
+		reg(event, "review_battery_boxes_expose_charge_slot", ReviewFixGameTests::batteryBoxesExposeChargeSlot, env, 60);
+		reg(event, "review_bank_port_charge_slots", ReviewFixGameTests::bankPortChargeSlots, env, 100);
 		reg(event, "energy_retention_battery_box_drop", EnergyRetentionGameTests::batteryBoxDropKeepsEnergy, env, 60);
 		reg(event, "energy_retention_battery_box_place", EnergyRetentionGameTests::batteryBoxPlacementRestoresEnergy, env, 60);
 		reg(event, "energy_retention_bank_cell", EnergyRetentionGameTests::bankCellRoundTrip, env, 60);
@@ -132,7 +137,7 @@ public class FTBICGameTests {
 		reg(event, "basic_generator_empty_stays_idle", FTBICGameTestFunctions::basicGeneratorEmptyStaysIdle, env, 200);
 		reg(event, "basic_generator_stops_when_full", FTBICGameTestFunctions::basicGeneratorStopsWhenFull, env, 200);
 		reg(event, "solar_panel_day", FTBICGameTestFunctions::solarPanelDay, env, 200);
-		reg(event, "solar_panel_night", FTBICGameTestFunctions::solarPanelNight, env, 200);
+		reg(event, "solar_panel_night", FTBICGameTestFunctions::solarPanelNight, nightEnv, 200);
 		reg(event, "solar_panel_obstructed", FTBICGameTestFunctions::solarPanelObstructed, env, 200);
 		reg(event, "ev_solar_outputs_more_than_lv", FTBICGameTestFunctions::evSolarOutputsMoreThanLv, env, 200);
 		reg(event, "geothermal_consumes_lava", FTBICGameTestFunctions::geothermalConsumesLava, env, 200);
