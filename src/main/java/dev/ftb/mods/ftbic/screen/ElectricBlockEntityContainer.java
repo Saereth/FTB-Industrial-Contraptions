@@ -1,6 +1,7 @@
 package dev.ftb.mods.ftbic.screen;
 
 import dev.ftb.mods.ftbic.block.entity.ElectricBlockEntity;
+import dev.ftb.mods.ftbic.block.entity.machine.MachineBlockEntity;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -67,6 +68,7 @@ public class ElectricBlockEntityContainer implements Container {
 
 	@Override
 	public void setChanged() {
+		if (be instanceof MachineBlockEntity machine) machine.markRecipeDirty();
 		be.setChanged();
 	}
 

@@ -19,6 +19,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStackTemplate;
+import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.common.conditions.ConditionalOps;
@@ -39,7 +40,7 @@ import java.util.function.Function;
 /** Expands material profiles into normal server recipes using the tags staged for this reload. */
 @EventBusSubscriber(modid = FTBIC.MOD_ID)
 public final class RefiningRecipeGenerator {
-	@SubscribeEvent
+	@SubscribeEvent(priority = EventPriority.HIGH)
 	public static void recipes(ModifyRecipeJsonsEvent event) {
 		var getter = event.lookupOrThrow(Registries.ITEM).getter();
 		if (!(getter instanceof HolderLookup<?> lookup)) {

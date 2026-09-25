@@ -33,6 +33,10 @@ public class BankPortBlockEntity extends GeneratorBlockEntity {
 
 	private int displayCharge;
 	private FaceStyle faceStyle = FaceStyle.PORT;
+	private long bankWalkTime = Long.MIN_VALUE;
+	private long bankWalkNetwork;
+	private List<ElectricBlockEntity> bankMembers = List.of();
+	private List<BankCellBlockEntity> bankCells = List.of();
 	public BankPortBlockEntity(BlockPos pos, BlockState state) {
 		super(FTBICElectricBlocks.INDUSTRIAL_BANK_PORT, pos, state);
 	}
@@ -51,10 +55,21 @@ public class BankPortBlockEntity extends GeneratorBlockEntity {
 	@Override
 	public void handleGeneration() {
 		if (level == null) return;
-		List<BankCellBlockEntity> cells = BankTopology.cells(level, worldPosition);
-		storeInCells(cells);
+		walkBank();
+		storeInCells(bankCells);
 		// Stage bank energy for the generator's output pass this tick.
-		refillFromCells(cells);
+		refillFromCells(bankCells);
+	}
+
+	private void walkBank() {
+		long time = level.getGameTime();
+		long network = getCurrentElectricNetwork(level, worldPosition);
+		if (time != bankWalkTime || network != bankWalkNetwork) {
+			bankMembers = BankTopology.members(level, worldPosition);
+			bankCells = BankTopology.cells(bankMembers);
+			bankWalkTime = time;
+			bankWalkNetwork = network;
+		}
 	}
 
 	private void storeInCells(List<BankCellBlockEntity> cells) {
@@ -88,7 +103,8 @@ public class BankPortBlockEntity extends GeneratorBlockEntity {
 		super.handleEnergyOutput();
 		if (level != null && !level.isClientSide()) {
 			// Keep the input buffer free for the next transfer; only a full bank retains port energy.
-			storeInCells(BankTopology.cells(level, worldPosition));
+			walkBank();
+			storeInCells(bankCells);
 		}
 	}
 
@@ -102,8 +118,9 @@ public class BankPortBlockEntity extends GeneratorBlockEntity {
 
 	public void refreshChargeDisplay() {
 		if (level == null || level.isClientSide()) return;
-		int charge = BankTopology.chargeLevel(BankTopology.snapshot(level, worldPosition));
-		for (ElectricBlockEntity member : BankTopology.members(level, worldPosition)) {
+		walkBank();
+		int charge = BankTopology.chargeLevel(BankTopology.snapshot(bankMembers));
+		for (ElectricBlockEntity member : bankMembers) {
 			if (member instanceof BankPortBlockEntity port && port.displayCharge != charge) {
 				port.displayCharge = charge;
 				port.setChanged();

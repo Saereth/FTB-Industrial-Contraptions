@@ -16,7 +16,7 @@ item_ids:
 <Column alignItems="center" fullWidth={true}>
   <ItemImage id="mv_transformer" scale="2" />
 
-  Transformers step voltage **down** from a higher tier to a lower one, or **up** by placing them backwards. Every transformer has a single higher-tier face and five lower-tier faces.
+  Transformers step voltage **down** from a higher tier to a lower one. They cannot step voltage up. Every transformer has a single higher-tier face and five lower-tier faces.
 </Column>
 
 <ItemImage id="minecraft:air" scale="0.25"/>

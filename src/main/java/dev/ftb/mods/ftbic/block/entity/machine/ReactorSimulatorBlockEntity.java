@@ -2,6 +2,7 @@ package dev.ftb.mods.ftbic.block.entity.machine;
 
 import dev.ftb.mods.ftbic.FTBICConfig;
 import dev.ftb.mods.ftbic.block.FTBICElectricBlocks;
+import dev.ftb.mods.ftbic.block.entity.generator.NuclearReactorBlockEntity;
 import dev.ftb.mods.ftbic.item.reactor.FuelRodItem;
 import dev.ftb.mods.ftbic.item.reactor.NuclearReactor;
 import dev.ftb.mods.ftbic.item.reactor.ReactorItem;
@@ -290,7 +291,7 @@ public class ReactorSimulatorBlockEntity extends ElectricBlockEntityRef {
 			elapsedCycles++;
 			double produced = simReactor.energyOutput * FTBICConfig.MACHINES.NUCLEAR_GENERATOR_OUTPUT.get();
 			if (produced > 0D) {
-				totalEnergy += produced;
+				totalEnergy += produced * NuclearReactorBlockEntity.TICKS_PER_CYCLE;
 			}
 			if (simReactor.heat > peakHeat) peakHeat = simReactor.heat;
 			lastEnergyOutput = produced;

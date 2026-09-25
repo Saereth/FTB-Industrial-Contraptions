@@ -439,9 +439,6 @@ public class ElectricBlockEntity extends BlockEntity implements ZapEnergyHandler
 	}
 
 	public void neighborChanged(BlockPos neighborPos, Block neighborBlock) {
-		if (level != null && !level.getBlockState(neighborPos).is(neighborBlock)) {
-			electricNetworkUpdated(level, neighborPos);
-		}
 	}
 
 	public void stepOn(ServerPlayer player) {

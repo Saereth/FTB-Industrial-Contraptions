@@ -42,7 +42,7 @@ item_ids:
   ### <Color id="aqua">Advanced Centrifuge</Color>
 </Row>
 
-HV tier. Runs separating recipes faster at <Energy config="machines.advanced_centrifuge_use" rate="true" />, with a buffer of <Energy config="machines.advanced_centrifuge_capacity" />. It has **three item output slots** and **one fluid output tank**. Recipes with three item results require this machine.
+MV tier. Runs separating recipes at the same speed for <Energy config="machines.advanced_centrifuge_use" rate="true" />, with a buffer of <Energy config="machines.advanced_centrifuge_capacity" />. It has **three item output slots** and **one fluid output tank**. Recipes with three item results require this machine.
 
 <RecipeFor id="advanced_centrifuge" />
 

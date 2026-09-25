@@ -1,6 +1,7 @@
 package dev.ftb.mods.ftbic.block.entity.machine;
 
 import dev.ftb.mods.ftbic.block.FTBICElectricBlocks;
+import dev.ftb.mods.ftbic.util.BatterySlotHelper;
 import dev.ftb.mods.ftbic.util.EnergyItemHandler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.DustParticleOptions;
@@ -18,9 +19,11 @@ public class ChargePadBlockEntity extends ElectricBlockEntityRef {
 
 	@Override
 	public boolean isItemValid(int slot, ItemStack stack) {
-		return super.isItemValid(slot, stack)
-				&& stack.getItem() instanceof EnergyItemHandler handler
-				&& handler.canInsertEnergy() && !handler.isCreativeEnergyItem();
+		if (!super.isItemValid(slot, stack)) return false;
+		if (stack.getItem() instanceof EnergyItemHandler handler) {
+			return handler.canInsertEnergy() && !handler.isCreativeEnergyItem();
+		}
+		return BatterySlotHelper.isForeignEnergyItem(stack);
 	}
 
 	@Override
@@ -28,8 +31,13 @@ public class ChargePadBlockEntity extends ElectricBlockEntityRef {
 		super.tick();
 		if (level == null || level.isClientSide() || energy <= 0D) return;
 		for (ItemStack stack : inputItems) {
-			if (!(stack.getItem() instanceof EnergyItemHandler handler) || handler.isCreativeEnergyItem()) continue;
-			double accepted = handler.insertEnergy(stack, energy, false);
+			double accepted;
+			if (stack.getItem() instanceof EnergyItemHandler handler) {
+				if (handler.isCreativeEnergyItem()) continue;
+				accepted = handler.insertEnergy(stack, energy, false);
+			} else {
+				accepted = BatterySlotHelper.chargeForeignItem(stack, energy);
+			}
 			if (accepted > 0D) {
 				energy -= accepted;
 				active = true;
@@ -45,9 +53,13 @@ public class ChargePadBlockEntity extends ElectricBlockEntityRef {
 		Inventory inv = player.getInventory();
 		for (int i = 0; i < inv.getContainerSize(); i++) {
 			ItemStack stack = inv.getItem(i);
-			if (!(stack.getItem() instanceof EnergyItemHandler eh)) continue;
-			if (eh.isCreativeEnergyItem()) continue;
-			double accepted = eh.insertEnergy(stack, energy, false);
+			double accepted;
+			if (stack.getItem() instanceof EnergyItemHandler eh) {
+				if (eh.isCreativeEnergyItem()) continue;
+				accepted = eh.insertEnergy(stack, energy, false);
+			} else {
+				accepted = BatterySlotHelper.chargeForeignItem(stack, energy);
+			}
 			if (accepted > 0D) {
 				energy -= accepted;
 				active = true;

@@ -27,7 +27,7 @@ item_ids:
 
 * Input: cobblestone, dirt, rotten flesh, sticks, or anything tagged recyclable.
 * Output: ~12.5% chance of scrap per operation (configurable).
-* **Stats:** LV tier, <Energy config="machines.reprocessor_capacity" /> buffer, <Energy config="machines.reprocessor_use" rate="true" /> use.
+* **Stats:** MV tier, <Energy config="machines.reprocessor_capacity" /> buffer, <Energy config="machines.reprocessor_use" rate="true" /> use.
 
 <ItemImage id="minecraft:air" scale="0.25"/>
 

@@ -42,7 +42,7 @@ Every cable and every block is rated for one of five voltage tiers. Feed more in
 | Extreme | **EV** | <Energy config="energy.ev_transfer_rate" rate="true" /> | Nuclear, teleporters, quantum |
 | Insane  | **IV** | <Energy config="energy.iv_transfer_rate" rate="true" /> | Antimatter, endgame |
 
-**Rule of thumb:** match the cable tier to the highest producer or consumer connected to it. Use <ItemLink id="lv_transformer" />-family blocks to step voltage up or down between tiers.
+**Rule of thumb:** match the cable tier to the highest producer or consumer connected to it. Use <ItemLink id="lv_transformer" />-family blocks to step voltage down to a lower tier.
 
 <ItemImage id="minecraft:air" scale="0.25"/>
 ***

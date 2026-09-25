@@ -325,7 +325,7 @@ public class TeleporterBlockEntity extends GeneratorBlockEntity {
 
 		if (linkedDimension != null && linkedPos != null) {
 			long now = level.getGameTime();
-			boolean active20 = (now - lastSendTick) <= FTBICConfig.MACHINES.TELEPORTER_ACTIVE_WINDOW_TICKS.get();
+			boolean active20 = ticksSinceSend(now) <= FTBICConfig.MACHINES.TELEPORTER_ACTIVE_WINDOW_TICKS.get();
 			if (active20) active = true;
 
 			if (active20 && (now % 20) == 0 && energy > 0D) {
@@ -338,7 +338,7 @@ public class TeleporterBlockEntity extends GeneratorBlockEntity {
 
 			if ((now % 4) == 0) flushSendBuffersToPeer();
 
-			boolean wantForced = (now - lastSendTick) <= FTBICConfig.MACHINES.TELEPORTER_CHUNK_LOAD_IDLE_TICKS.get();
+			boolean wantForced = ticksSinceSend(now) <= FTBICConfig.MACHINES.TELEPORTER_CHUNK_LOAD_IDLE_TICKS.get();
 			updateChunkTicket(wantForced);
 		}
 
@@ -681,6 +681,10 @@ public class TeleporterBlockEntity extends GeneratorBlockEntity {
 
 	private void snapshotFluids(TransactionContext tx) {
 		fluidJournal.updateSnapshots(tx);
+	}
+
+	private long ticksSinceSend(long now) {
+		return lastSendTick == Long.MIN_VALUE ? Long.MAX_VALUE : now - lastSendTick;
 	}
 
 	private void balancePairEnergy() {

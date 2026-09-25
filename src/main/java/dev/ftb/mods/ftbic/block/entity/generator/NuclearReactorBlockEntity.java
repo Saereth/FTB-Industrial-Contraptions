@@ -37,6 +37,8 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Arrays;
 
 public class NuclearReactorBlockEntity extends GeneratorBlockEntity {
+	public static final int TICKS_PER_CYCLE = 20;
+
 	public final NuclearReactor reactor;
 	public int timeUntilNextCycle;
 	public int debugSpeed;
@@ -254,7 +256,7 @@ public class NuclearReactorBlockEntity extends GeneratorBlockEntity {
 
 		timeUntilNextCycle--;
 		if (timeUntilNextCycle <= 0) {
-			timeUntilNextCycle = 20;
+			timeUntilNextCycle = TICKS_PER_CYCLE;
 			if (debugSpeed <= 0) runCycle();
 		}
 		if (debugSpeed > 0) {

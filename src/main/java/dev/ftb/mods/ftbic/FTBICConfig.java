@@ -192,14 +192,14 @@ public final class FTBICConfig {
 		public final ModConfigSpec.DoubleValue POWERED_CRAFTING_TABLE_USE;
 		public final ModConfigSpec.DoubleValue QUARRY_CAPACITY;
 		public final ModConfigSpec.DoubleValue QUARRY_USE;
-		public final ModConfigSpec.LongValue QUARRY_MINE_TICKS;
-		public final ModConfigSpec.LongValue QUARRY_MOVE_TICKS;
+		public final ModConfigSpec.IntValue QUARRY_MINE_TICKS;
+		public final ModConfigSpec.IntValue QUARRY_MOVE_TICKS;
 		public final ModConfigSpec.BooleanValue QUARRY_REPLACE_FLUID_EXFLUID;
 		public final ModConfigSpec.BooleanValue QUARRY_PICKAXE_TAKES_DAMAGE;
 		public final ModConfigSpec.DoubleValue PUMP_CAPACITY;
 		public final ModConfigSpec.DoubleValue PUMP_USE;
-		public final ModConfigSpec.LongValue PUMP_MINE_TICKS;
-		public final ModConfigSpec.LongValue PUMP_MOVE_TICKS;
+		public final ModConfigSpec.IntValue PUMP_MINE_TICKS;
+		public final ModConfigSpec.IntValue PUMP_MOVE_TICKS;
 		public final ModConfigSpec.BooleanValue PUMP_REPLACE_FLUID_EXFLUID;
 		public final ModConfigSpec.IntValue PUMP_TANK_CAPACITY;
 		public final ModConfigSpec.DoubleValue ITEM_TRANSFER_EFFICIENCY;
@@ -284,15 +284,15 @@ public final class FTBICConfig {
 			POWERED_CRAFTING_TABLE_USE = b.defineInRange("powered_crafting_table_use", 1D, 0D, 100_000D);
 			QUARRY_CAPACITY = b.defineInRange("quarry_capacity", 10_000D, 1D, 100_000D);
 			QUARRY_USE = b.defineInRange("quarry_use", 3D, 0D, 100_000D);
-			QUARRY_MINE_TICKS = b.defineInRange("quarry_mine_ticks", 8L, 0L, 100_000L);
-			QUARRY_MOVE_TICKS = b.defineInRange("quarry_move_ticks", 2L, 0L, 100_000L);
+			QUARRY_MINE_TICKS = b.defineInRange("quarry_mine_ticks", 8, 0, 72_000);
+			QUARRY_MOVE_TICKS = b.defineInRange("quarry_move_ticks", 2, 0, 72_000);
 			QUARRY_REPLACE_FLUID_EXFLUID = b.define("quarry_replace_fluid_with_exfluid", true);
 			QUARRY_PICKAXE_TAKES_DAMAGE = b.comment("If true, a pickaxe in the quarry's pickaxe slot takes durability damage each block mined.")
 					.define("quarry_pickaxe_takes_damage", false);
 			PUMP_CAPACITY = b.defineInRange("pump_capacity", 10_000D, 1D, 100_000D);
 			PUMP_USE = b.defineInRange("pump_use", 3D, 0D, 100_000D);
-			PUMP_MINE_TICKS = b.defineInRange("pump_mine_ticks", 40L, 0L, 100_000L);
-			PUMP_MOVE_TICKS = b.defineInRange("pump_move_ticks", 10L, 0L, 100_000L);
+			PUMP_MINE_TICKS = b.defineInRange("pump_mine_ticks", 40, 0, 72_000);
+			PUMP_MOVE_TICKS = b.defineInRange("pump_move_ticks", 10, 0, 72_000);
 			PUMP_REPLACE_FLUID_EXFLUID = b.define("pump_replace_fluid_with_exfluid", true);
 			PUMP_TANK_CAPACITY = b.defineInRange("pump_tank_capacity", FLUID_BUCKET_VOLUME * 128, 1, 1_000_000);
 			ITEM_TRANSFER_EFFICIENCY = b.defineInRange("item_transfer_efficiency", 20.0D, 0D, Double.POSITIVE_INFINITY);

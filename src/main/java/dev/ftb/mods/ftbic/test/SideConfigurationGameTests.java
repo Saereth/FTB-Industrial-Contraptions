@@ -250,7 +250,7 @@ final class SideConfigurationGameTests {
 		var front = battery.getFacing(Direction.NORTH);
 		var batteryFe = h.getLevel().getCapability(Capabilities.Energy.BLOCK, battery.getBlockPos(), front);
 		try (var tx = Transaction.openRoot()) {
-			h.assertTrue(batteryFe.insert(10, tx) > 0, "Default retains legacy full FE battery input on every side");
+			h.assertValueEqual(0, batteryFe.insert(10, tx), "Default battery output face refuses FE input");
 		}
 		side(battery, Resource.ENERGY, front, Mode.OUTPUT);
 		try (var tx = Transaction.openRoot()) {

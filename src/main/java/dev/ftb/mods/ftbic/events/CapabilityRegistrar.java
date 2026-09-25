@@ -18,6 +18,8 @@ import dev.ftb.mods.ftbic.item.FTBICItems;
 import dev.ftb.mods.ftbic.util.ElectricBlockEnergyHandler;
 import dev.ftb.mods.ftbic.util.CableFEHandler;
 import dev.ftb.mods.ftbic.util.ElectricBlockResourceHandler;
+import dev.ftb.mods.ftbic.util.EnergyItemFEHandler;
+import dev.ftb.mods.ftbic.util.EnergyItemHandler;
 import dev.ftb.mods.ftbic.util.EnergyRectifierFEHandler;
 import dev.ftb.mods.ftbic.util.FTBICCapabilities;
 import dev.ftb.mods.ftbic.util.FluidCellHandler;
@@ -150,6 +152,16 @@ public final class CapabilityRegistrar {
 		event.registerItem(Capabilities.Fluid.ITEM,
 				(stack, access) -> new FluidCellHandler(access),
 				FTBICItems.FLUID_CELL.get());
+
+		if (fullFE) {
+			for (var entry : FTBICItems.REGISTRY.getEntries()) {
+				if (entry.get() instanceof EnergyItemHandler energyItem) {
+					event.registerItem(Capabilities.Energy.ITEM,
+							(stack, access) -> EnergyItemFEHandler.create(access, energyItem),
+							entry.get());
+				}
+			}
+		}
 
 		event.registerBlock(Capabilities.Item.BLOCK,
 				(level, pos, state, be, side) -> forwardChamber(Capabilities.Item.BLOCK, level, pos, side),

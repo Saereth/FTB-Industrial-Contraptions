@@ -157,17 +157,17 @@ public interface FTBICItems {
 
 	// Batteries: capacities resolved lazily so datagen can register without a loaded config.
 	DeferredItem<Item> SINGLE_USE_BATTERY = REGISTRY.register("single_use_battery",
-			name -> new BatteryItem(props(name), BatteryType.SINGLE_USE, EnergyTier.LV, safeGet(FTBICConfig.ENERGY.SINGLE_USE_BATTERY_CAPACITY, 8_000D)));
+			name -> new BatteryItem(props(name), BatteryType.SINGLE_USE, EnergyTier.LV, () -> safeGet(FTBICConfig.ENERGY.SINGLE_USE_BATTERY_CAPACITY, 2_400D)));
 	DeferredItem<Item> LV_BATTERY = REGISTRY.register("lv_battery",
-			name -> new BatteryItem(props(name), BatteryType.RECHARGEABLE, EnergyTier.LV, safeGet(FTBICConfig.ENERGY.LV_BATTERY_CAPACITY, 10_000D)));
+			name -> new BatteryItem(props(name), BatteryType.RECHARGEABLE, EnergyTier.LV, () -> safeGet(FTBICConfig.ENERGY.LV_BATTERY_CAPACITY, 4_000D)));
 	DeferredItem<Item> MV_BATTERY = REGISTRY.register("mv_battery",
-			name -> new BatteryItem(props(name), BatteryType.RECHARGEABLE, EnergyTier.MV, safeGet(FTBICConfig.ENERGY.MV_BATTERY_CAPACITY, 100_000D)));
+			name -> new BatteryItem(props(name), BatteryType.RECHARGEABLE, EnergyTier.MV, () -> safeGet(FTBICConfig.ENERGY.MV_BATTERY_CAPACITY, 40_000D)));
 	DeferredItem<Item> HV_BATTERY = REGISTRY.register("hv_battery",
-			name -> new BatteryItem(props(name), BatteryType.RECHARGEABLE, EnergyTier.HV, safeGet(FTBICConfig.ENERGY.HV_BATTERY_CAPACITY, 1_000_000D)));
+			name -> new BatteryItem(props(name), BatteryType.RECHARGEABLE, EnergyTier.HV, () -> safeGet(FTBICConfig.ENERGY.HV_BATTERY_CAPACITY, 400_000D)));
 	DeferredItem<Item> EV_BATTERY = REGISTRY.register("ev_battery",
-			name -> new BatteryItem(props(name), BatteryType.RECHARGEABLE, EnergyTier.EV, safeGet(FTBICConfig.ENERGY.EV_BATTERY_CAPACITY, 10_000_000D)));
+			name -> new BatteryItem(props(name), BatteryType.RECHARGEABLE, EnergyTier.EV, () -> safeGet(FTBICConfig.ENERGY.EV_BATTERY_CAPACITY, 10_000_000D)));
 	DeferredItem<Item> CREATIVE_BATTERY = REGISTRY.register("creative_battery",
-			name -> new BatteryItem(props(name), BatteryType.CREATIVE, EnergyTier.IV, Integer.MAX_VALUE));
+			name -> new BatteryItem(props(name), BatteryType.CREATIVE, EnergyTier.IV, () -> Integer.MAX_VALUE));
 
 	DeferredItem<Item> FLUID_CELL = REGISTRY.register("fluid_cell", name -> new FluidCellItem(props(name)));
 

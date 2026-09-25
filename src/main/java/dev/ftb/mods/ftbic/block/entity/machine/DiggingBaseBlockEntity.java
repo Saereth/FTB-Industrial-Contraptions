@@ -1,28 +1,35 @@
 package dev.ftb.mods.ftbic.block.entity.machine;
 
+import com.mojang.authlib.GameProfile;
 import dev.ftb.mods.ftbic.FTBICConfig;
 import dev.ftb.mods.ftbic.block.ElectricBlockInstance;
 import dev.ftb.mods.ftbic.block.FTBICBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.registries.Registries;
+import net.minecraft.core.SectionPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.tags.TagKey;
 import net.minecraft.util.Mth;
+import net.minecraft.util.Util;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.chunk.LevelChunk;
+import net.minecraft.world.level.chunk.LevelChunkSection;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.BlockHitResult;
+import net.neoforged.neoforge.common.CommonHooks;
+import net.neoforged.neoforge.common.Tags;
+import net.neoforged.neoforge.common.util.FakePlayer;
+import net.neoforged.neoforge.common.util.FakePlayerFactory;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -34,6 +41,10 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class DiggingBaseBlockEntity extends BasicMachineBlockEntity {
 	public static final int INVALID_Y = Integer.MIN_VALUE;
+	public static final int LANDMARK_SEARCH_RADIUS = 128;
+	public static final int MAX_AREA_SIZE = LANDMARK_SEARCH_RADIUS * 2 + 1;
+	private static final int LANDMARK_SEARCH_DEPTH = 128;
+	private static final int LANDMARK_SEARCH_HEIGHT = 4;
 
 	private static final WeakHashMap<Level, Set<DiggingBaseBlockEntity>> PER_LEVEL = new WeakHashMap<>();
 
@@ -70,8 +81,8 @@ public class DiggingBaseBlockEntity extends BasicMachineBlockEntity {
 	public int sizeX = 0;
 	public int sizeZ = 0;
 	public int skippedBlocks = 0;
-	public long diggingMineTicks;
-	public long diggingMoveTicks;
+	public int diggingMineTicks;
+	public int diggingMoveTicks;
 
 	public DiggingBaseBlockEntity(ElectricBlockInstance type, BlockPos pos, BlockState state) {
 		super(type, pos, state);
@@ -106,10 +117,10 @@ public class DiggingBaseBlockEntity extends BasicMachineBlockEntity {
 		super.saveAdditional(output);
 		output.putBoolean("Paused", paused);
 		output.putLong("Tick", tick);
-		output.putByte("OffsetX", (byte) offsetX);
-		output.putByte("OffsetZ", (byte) offsetZ);
-		output.putByte("SizeX", (byte) sizeX);
-		output.putByte("SizeZ", (byte) sizeZ);
+		output.putInt("OffsetX", offsetX);
+		output.putInt("OffsetZ", offsetZ);
+		output.putInt("SizeX", sizeX);
+		output.putInt("SizeZ", sizeZ);
 		if (skippedBlocks > 0) output.putShort("SkippedBlocks", (short) skippedBlocks);
 		if (boundaryHighlightTicks > 0) output.putInt("BoundaryHighlight", boundaryHighlightTicks);
 		output.putFloat("LaserX", laserX);
@@ -122,15 +133,20 @@ public class DiggingBaseBlockEntity extends BasicMachineBlockEntity {
 		super.loadAdditional(input);
 		paused = input.getBooleanOr("Paused", false);
 		tick = input.getLongOr("Tick", 0L);
-		offsetX = input.getByteOr("OffsetX", (byte) 0);
-		offsetZ = input.getByteOr("OffsetZ", (byte) 0);
-		sizeX = Mth.clamp(input.getByteOr("SizeX", (byte) 0), 0, 64);
-		sizeZ = Mth.clamp(input.getByteOr("SizeZ", (byte) 0), 0, 64);
+		offsetX = Mth.clamp(input.getIntOr("OffsetX", 0), -LANDMARK_SEARCH_RADIUS, LANDMARK_SEARCH_RADIUS);
+		offsetZ = Mth.clamp(input.getIntOr("OffsetZ", 0), -LANDMARK_SEARCH_RADIUS, LANDMARK_SEARCH_RADIUS);
+		sizeX = readAreaSize(input, "SizeX");
+		sizeZ = readAreaSize(input, "SizeZ");
 		skippedBlocks = input.getShortOr("SkippedBlocks", (short) 0);
 		boundaryHighlightTicks = input.getIntOr("BoundaryHighlight", 0);
 		laserX = input.getFloatOr("LaserX", 0.5F);
 		laserZ = input.getFloatOr("LaserZ", 0.5F);
 		laserY = input.getIntOr("LaserY", Integer.MIN_VALUE);
+	}
+
+	private static int readAreaSize(ValueInput input, String key) {
+		int size = input.getIntOr(key, 0);
+		return Mth.clamp(size < 0 ? Byte.toUnsignedInt((byte) size) : size, 0, MAX_AREA_SIZE);
 	}
 
 	public boolean isEffectivelyPaused() {
@@ -156,14 +172,17 @@ public class DiggingBaseBlockEntity extends BasicMachineBlockEntity {
 			return;
 		}
 
+		int interiorW = sizeX - 2;
+		int interiorD = sizeZ - 2;
+		if (interiorW <= 0 || interiorD <= 0) {
+			return;
+		}
+		long area = (long) interiorW * interiorD;
+
 		int miningTicks = Math.max((int) (diggingMineTicks / progressSpeed), 1);
 		int moveTicks = Math.max((int) (diggingMoveTicks / progressSpeed), 1);
 		int totalTicks = miningTicks + moveTicks;
 		if (skipEmptyTargetsWithoutEnergy() && tick % totalTicks == 0) {
-			int interiorW = sizeX - 2;
-			int interiorD = sizeZ - 2;
-			long area = (long) interiorW * interiorD;
-			if (area <= 0) return;
 			int scanned = 0;
 			boolean found = false;
 			while (scanned++ < 32) {
@@ -192,10 +211,6 @@ public class DiggingBaseBlockEntity extends BasicMachineBlockEntity {
 		active = true;
 
 		if ((tick % totalTicks) == totalTicks - 1) {
-			int interiorW = sizeX - 2;
-			int interiorD = sizeZ - 2;
-			if (interiorW <= 0 || interiorD <= 0) return;
-			long area = (long) interiorW * (long) interiorD;
 			long pos = (tick / totalTicks) % area;
 			int row = (int) (pos / interiorW);
 			int col = row % 2 == 0 ? (int) (pos % interiorW) : (interiorW - 1 - (int) (pos % interiorW));
@@ -226,12 +241,8 @@ public class DiggingBaseBlockEntity extends BasicMachineBlockEntity {
 		setChanged();
 	}
 
-	private static final TagKey<Block> RELOCATION_NOT_PERMITTED =
-			TagKey.create(Registries.BLOCK,
-					Identifier.fromNamespaceAndPath("c", "relocation_not_permitted"));
-
 	public boolean isValidBlock(BlockState state, BlockPos pos) {
-		return !state.is(RELOCATION_NOT_PERMITTED);
+		return !state.is(Tags.Blocks.RELOCATION_NOT_SUPPORTED);
 	}
 
 	public void digBlock(BlockState state, BlockPos miningPos) {
@@ -242,11 +253,38 @@ public class DiggingBaseBlockEntity extends BasicMachineBlockEntity {
 			setChanged();
 			return;
 		}
-		level.removeBlock(miningPos, false);
+		clearMinedBlock(miningPos, state);
 		for (ItemStack drop : drops) {
 			addToOutputs(drop);
 		}
 		setChanged();
+	}
+
+	protected void clearMinedBlock(BlockPos pos, BlockState state) {
+		if (state.getFluidState().isEmpty()) {
+			level.removeBlock(pos, false);
+		} else {
+			level.setBlock(pos, fluidReplacement(), 3);
+		}
+	}
+
+	protected BlockState fluidReplacement() {
+		return replaceFluidWithExfluid() ? FTBICBlocks.EXFLUID.get().defaultBlockState() : Blocks.AIR.defaultBlockState();
+	}
+
+	protected boolean replaceFluidWithExfluid() {
+		return FTBICConfig.MACHINES.QUARRY_REPLACE_FLUID_EXFLUID.get();
+	}
+
+	protected FakePlayer getFakePlayer(ServerLevel server) {
+		if (placerId.equals(Util.NIL_UUID)) {
+			return FakePlayerFactory.getMinecraft(server);
+		}
+		return FakePlayerFactory.get(server, new GameProfile(placerId, placerName));
+	}
+
+	protected boolean canBreak(ServerLevel server, BlockPos pos, BlockState state) {
+		return !CommonHooks.fireBlockBreak(server, GameType.SURVIVAL, getFakePlayer(server), pos, state).isCanceled();
 	}
 
 	protected boolean canFitAllDrops(List<ItemStack> drops) {
@@ -292,7 +330,7 @@ public class DiggingBaseBlockEntity extends BasicMachineBlockEntity {
 	protected boolean skipEmptyTargetsWithoutEnergy() { return false; }
 
 	private int findMinableY(int x, int z) {
-		if (level == null) return INVALID_Y;
+		if (!(level instanceof ServerLevel server)) return INVALID_Y;
 		BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos(x, 0, z);
 		int bottom = level.getMinY();
 		for (int y = worldPosition.getY() - 1; y >= bottom; y--) {
@@ -302,8 +340,9 @@ public class DiggingBaseBlockEntity extends BasicMachineBlockEntity {
 			if (state.isAir()) continue;
 			if (state.getBlock() == Blocks.BEDROCK) continue;
 			if (state.getBlock() == FTBICBlocks.EXFLUID.get()) continue;
+			if (state.getDestroySpeed(level, pos) < 0F) continue;
 			if (!isValidBlock(state, pos)) continue;
-			return y;
+			return canBreak(server, pos.immutable(), state) ? y : INVALID_Y;
 		}
 		return INVALID_Y;
 	}
@@ -312,37 +351,60 @@ public class DiggingBaseBlockEntity extends BasicMachineBlockEntity {
 		if (level == null) return false;
 		Direction back = getFacing(Direction.NORTH).getOpposite();
 		BlockPos anchorPos = worldPosition.relative(back);
-		return level.getBlockState(anchorPos).getBlock() == FTBICBlocks.LANDMARK.get();
+		return level.isLoaded(anchorPos) && level.getBlockState(anchorPos).getBlock() == FTBICBlocks.LANDMARK.get();
 	}
 
-	public void resize() {
-		if (level == null) return;
+	private List<BlockPos> findLandmarks() {
+		List<BlockPos> marks = new ArrayList<>();
 		Block landmark = FTBICBlocks.LANDMARK.get();
-		int radius = 128;
 		int qx = worldPosition.getX();
 		int qy = worldPosition.getY();
 		int qz = worldPosition.getZ();
-		List<BlockPos> marks = new ArrayList<>();
-		boolean useLandmarks = hasAnchorLandmark();
-		if (useLandmarks) {
-			BlockPos.MutableBlockPos mut = new BlockPos.MutableBlockPos();
-			int yMin = Math.max(level.getMinY(), qy - 128);
-			int yMax = Math.min(level.getMaxY() - 1, qy + 4);
-			for (int dx = -radius; dx <= radius; dx++) {
-				for (int dz = -radius; dz <= radius; dz++) {
-					if (dx == 0 && dz == 0) continue;
-					for (int y = yMin; y <= yMax; y++) {
-						mut.set(qx + dx, y, qz + dz);
-						if (level.getBlockState(mut).getBlock() == landmark) {
-							marks.add(mut.immutable());
+		int minX = qx - LANDMARK_SEARCH_RADIUS;
+		int maxX = qx + LANDMARK_SEARCH_RADIUS;
+		int minZ = qz - LANDMARK_SEARCH_RADIUS;
+		int maxZ = qz + LANDMARK_SEARCH_RADIUS;
+		int minY = Math.max(level.getMinY(), qy - LANDMARK_SEARCH_DEPTH);
+		int maxY = Math.min(level.getMaxY(), qy + LANDMARK_SEARCH_HEIGHT);
+		if (minY > maxY) return marks;
+
+		for (int cx = SectionPos.blockToSectionCoord(minX); cx <= SectionPos.blockToSectionCoord(maxX); cx++) {
+			for (int cz = SectionPos.blockToSectionCoord(minZ); cz <= SectionPos.blockToSectionCoord(maxZ); cz++) {
+				LevelChunk chunk = level.getChunkSource().getChunkNow(cx, cz);
+				if (chunk == null) continue;
+				int x0 = Math.max(minX, SectionPos.sectionToBlockCoord(cx));
+				int x1 = Math.min(maxX, SectionPos.sectionToBlockCoord(cx, 15));
+				int z0 = Math.max(minZ, SectionPos.sectionToBlockCoord(cz));
+				int z1 = Math.min(maxZ, SectionPos.sectionToBlockCoord(cz, 15));
+				for (int sy = SectionPos.blockToSectionCoord(minY); sy <= SectionPos.blockToSectionCoord(maxY); sy++) {
+					LevelChunkSection section = chunk.getSection(chunk.getSectionIndexFromSectionY(sy));
+					if (!section.maybeHas(state -> state.is(landmark))) continue;
+					int y0 = Math.max(minY, SectionPos.sectionToBlockCoord(sy));
+					int y1 = Math.min(maxY, SectionPos.sectionToBlockCoord(sy, 15));
+					for (int y = y0; y <= y1; y++) {
+						for (int x = x0; x <= x1; x++) {
+							for (int z = z0; z <= z1; z++) {
+								if (x == qx && z == qz) continue;
+								if (section.getBlockState(x & 15, y & 15, z & 15).is(landmark)) {
+									marks.add(new BlockPos(x, y, z));
+								}
+							}
 						}
 					}
 				}
 			}
 		}
+		return marks;
+	}
+
+	public void resize() {
+		if (level == null) return;
+		int qx = worldPosition.getX();
+		int qz = worldPosition.getZ();
+		List<BlockPos> marks = hasAnchorLandmark() ? findLandmarks() : List.of();
 
 		int x0, x1, z0, z1;
-		boolean defaultArea = marks.isEmpty() || marks.size() == 1;
+		boolean defaultArea = marks.size() <= 1;
 		if (defaultArea) {
 			Direction back = getFacing(Direction.NORTH).getOpposite();
 			int ox = back.getStepX();

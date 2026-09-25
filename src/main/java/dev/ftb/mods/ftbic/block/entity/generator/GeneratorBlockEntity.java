@@ -8,6 +8,7 @@ import dev.ftb.mods.ftbic.block.ElectricBlockInstance;
 import dev.ftb.mods.ftbic.block.entity.ElectricBlockEntity;
 import dev.ftb.mods.ftbic.block.entity.machine.BatteryInventory;
 import dev.ftb.mods.ftbic.block.NuclearReactorChamberBlock;
+import dev.ftb.mods.ftbic.util.BatterySlotHelper;
 import dev.ftb.mods.ftbic.util.CachedEnergyStorage;
 import dev.ftb.mods.ftbic.util.CachedEnergyStorageOrigin;
 import dev.ftb.mods.ftbic.util.EnergyItemHandler;
@@ -48,6 +49,7 @@ public class GeneratorBlockEntity extends ElectricBlockEntity {
 	public final BatteryInventory chargeBatteryInventory;
 	private long currentElectricNetwork = -1L;
 	private CachedEnergyStorage[] connectedEnergyBlocks;
+	private int scannedEnergyNeighbours;
 	private int[] validConsumerIndices;
 	private BlockCapabilityCache<EnergyHandler, Direction>[] fePushCaches;
 	private BlockCapabilityCache<ZapEnergyHandler, Direction>[] zapPushCaches;
@@ -99,17 +101,21 @@ public class GeneratorBlockEntity extends ElectricBlockEntity {
 
 		if (energy > 0D) {
 			ItemStack battery = chargeBatteryInventory.getStackInSlot(0);
+			double accepted;
 			if (!battery.isEmpty() && battery.getItem() instanceof EnergyItemHandler item) {
 				double transfer = item.isCreativeEnergyItem()
 						? Double.POSITIVE_INFINITY
 						: remainingOutput * FTBICConfig.MACHINES.ITEM_TRANSFER_EFFICIENCY.get();
-				double accepted = item.insertEnergy(battery, Math.min(energy, Math.min(transfer, remainingOutput)), false);
-				if (accepted > 0) {
-					energy -= accepted;
-					remainingOutput -= accepted;
-					active = true;
-					setChanged();
-				}
+				accepted = item.insertEnergy(battery, Math.min(energy, Math.min(transfer, remainingOutput)), false);
+			} else {
+				double transfer = remainingOutput * FTBICConfig.MACHINES.ITEM_TRANSFER_EFFICIENCY.get();
+				accepted = BatterySlotHelper.chargeForeignItem(battery, Math.min(energy, Math.min(transfer, remainingOutput)));
+			}
+			if (accepted > 0) {
+				energy -= accepted;
+				remainingOutput -= accepted;
+				active = true;
+				setChanged();
 			}
 		}
 
@@ -205,7 +211,7 @@ public class GeneratorBlockEntity extends ElectricBlockEntity {
 			try (Transaction tx = Transaction.openRoot()) {
 				int feAccepted = fe.insert(feToOffer, tx);
 				if (feAccepted > 0) {
-					double zapsConsumed = Math.min(ZapFEConversion.feToZapsCeil(feAccepted), energy);
+					double zapsConsumed = Math.min(ZapFEConversion.feToZaps(feAccepted), energy);
 					energy -= zapsConsumed;
 					remaining -= zapsConsumed;
 					tx.commit();
@@ -282,7 +288,36 @@ public class GeneratorBlockEntity extends ElectricBlockEntity {
 
 		connectedEnergyBlocks = set.toArray(CachedEnergyStorage.EMPTY);
 		currentElectricNetwork = currentId;
+		scannedEnergyNeighbours = energyNeighbours();
 		return connectedEnergyBlocks;
+	}
+
+	@Override
+	public void neighborChanged(BlockPos neighborPos, Block neighborBlock) {
+		super.neighborChanged(neighborPos, neighborBlock);
+		if (connectedEnergyBlocks != null && energyNeighbours() != scannedEnergyNeighbours) {
+			connectedEnergyBlocks = null;
+		}
+	}
+
+	private int energyNeighbours() {
+		int mask = 0;
+		if (level == null) {
+			return mask;
+		}
+		for (Direction direction : FTBICUtils.DIRECTIONS) {
+			BlockPos pos = worldPosition.relative(direction);
+			if (!level.isLoaded(pos)) {
+				continue;
+			}
+			BlockState state = level.getBlockState(pos);
+			if (state.getBlock() instanceof NuclearReactorChamberBlock || (state.hasBlockEntity()
+					&& (level.getCapability(FTBICCapabilities.ZAP_ENERGY_BLOCK, pos, direction.getOpposite()) != null
+					|| level.getCapability(Capabilities.Energy.BLOCK, pos, direction.getOpposite()) != null))) {
+				mask |= 1 << direction.ordinal();
+			}
+		}
+		return mask;
 	}
 
 	private void find(LongOpenHashSet traversed, Set<CachedEnergyStorage> set, CachedEnergyStorageOrigin origin,

@@ -1,7 +1,6 @@
 package dev.ftb.mods.ftbic.block.entity.machine;
 
 import dev.ftb.mods.ftbic.FTBICConfig;
-import dev.ftb.mods.ftbic.block.FTBICBlocks;
 import dev.ftb.mods.ftbic.block.FTBICElectricBlocks;
 import dev.ftb.mods.ftbic.screen.PumpMenu;
 import net.minecraft.core.BlockPos;
@@ -14,6 +13,7 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
@@ -31,6 +31,18 @@ public class PumpBlockEntity extends DiggingBaseBlockEntity {
 	@Override
 	public AbstractContainerMenu createMenu(int id, Inventory inv) {
 		return new PumpMenu(id, inv, this);
+	}
+
+	@Override
+	public void initProperties() {
+		super.initProperties();
+		diggingMineTicks = FTBICConfig.MACHINES.PUMP_MINE_TICKS.get();
+		diggingMoveTicks = FTBICConfig.MACHINES.PUMP_MOVE_TICKS.get();
+	}
+
+	@Override
+	protected boolean replaceFluidWithExfluid() {
+		return FTBICConfig.MACHINES.PUMP_REPLACE_FLUID_EXFLUID.get();
 	}
 
 	public int getTankCapacity() {
@@ -85,7 +97,10 @@ public class PumpBlockEntity extends DiggingBaseBlockEntity {
 
 		storedFluid = f;
 		fluidAmount += 1000;
-		level.setBlock(miningPos, FTBICBlocks.EXFLUID.get().defaultBlockState(), 3);
+		BlockState emptied = state.hasProperty(BlockStateProperties.WATERLOGGED)
+				? state.setValue(BlockStateProperties.WATERLOGGED, false)
+				: fluidReplacement();
+		level.setBlock(miningPos, emptied, 3);
 		setChanged();
 
 		// Opportunistically fill a player-supplied empty bucket.

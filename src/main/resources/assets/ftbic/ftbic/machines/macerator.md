@@ -42,6 +42,6 @@ item_ids:
   ### <Color id="aqua">Advanced Macerator</Color>
 </Row>
 
-HV version: <Energy config="machines.advanced_macerator_capacity" /> buffer, <Energy config="machines.advanced_macerator_use" rate="true" />, much faster recipe ticks.
+MV version: <Energy config="machines.advanced_macerator_capacity" /> buffer, <Energy config="machines.advanced_macerator_use" rate="true" />. Same recipe speed, and it accepts <ItemLink id="parallel_processing_upgrade" />s.
 
 <RecipeFor id="advanced_macerator" />

@@ -76,7 +76,7 @@ public final class ModDataComponents {
 	public static final DeferredHolder<DataComponentType<?>, DataComponentType<MachineConfiguration>> MACHINE_CONFIGURATION =
 			DATA_COMPONENTS.registerComponentType("machine_configuration", b -> b
 					.persistent(MachineConfiguration.CODEC)
-					.networkSynchronized(ByteBufCodecs.fromCodec(MachineConfiguration.CODEC)));
+					.networkSynchronized(ByteBufCodecs.fromCodecWithRegistries(MachineConfiguration.CODEC)));
 
 	public static final DeferredHolder<DataComponentType<?>, DataComponentType<Identifier>> REFINING_MATERIAL =
 			DATA_COMPONENTS.registerComponentType("refining_material", b -> b.persistent(Identifier.CODEC).networkSynchronized(Identifier.STREAM_CODEC));

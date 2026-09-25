@@ -165,25 +165,25 @@ final class CentrifugeFluidGameTests {
 	static void automationAndPersistence(GameTestHelper h) {
 		var machine = place(h, true);
 		var handler = h.getLevel().getCapability(Capabilities.Fluid.BLOCK, machine.getBlockPos(), Direction.UP);
-		var water = FluidResource.of(Fluids.WATER);
-		try (var tx = Transaction.openRoot()) { handler.insert(water, 1000, tx); }
+		var lava = FluidResource.of(Fluids.LAVA);
+		try (var tx = Transaction.openRoot()) { handler.insert(lava, 1000, tx); }
 		h.assertTrue(machine.getInputFluid().isEmpty(), "Aborted insertion rolls back");
 		try (var tx = Transaction.openRoot()) {
-			h.assertValueEqual(16_000, handler.insert(water, 20_000, tx), "Input capacity enforced");
-			h.assertValueEqual(0, handler.insert(1, water, 1, tx), "Cannot insert into output tank");
-			h.assertValueEqual(0, handler.extract(0, water, 1, tx), "Cannot extract from input tank");
+			h.assertValueEqual(16_000, handler.insert(lava, 20_000, tx), "Input capacity enforced");
+			h.assertValueEqual(0, handler.insert(1, lava, 1, tx), "Cannot insert into output tank");
+			h.assertValueEqual(0, handler.extract(0, lava, 1, tx), "Cannot extract from input tank");
 			tx.commit();
 		}
 		machine.setSideConfiguration(machine.getSideConfiguration().with(Resource.FLUIDS, Face.TOP, Mode.DISABLED));
-		machine.setFluids(FluidStack.EMPTY, new FluidStack(Fluids.WATER, 1000));
+		machine.setFluids(FluidStack.EMPTY, new FluidStack(Fluids.LAVA, 1000));
 		try (var tx = Transaction.openRoot()) {
-			h.assertValueEqual(0, handler.insert(water, 1, tx), "Cached capability respects disabled side");
-			h.assertValueEqual(0, handler.extract(water, 1, tx), "Disabled side blocks extraction");
+			h.assertValueEqual(0, handler.insert(lava, 1, tx), "Cached capability respects disabled side");
+			h.assertValueEqual(0, handler.extract(lava, 1, tx), "Disabled side blocks extraction");
 		}
 		machine.setSideConfiguration(machine.getSideConfiguration().with(Resource.FLUIDS, Face.TOP, Mode.BOTH));
-		try (var tx = Transaction.openRoot()) { handler.extract(water, 300, tx); }
+		try (var tx = Transaction.openRoot()) { handler.extract(lava, 300, tx); }
 		h.assertValueEqual(1000, machine.getOutputFluid().getAmount(), "Aborted extraction rolls back");
-		try (var tx = Transaction.openRoot()) { handler.extract(water, 300, tx); tx.commit(); }
+		try (var tx = Transaction.openRoot()) { handler.extract(lava, 300, tx); tx.commit(); }
 		h.assertValueEqual(700, machine.getOutputFluid().getAmount(), "Committed output extraction works");
 		FluidStack named = new FluidStack(Fluids.WATER, 2300);
 		named.set(DataComponents.CUSTOM_NAME, Component.literal("Test fluid"));
@@ -214,7 +214,7 @@ final class CentrifugeFluidGameTests {
 			player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.STONE));
 			h.assertTrue(state.useItemOn(player.getMainHandItem(), h.getLevel(), player, InteractionHand.MAIN_HAND, hit) == InteractionResult.TRY_WITH_EMPTY_HAND,
 					"A non-fluid item also permits opening the UI");
-			player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.WATER_BUCKET));
+			player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.LAVA_BUCKET));
 			h.assertTrue(state.useItemOn(player.getMainHandItem(), h.getLevel(), player, InteractionHand.MAIN_HAND, hit) == InteractionResult.SUCCESS,
 					"A fluid container is handled by the block interaction");
 			h.assertValueEqual(1000, machine.getInputFluid().getAmount(), "Bucket interaction still fills the input tank");
@@ -225,8 +225,8 @@ final class CentrifugeFluidGameTests {
 	static void containersAndSlots(GameTestHelper h) {
 		var machine = place(h, true);
 		var player = h.makeMockPlayer(GameType.SURVIVAL);
-		player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.WATER_BUCKET));
-		h.assertTrue(FluidUtil.interactWithFluidHandler(player, InteractionHand.MAIN_HAND, h.getLevel(), machine.getBlockPos(), Direction.UP), "Water bucket fills input");
+		player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.LAVA_BUCKET));
+		h.assertTrue(FluidUtil.interactWithFluidHandler(player, InteractionHand.MAIN_HAND, h.getLevel(), machine.getBlockPos(), Direction.UP), "Lava bucket fills input");
 		h.assertValueEqual(1000, machine.getInputFluid().getAmount(), "Bucket transfers exact amount");
 		machine.setFluids(machine.getInputFluid(), new FluidStack(Fluids.LAVA, 1000));
 		player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.BUCKET));

@@ -20,7 +20,6 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
-import net.neoforged.neoforge.common.util.FakePlayerFactory;
 
 import java.util.List;
 
@@ -108,7 +107,7 @@ public class QuarryBlockEntity extends DiggingBaseBlockEntity {
 		ItemStack tool = pickaxeStack;
 		List<ItemStack> drops;
 		if (!tool.isEmpty() && tool.is(ItemTags.PICKAXES)) {
-			drops = Block.getDrops(state, server, miningPos, null, FakePlayerFactory.getMinecraft(server), tool);
+			drops = Block.getDrops(state, server, miningPos, null, getFakePlayer(server), tool);
 		} else {
 			drops = Block.getDrops(state, server, miningPos, null);
 		}
@@ -118,7 +117,7 @@ public class QuarryBlockEntity extends DiggingBaseBlockEntity {
 			setChanged();
 			return;
 		}
-		level.removeBlock(miningPos, false);
+		clearMinedBlock(miningPos, state);
 		for (ItemStack drop : drops) {
 			addToOutputs(drop);
 		}

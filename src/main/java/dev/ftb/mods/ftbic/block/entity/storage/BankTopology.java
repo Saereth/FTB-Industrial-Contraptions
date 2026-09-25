@@ -28,11 +28,15 @@ public final class BankTopology {
 	}
 
 	public static Snapshot snapshot(Level level, BlockPos origin) {
+		return snapshot(members(level, origin));
+	}
+
+	public static Snapshot snapshot(List<ElectricBlockEntity> members) {
 		double stored = 0D;
 		double capacity = 0D;
 		int cells = 0;
 		int ports = 0;
-		for (ElectricBlockEntity member : members(level, origin)) {
+		for (ElectricBlockEntity member : members) {
 			stored += member.getEnergy();
 			capacity += member.getEnergyCapacity();
 			if (member instanceof BankCellBlockEntity) cells++;
@@ -42,8 +46,12 @@ public final class BankTopology {
 	}
 
 	public static List<BankCellBlockEntity> cells(Level level, BlockPos origin) {
+		return cells(members(level, origin));
+	}
+
+	public static List<BankCellBlockEntity> cells(List<ElectricBlockEntity> members) {
 		List<BankCellBlockEntity> cells = new ArrayList<>();
-		for (ElectricBlockEntity member : members(level, origin)) {
+		for (ElectricBlockEntity member : members) {
 			if (member instanceof BankCellBlockEntity cell) cells.add(cell);
 		}
 		return cells;

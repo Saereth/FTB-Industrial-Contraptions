@@ -79,7 +79,7 @@ public class MachineBlockEntity extends BasicMachineBlockEntity {
 		super.setStackInSlot(slot, stack);
 	}
 
-	protected void markRecipeDirty() {
+	public void markRecipeDirty() {
 		recipeDirty = true;
 	}
 

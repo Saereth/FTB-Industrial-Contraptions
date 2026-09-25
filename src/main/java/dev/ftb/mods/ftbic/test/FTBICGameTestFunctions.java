@@ -2027,6 +2027,26 @@ public class FTBICGameTestFunctions {
 		});
 	}
 
+	static void idleTeleporterPairDoesNotDrain(GameTestHelper helper) {
+		BlockPos aRel = CENTER;
+		BlockPos bRel = CENTER.south(3);
+		TeleporterBlockEntity a = placeTeleporter(helper, aRel);
+		TeleporterBlockEntity b = placeTeleporter(helper, bRel);
+		linkPeers(helper, a, aRel, b, bRel);
+
+		a.energy = 40_000D;
+		b.energy = 40_000D;
+		a.setChanged();
+		b.setChanged();
+
+		helper.runAfterDelay(45L, () -> {
+			TeleporterBlockEntity aAfter = helper.getBlockEntity(aRel, TeleporterBlockEntity.class);
+			TeleporterBlockEntity bAfter = helper.getBlockEntity(bRel, TeleporterBlockEntity.class);
+			helper.assertValueEqual(80_000D, aAfter.energy + bAfter.energy, "A pair that has never transferred anything does not drain energy");
+			helper.succeed();
+		});
+	}
+
 	static void teleporterExposesEnergyCapBothDirections(GameTestHelper helper) {
 		helper.setBlock(CENTER.below(), Blocks.STONE);
 		helper.setBlock(CENTER, FTBICElectricBlocks.TELEPORTER.block.get());

@@ -13,12 +13,13 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.TooltipDisplay;
 
 import java.util.function.Consumer;
+import java.util.function.DoubleSupplier;
 
 public class ElectricItem extends Item implements EnergyItemHandler {
 	public final EnergyTier tier;
-	public final double capacity;
+	private final DoubleSupplier capacity;
 
-	public ElectricItem(Properties props, EnergyTier tier, double capacity) {
+	public ElectricItem(Properties props, EnergyTier tier, DoubleSupplier capacity) {
 		super(props.stacksTo(1));
 		this.tier = tier;
 		this.capacity = capacity;
@@ -26,7 +27,7 @@ public class ElectricItem extends Item implements EnergyItemHandler {
 
 	@Override
 	public double getEnergyCapacity(ItemStack stack) {
-		return capacity;
+		return capacity.getAsDouble();
 	}
 
 	@Override

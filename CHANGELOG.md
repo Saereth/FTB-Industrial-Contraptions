@@ -30,6 +30,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Jade showing a duplicate energy bar on FTBIC machines.
 * Mystical Agriculture erroring on FTBIC recipes that use custom ingredients.
 * Wrong solar panel buffer, geothermal output and energy storage upgrade figures in the guide.
+* Single-use batteries being used up with no charge, and battery capacity settings having no effect.
+* Industrial Battery Bank cells and ports vanishing when broken.
+* Idle linked teleporters keeping chunks loaded and draining energy.
+* Configuration Cards holding enchanted items disconnecting players.
+* Energy held by Energy Storage Upgrades being lost on chunk reload.
+* Machines staying idle after their input was topped up with Shift-click.
+* Powered Crafting Table destroying recipe remainders such as buckets.
+* Machine tanks accepting fluids that no recipe uses.
+* Quarry landmark resizing freezing the server.
+* Quarry areas wider than 64 blocks breaking after a reload.
+* Quarries stopping at water and lava.
+* Quarries and pumps ignoring land claims.
+* Quarries mining blocks that other mods mark as not movable.
+* Quarry and pump exfluid options having no effect.
+* FE ignoring battery box and transformer side settings.
+* Small FE transfers being refused or overcharged by rounding.
+* Ore refining smelting into FTBIC's own ingots instead of unified ones.
+* Reactor Simulator total energy reading 20 times too low.
+* Wind mills overproducing at low altitude.
+* Server lag from generators rescanning their cable networks on unrelated block updates.
+* Config screen errors for the quarry and pump tick options.
+* Wrong tiers, speeds and recharge rules on several guide pages.
 
 ### Added
 
@@ -57,6 +79,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Reusable Reactor Blueprints for copying and sharing designs.
 * GuideMe instructions for recording and applying Reactor Blueprints.
 * Items with the `ftbic:loot_box` data component can open a chosen loot table. Crouching opens the whole stack at once. Based on [PR 56](https://github.com/FTBTeam/FTB-Industrial-Contraptions/pull/56) by @jshipley.
+* Full FE mode lets other mods charge FTBIC batteries and armour, and FTBIC battery slots and Charge Pads accept other mods' FE items.
 
 ### Changed
 
@@ -70,6 +93,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Energy Rectifiers are hidden and uncraftable in full FE mode.
 * Guide energy figures follow the active energy mode and the config values.
 * Four Transformer Upgrades let a machine accept any amount of power without burning out.
+* Pumps use their own speed settings, which are slower than the quarry's by default.
 
 ## [26.1.2.10]
 

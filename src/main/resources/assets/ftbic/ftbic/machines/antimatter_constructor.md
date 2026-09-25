@@ -29,9 +29,9 @@ item_ids:
   ## <Color id="gold">Operation</Color>
 </Column>
 
-* **Tier:** EV
+* **Tier:** IV
 * **Buffer:** <Energy config="machines.antimatter_constructor_capacity" />
-* Slowly accumulates antimatter fuel from raw energy. Requires a sustained EV feed. Plan for a nuclear reactor or a wall of <ItemLink id="ev_solar_panel" />s.
+* Slowly accumulates antimatter fuel from raw energy. Requires a sustained IV feed. Plan for a nuclear reactor or a wall of <ItemLink id="ev_solar_panel" />s.
 * Accepts "boost" items (see `antimatter_boost` recipes) that temporarily multiply output.
 
 <ItemImage id="minecraft:air" scale="0.25"/>

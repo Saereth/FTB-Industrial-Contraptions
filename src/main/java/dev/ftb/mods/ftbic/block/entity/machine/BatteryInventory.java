@@ -1,6 +1,7 @@
 package dev.ftb.mods.ftbic.block.entity.machine;
 
 import dev.ftb.mods.ftbic.block.entity.ElectricBlockEntity;
+import dev.ftb.mods.ftbic.util.BatterySlotHelper;
 import dev.ftb.mods.ftbic.util.EnergyItemHandler;
 import net.minecraft.world.item.ItemStack;
 
@@ -28,7 +29,7 @@ public class BatteryInventory {
 	}
 
 	public boolean isItemValid(int slot, ItemStack s) {
-		if (!(s.getItem() instanceof EnergyItemHandler handler)) return false;
+		if (!(s.getItem() instanceof EnergyItemHandler handler)) return BatterySlotHelper.isForeignEnergyItem(s);
 		return charge ? handler.canInsertEnergy() : handler.canExtractEnergy();
 	}
 

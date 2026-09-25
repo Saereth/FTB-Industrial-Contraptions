@@ -45,6 +45,6 @@ item_ids:
   ### <Color id="aqua">Advanced Compressor</Color>
 </Row>
 
-HV tier. <Energy config="machines.advanced_compressor_use" rate="true" />, <Energy config="machines.advanced_compressor_capacity" /> buffer. Same recipes, faster.
+MV tier. <Energy config="machines.advanced_compressor_use" rate="true" />, <Energy config="machines.advanced_compressor_capacity" /> buffer. Same recipes and speed, and it accepts <ItemLink id="parallel_processing_upgrade" />s.
 
 <RecipeFor id="advanced_compressor" />

@@ -74,7 +74,7 @@ public final class CachedEnergyStorage {
 				int feAccepted = fe.insert(feOffer, tx);
 				if (feAccepted > 0) {
 					tx.commit();
-					return Math.min(ZapFEConversion.feToZapsCeil(feAccepted), zaps);
+					return Math.min(ZapFEConversion.feToZaps(feAccepted), zaps);
 				}
 			}
 			return 0D;

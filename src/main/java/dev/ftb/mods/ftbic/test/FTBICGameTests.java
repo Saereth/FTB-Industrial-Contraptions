@@ -59,6 +59,26 @@ public class FTBICGameTests {
 		reg(event, "energy_mode_direct_fe_input_clamps", EnergyModeGameTests::directFEInputClamps, env, 60);
 		reg(event, "energy_mode_display_follows_mode", EnergyModeGameTests::energyDisplayFollowsMode, env, 60);
 		reg(event, "energy_mode_reactor_exposes_fe", EnergyModeGameTests::reactorExposesFE, env, 60);
+		reg(event, "review_batteries_use_configured_charge", ReviewFixGameTests::batteriesUseConfiguredCharge, env, 60);
+		reg(event, "review_bank_blocks_drop_themselves", ReviewFixGameTests::bankBlocksDropThemselves, env, 60);
+		reg(event, "review_upgraded_energy_survives_reload", ReviewFixGameTests::upgradedEnergySurvivesReload, env, 60);
+		reg(event, "review_configuration_card_syncs_enchanted_items", ReviewFixGameTests::configurationCardSyncsEnchantedItems, env, 60);
+		reg(event, "digging_area_survives_reload", DiggingGameTests::areaSurvivesReload, env, 100);
+		reg(event, "digging_no_energy_without_area", DiggingGameTests::noEnergyWithoutArea, env, 100);
+		reg(event, "digging_quarry_clears_fluid", DiggingGameTests::quarryClearsFluid, env, 100);
+		reg(event, "digging_pump_uses_own_settings", DiggingGameTests::pumpUsesOwnSettings, env, 100);
+		reg(event, "digging_landmark_area", DiggingGameTests::landmarkArea, env, 100);
+		reg(event, "digging_protected_block_skipped", DiggingGameTests::protectedBlockSkipped, env, 100);
+		reg(event, "machine_fix_crafting_remainders", MachineFixGameTests::craftingTableRemainders, env, 100);
+		reg(event, "machine_fix_topped_up_input_restarts", MachineFixGameTests::toppedUpInputRestartsMachine, env, 100);
+		reg(event, "machine_fix_tanks_reject_unused_fluids", MachineFixGameTests::tanksRejectUnusedFluids, env, 100);
+		reg(event, "item_fe_battery_exchange", ItemEnergyGameTests::batteryExchangesFE, env, 60);
+		reg(event, "item_fe_aborted_transaction", ItemEnergyGameTests::abortedTransactionLeavesStack, env, 60);
+		reg(event, "item_fe_machine_slot_drain", ItemEnergyGameTests::machineSlotDrainsFEItem, env, 60);
+		reg(event, "energy_rules_directional_fe_faces", EnergyRulesGameTests::directionalFEFaces, env, 60);
+		reg(event, "energy_rules_small_fe_inserts", EnergyRulesGameTests::smallFEInsertsAreExact, env, 60);
+		reg(event, "energy_rules_fe_consumer_charge", EnergyRulesGameTests::feConsumerChargedExactly, env, 60);
+		reg(event, "energy_rules_neighbour_update", EnergyRulesGameTests::plainNeighbourUpdateKeepsNetwork, env, 60);
 
 		reg(event, "parallel_changed_inputs", ParallelProcessingGameTests::changedInputs, env, 60);
 		reg(event, "parallel_processing", ParallelProcessingGameTests::processing, env, 60);
@@ -203,6 +223,7 @@ public class FTBICGameTests {
 		reg(event, "teleporter_pipe_clear_fluids", FTBICGameTestFunctions::teleporterPipeClearFluids, env, 100);
 		reg(event, "teleporter_pipe_drain_on_activity", FTBICGameTestFunctions::teleporterPipeDrainOnActivity, env, 200);
 		reg(event, "teleporter_pipe_balances_energy", FTBICGameTestFunctions::teleporterPipeBalancesEnergy, env, 200);
+		reg(event, "teleporter_idle_pair_does_not_drain", FTBICGameTestFunctions::idleTeleporterPairDoesNotDrain, env, 200);
 		reg(event, "teleporter_exposes_energy_cap_both_directions", FTBICGameTestFunctions::teleporterExposesEnergyCapBothDirections, env, 40);
 		reg(event, "teleporter_pair_relays_power_for_remote_extract", FTBICGameTestFunctions::teleporterPairRelaysPowerForRemoteExtract, env, 200);
 		reg(event, "teleporter_filters_other_teleporters_from_push_network", FTBICGameTestFunctions::teleporterFiltersOtherTeleportersFromPushNetwork, env, 40);

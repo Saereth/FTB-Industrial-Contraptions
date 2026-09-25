@@ -45,7 +45,7 @@ public class WindMillBlockEntity extends GeneratorBlockEntity {
 		if (height < minY) return;
 		if (height > maxY) height = maxY;
 
-		output = Mth.lerp(height / (double) (maxY - minY),
+		output = Mth.lerp(maxY > minY ? (height - minY) / (double) (maxY - minY) : 1D,
 				FTBICConfig.MACHINES.WIND_MILL_MIN_OUTPUT.get(),
 				FTBICConfig.MACHINES.WIND_MILL_MAX_OUTPUT.get());
 

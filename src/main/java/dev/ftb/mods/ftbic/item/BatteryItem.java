@@ -16,16 +16,22 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 
+import java.util.function.DoubleSupplier;
+
 public class BatteryItem extends ElectricItem {
 	public final BatteryType batteryType;
 
-	public BatteryItem(Properties props, BatteryType batteryType, EnergyTier tier, double capacity) {
+	public BatteryItem(Properties props, BatteryType batteryType, EnergyTier tier, DoubleSupplier capacity) {
 		super(props, tier, capacity);
 		this.batteryType = batteryType;
-		// Single-use batteries ship pre-charged via the ENERGY data component default.
-		if (batteryType.singleUse) {
-			props.component(ModDataComponents.ENERGY.get(), capacity);
+	}
+
+	@Override
+	public double getEnergy(ItemStack stack) {
+		if (batteryType.singleUse && !stack.has(ModDataComponents.ENERGY.get())) {
+			return getEnergyCapacity(stack);
 		}
+		return super.getEnergy(stack);
 	}
 
 	@Override
