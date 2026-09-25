@@ -24,3 +24,5 @@ item_ids:
 ***
 
 Stack up to **4** to let any LV machine accept IV power directly — the classic companion to heavy overclocking, since overclockers drastically increase power draw beyond the base tier's cable capacity.
+
+With all **4** installed, the machine takes any amount of power, zaps or FE, and can no longer burn out from overvoltage.

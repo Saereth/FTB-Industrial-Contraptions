@@ -587,6 +587,32 @@ public class FTBICGameTestFunctions {
 		helper.succeed();
 	}
 
+	static void maxTransformerUpgradesAcceptAnyInput(GameTestHelper helper) {
+		BasicMachineBlockEntity be = placeMacerator(helper);
+		double overload = FTBICConfig.ENERGY.IV_TRANSFER_RATE.get() * 16D;
+		be.upgradeInventory.setStackInSlot(0, new ItemStack(FTBICItems.TRANSFORMER_UPGRADE.get(), 3));
+		be.insertEnergy(overload, false);
+		helper.assertTrue(be.isBurnt(), "Three transformers still burn on input above IV");
+
+		be.setBurnt(false);
+		be.upgradeInventory.setStackInSlot(0, new ItemStack(FTBICItems.TRANSFORMER_UPGRADE.get(), 4));
+		be.energy = 0D;
+		double accepted = be.insertEnergy(overload, false);
+		helper.assertFalse(be.isBurnt(), "Four transformers accept any zap input");
+		helper.assertValueEqual(be.energyCapacity, accepted, "Zap input is limited only by free buffer space");
+
+		var fe = helper.getLevel().getCapability(Capabilities.Energy.BLOCK, helper.absolutePos(CENTER), Direction.UP);
+		if (fe != null) {
+			be.energy = 0D;
+			try (var tx = Transaction.openRoot()) {
+				helper.assertTrue(fe.insert(Integer.MAX_VALUE, tx) > 0, "Four transformers accept any FE input");
+				tx.commit();
+			}
+			helper.assertFalse(be.isBurnt(), "Large FE offers do not burn a machine with four transformers");
+		}
+		helper.succeed();
+	}
+
 	static void storageUpgradeIncreasesCapacity(GameTestHelper helper) {
 		BasicMachineBlockEntity be = placeMacerator(helper);
 		double baseCap = be.energyCapacity;

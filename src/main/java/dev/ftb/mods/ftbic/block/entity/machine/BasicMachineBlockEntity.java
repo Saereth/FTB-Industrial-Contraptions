@@ -175,6 +175,10 @@ public class BasicMachineBlockEntity extends ElectricBlockEntity {
 		progressSpeed = sanitize(progressSpeed, 1D);
 		maxInputEnergy = sanitize(maxInputEnergy, electricBlockInstance.maxEnergyInput.get());
 		energyCapacity = sanitize(energyCapacity, electricBlockInstance.energyCapacity.get());
+
+		if (transformers >= UpgradeInventory.MAX_PER_TYPE_UPGRADES) {
+			maxInputEnergy = Double.POSITIVE_INFINITY;
+		}
 	}
 
 	private static double sanitize(double value, double fallback) {

@@ -127,6 +127,7 @@ public class FTBICGameTests {
 		reg(event, "overclocker_increases_energy_use", FTBICGameTestFunctions::overclockerIncreasesEnergyUse, env, 100);
 		reg(event, "stacked_overclockers_multiplicative", FTBICGameTestFunctions::stackedOverclockersMultiplicative, env, 100);
 		reg(event, "transformer_upgrade_increases_input_cap", FTBICGameTestFunctions::transformerUpgradeIncreasesInputCap, env, 100);
+		reg(event, "max_transformer_upgrades_accept_any_input", FTBICGameTestFunctions::maxTransformerUpgradesAcceptAnyInput, env, 100);
 		reg(event, "storage_upgrade_increases_capacity", FTBICGameTestFunctions::storageUpgradeIncreasesCapacity, env, 100);
 		reg(event, "ejector_upgrade_sets_auto_eject", FTBICGameTestFunctions::ejectorUpgradeSetsAutoEject, env, 100);
 		reg(event, "upgrade_persisted_across_save", FTBICGameTestFunctions::upgradePersistedAcrossSave, env, 100);
