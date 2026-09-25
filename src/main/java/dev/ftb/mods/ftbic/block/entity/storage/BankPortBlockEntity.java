@@ -207,8 +207,10 @@ public class BankPortBlockEntity extends GeneratorBlockEntity {
 			case "basic" -> FaceStyle.BASIC;
 			default -> FaceStyle.PORT;
 		};
-		for (int i = 0; i < chargeSlots.size(); i++) {
-			chargeSlots.get(i).loadItem(input.read("ChargeSlot" + i, ItemStack.CODEC).orElse(ItemStack.EMPTY));
+		if (!isClientSync(input)) {
+			for (int i = 0; i < chargeSlots.size(); i++) {
+				chargeSlots.get(i).loadItem(input.read("ChargeSlot" + i, ItemStack.CODEC).orElse(ItemStack.EMPTY));
+			}
 		}
 	}
 

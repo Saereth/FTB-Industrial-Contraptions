@@ -59,6 +59,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Industrial Battery Bank screen showing wrong values on dedicated servers.
 * Reactor output readouts capping at 32,767.
 * Cable networks loading chunks when they reach unloaded areas.
+* Heavy network traffic from machine, quarry and hydroponic block updates.
 
 ### Added
 

@@ -62,10 +62,13 @@ import java.util.List;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 public class ElectricBlockEntity extends BlockEntity implements ZapEnergyHandler {
 	private static final Map<ResourceKey<Level>, long[]> ELECTRIC_NETWORK_CHANGES = new HashMap<>();
+	private static final String CLIENT_SYNC = "ClientSync";
+	private static final Set<String> MENU_SYNCED_KEYS = Set.of("Inventory", "Upgrades", "Battery", "ChargeBattery", "Pickaxe", "PlacerId", "PlacerName");
 
 	public static void electricNetworkUpdated(LevelAccessor level, BlockPos pos) {
 		if (level instanceof ServerLevel l) {
@@ -295,9 +298,12 @@ public class ElectricBlockEntity extends BlockEntity implements ZapEnergyHandler
 		sideConfiguration = input.read("SideConfiguration", SideConfiguration.CODEC).orElse(SideConfiguration.DEFAULT);
 		burnt = input.getBooleanOr("Burnt", false);
 		inputLocks = supportsInputLocks() ? input.read("InputLocks", GhostItem.LIST_CODEC).orElse(List.of()) : List.of();
-		placerId = input.read("PlacerId", UUIDUtil.CODEC).orElse(Util.NIL_UUID);
-		placerName = input.getStringOr("PlacerName", "");
-		if (getSlotCount() > 0) {
+		boolean clientSync = isClientSync(input);
+		if (!clientSync) {
+			placerId = input.read("PlacerId", UUIDUtil.CODEC).orElse(Util.NIL_UUID);
+			placerName = input.getStringOr("PlacerName", "");
+		}
+		if (!clientSync && getSlotCount() > 0) {
 			Arrays.fill(inputItems, ItemStack.EMPTY);
 			Arrays.fill(outputItems, ItemStack.EMPTY);
 			input.listOrEmpty("Inventory", SlotStack.CODEC).forEach(e -> {
@@ -345,7 +351,18 @@ public class ElectricBlockEntity extends BlockEntity implements ZapEnergyHandler
 
 	@Override
 	public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
-		return saveCustomOnly(registries);
+		CompoundTag tag = saveCustomOnly(registries);
+		for (String key : List.copyOf(tag.keySet())) {
+			if (MENU_SYNCED_KEYS.contains(key) || key.startsWith("ChargeSlot")) {
+				tag.remove(key);
+			}
+		}
+		tag.putBoolean(CLIENT_SYNC, true);
+		return tag;
+	}
+
+	protected static boolean isClientSync(ValueInput input) {
+		return input.getBooleanOr(CLIENT_SYNC, false);
 	}
 
 

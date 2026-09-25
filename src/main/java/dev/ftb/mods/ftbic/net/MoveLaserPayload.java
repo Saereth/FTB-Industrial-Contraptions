@@ -1,6 +1,7 @@
 package dev.ftb.mods.ftbic.net;
 
 import dev.ftb.mods.ftbic.FTBIC;
+import dev.ftb.mods.ftbic.block.entity.machine.DiggingBaseBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -28,9 +29,11 @@ public record MoveLaserPayload(BlockPos pos, float x, int y, float z) implements
 
 	public static void handleOnClient(MoveLaserPayload payload, IPayloadContext context) {
 		context.enqueueWork(() -> {
-			// Currently no-op. DiggingBeamRenderer derives its beam from the BE's own state +
-			// game time without per-tick position sync. This payload is plumbed end-to-end and
-			// available for a future fine-grained laser-cursor renderer if we want it.
+			if (context.player().level().getBlockEntity(payload.pos) instanceof DiggingBaseBlockEntity digging) {
+				digging.laserX = payload.x;
+				digging.laserY = payload.y;
+				digging.laserZ = payload.z;
+			}
 		});
 	}
 }

@@ -80,7 +80,9 @@ public class GeneratorBlockEntity extends ElectricBlockEntity {
 	@Override
 	protected void loadAdditional(ValueInput input) {
 		super.loadAdditional(input);
-		chargeBatteryInventory.loadItem(input.read("ChargeBattery", ItemStack.CODEC).orElse(ItemStack.EMPTY));
+		if (!isClientSync(input)) {
+			chargeBatteryInventory.loadItem(input.read("ChargeBattery", ItemStack.CODEC).orElse(ItemStack.EMPTY));
+		}
 	}
 
 	@Override

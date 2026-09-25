@@ -83,7 +83,9 @@ public class QuarryBlockEntity extends DiggingBaseBlockEntity {
 	@Override
 	protected void loadAdditional(ValueInput input) {
 		super.loadAdditional(input);
-		pickaxeStack = input.read("Pickaxe", ItemStack.CODEC).orElse(ItemStack.EMPTY);
+		if (!isClientSync(input)) {
+			pickaxeStack = input.read("Pickaxe", ItemStack.CODEC).orElse(ItemStack.EMPTY);
+		}
 		filter = input.read("QuarryFilter", QuarryFilter.CODEC).orElse(QuarryFilter.DEFAULT);
 		if (!pickaxeStack.isEmpty()) {
 			initProperties();

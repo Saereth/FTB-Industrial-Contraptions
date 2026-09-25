@@ -31,6 +31,9 @@ public class MachineBlockEntity extends BasicMachineBlockEntity {
 	public int progress;
 	public int maxProgress;
 	public boolean starving;
+	private static final int STARVING_SYNC_INTERVAL = 20;
+	private boolean syncedStarving;
+	private long lastStarvingSync = Long.MIN_VALUE;
 
 	@Nullable
 	private MachineRecipe cachedRecipe;
@@ -121,11 +124,17 @@ public class MachineBlockEntity extends BasicMachineBlockEntity {
 		if (starving != s) {
 			starving = s;
 			setChanged();
-			if (level != null && !level.isClientSide()) {
-				BlockState state = getBlockState();
-				level.sendBlockUpdated(worldPosition, state, state, 3);
-			}
 		}
+	}
+
+	private void syncStarving() {
+		if (starving == syncedStarving) return;
+		long time = level.getGameTime();
+		if (lastStarvingSync != Long.MIN_VALUE && time - lastStarvingSync < STARVING_SYNC_INTERVAL) return;
+		syncedStarving = starving;
+		lastStarvingSync = time;
+		BlockState state = getBlockState();
+		level.sendBlockUpdated(worldPosition, state, state, 3);
 	}
 
 	@Nullable
@@ -278,6 +287,7 @@ public class MachineBlockEntity extends BasicMachineBlockEntity {
 		if (level == null || level.isClientSide()) {
 			return;
 		}
+		syncStarving();
 
 		MachineRecipe recipe = findRecipe();
 

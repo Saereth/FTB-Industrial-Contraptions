@@ -49,9 +49,13 @@ public class BasicMachineBlockEntity extends ElectricBlockEntity {
 
 	@Override
 	protected void loadAdditional(ValueInput input) {
-		input.child("Upgrades").ifPresent(upgradeInventory::deserialize);
+		if (!isClientSync(input)) {
+			input.child("Upgrades").ifPresent(upgradeInventory::deserialize);
+		}
 		super.loadAdditional(input);
-		batteryInventory.loadItem(input.read("Battery", ItemStack.CODEC).orElse(ItemStack.EMPTY));
+		if (!isClientSync(input)) {
+			batteryInventory.loadItem(input.read("Battery", ItemStack.CODEC).orElse(ItemStack.EMPTY));
+		}
 		initProperties();
 		upgradesChanged();
 	}

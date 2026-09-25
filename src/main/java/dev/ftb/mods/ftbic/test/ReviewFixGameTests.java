@@ -224,6 +224,29 @@ final class ReviewFixGameTests {
 		helper.succeed();
 	}
 
+	static void updateTagSkipsMenuData(GameTestHelper helper) {
+		helper.setBlock(POS, FTBICElectricBlocks.MACERATOR.block.get());
+		BasicMachineBlockEntity machine = helper.getBlockEntity(POS, BasicMachineBlockEntity.class);
+		machine.setStackInSlot(0, new ItemStack(Items.BONE, 5));
+		machine.upgradeInventory.setStackInSlot(0, new ItemStack(FTBICItems.OVERCLOCKER_UPGRADE.get(), 2));
+		machine.placerName = "Tester";
+		HolderLookup.Provider registries = helper.getLevel().registryAccess();
+
+		CompoundTag update = machine.getUpdateTag(registries);
+		helper.assertFalse(update.contains("Inventory") || update.contains("Upgrades") || update.contains("PlacerName"), "The client update leaves out menu-synced and server-only data");
+		helper.assertTrue(update.getBooleanOr("ClientSync", false), "The client update is marked as a client sync");
+		helper.assertTrue(machine.saveCustomOnly(registries).contains("Inventory"), "A normal save still includes the inventory");
+
+		machine.energy = 0D;
+		update.putDouble("Energy", 123D);
+		machine.loadCustomOnly(TagValueInput.create(ProblemReporter.DISCARDING, registries, update));
+		helper.assertValueEqual(123D, machine.energy, "Client updates still apply synced fields");
+		helper.assertValueEqual(5, machine.inputItems[0].getCount(), "Client updates keep the existing inventory");
+		helper.assertValueEqual(2, machine.upgradeInventory.countUpgrades(FTBICItems.OVERCLOCKER_UPGRADE.get()), "Client updates keep installed upgrades");
+		helper.assertValueEqual("Tester", machine.placerName, "Client updates keep the placer");
+		helper.succeed();
+	}
+
 	private static int playerSlot(AbstractContainerMenu menu, Player player, int inventorySlot) {
 		for (int i = 0; i < menu.slots.size(); i++) {
 			Slot slot = menu.slots.get(i);

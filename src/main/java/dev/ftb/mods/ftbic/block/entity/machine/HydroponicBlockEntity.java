@@ -35,6 +35,7 @@ public final class HydroponicBlockEntity extends BasicMachineBlockEntity {
 	private boolean mutationMode;
 	private FluidStack inputFluid = FluidStack.EMPTY;
 	private int syncTimer;
+	private FluidStack syncedFluid = FluidStack.EMPTY;
 	private RecipeMap cachedRecipes;
 	public final HydroponicWaterHandler fluidHandler = new HydroponicWaterHandler(this);
 
@@ -132,7 +133,10 @@ public final class HydroponicBlockEntity extends BasicMachineBlockEntity {
 		if (++syncTimer >= 20) {
 			syncTimer = 0;
 			setChanged();
-			server.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);
+			if (!FluidStack.matches(syncedFluid, inputFluid)) {
+				syncedFluid = inputFluid.copy();
+				server.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);
+			}
 		}
 	}
 
