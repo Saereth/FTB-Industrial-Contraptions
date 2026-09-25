@@ -32,6 +32,11 @@ public class BatteryBoxBlockEntity extends GeneratorBlockEntity {
 	}
 
 	@Override
+	public boolean keepsEnergyWhenBroken() {
+		return true;
+	}
+
+	@Override
 	public boolean isValidEnergyOutputSide(Direction direction) {
 		Mode mode = getSideConfiguration().mode(Resource.ENERGY, Face.relative(getFacing(Direction.NORTH), direction));
 		return mode == Mode.DEFAULT ? direction == getFacing(Direction.NORTH) : mode.allows(false);

@@ -7,6 +7,7 @@ import dev.ftb.mods.ftbic.block.FTBICElectricBlocks;
 import dev.ftb.mods.ftbic.block.entity.machine.BasicMachineBlockEntity;
 import dev.ftb.mods.ftbic.item.BatteryItem;
 import dev.ftb.mods.ftbic.item.FTBICItems;
+import dev.ftb.mods.ftbic.recipe.RecipeToggleCondition;
 import dev.ftb.mods.ftbic.registry.ModDataComponents;
 import dev.ftb.mods.ftbic.util.GhostItem;
 import dev.ftb.mods.ftbic.util.MachineConfiguration;
@@ -14,19 +15,25 @@ import dev.ftb.mods.ftbic.util.SideConfiguration;
 import io.netty.buffer.Unpooled;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.storage.TagValueInput;
+import net.neoforged.neoforge.common.ModConfigSpec;
+import net.neoforged.neoforge.common.conditions.ICondition;
 import net.neoforged.neoforge.fluids.SimpleFluidContent;
 
 import java.util.List;
+import java.util.Map;
 
 final class ReviewFixGameTests {
 	private static final BlockPos POS = new BlockPos(1, 2, 1);
@@ -89,6 +96,32 @@ final class ReviewFixGameTests {
 		} finally {
 			buffer.release();
 		}
+		helper.succeed();
+	}
+
+	static void recipeTogglesFollowConfig(GameTestHelper helper) {
+		Map<String, ModConfigSpec.BooleanValue> toggles = Map.of(
+				"add_dust_from_ore_recipes", FTBICConfig.RECIPES.ADD_DUST_FROM_ORE_RECIPES,
+				"add_dust_from_material_recipes", FTBICConfig.RECIPES.ADD_DUST_FROM_MATERIAL_RECIPES,
+				"add_gem_from_ore_recipes", FTBICConfig.RECIPES.ADD_GEM_FROM_ORE_RECIPES,
+				"add_rod_recipes", FTBICConfig.RECIPES.ADD_ROD_RECIPES,
+				"add_plate_recipes", FTBICConfig.RECIPES.ADD_PLATE_RECIPES,
+				"add_gear_recipes", FTBICConfig.RECIPES.ADD_GEAR_RECIPES,
+				"add_canned_food_recipes", FTBICConfig.RECIPES.ADD_CANNED_FOOD_RECIPES);
+		toggles.forEach((option, value) -> helper.assertValueEqual(value.get(),
+				new RecipeToggleCondition(option).test(ICondition.IContext.EMPTY), option + " condition follows the config"));
+		helper.assertTrue(new RecipeToggleCondition("not_a_real_option").test(ICondition.IContext.EMPTY), "Unknown options keep recipes enabled");
+
+		Map<String, ModConfigSpec.BooleanValue> samples = Map.of(
+				"macerating/ingots/iron_to_dust", FTBICConfig.RECIPES.ADD_DUST_FROM_MATERIAL_RECIPES,
+				"macerating/ores/diamond_to_dust", FTBICConfig.RECIPES.ADD_GEM_FROM_ORE_RECIPES,
+				"extruding/ingots/iron_to_iron_rod", FTBICConfig.RECIPES.ADD_ROD_RECIPES,
+				"rolling/ingots/iron_to_iron_plate", FTBICConfig.RECIPES.ADD_PLATE_RECIPES,
+				"extruding/plates/iron_to_iron_gear", FTBICConfig.RECIPES.ADD_GEAR_RECIPES,
+				"canning/apple", FTBICConfig.RECIPES.ADD_CANNED_FOOD_RECIPES);
+		RecipeManager recipes = helper.getLevel().getServer().getRecipeManager();
+		samples.forEach((path, value) -> helper.assertValueEqual(value.get(),
+				recipes.byKey(ResourceKey.create(Registries.RECIPE, FTBIC.id(path))).isPresent(), path + " loads only when its toggle is on"));
 		helper.succeed();
 	}
 }

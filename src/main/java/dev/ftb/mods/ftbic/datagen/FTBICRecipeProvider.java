@@ -11,6 +11,7 @@ import dev.ftb.mods.ftbic.recipe.FTBICRecipes;
 import dev.ftb.mods.ftbic.recipe.FullFEModeCondition;
 import dev.ftb.mods.ftbic.recipe.MachineRecipe;
 import dev.ftb.mods.ftbic.recipe.MachineRecipeType;
+import dev.ftb.mods.ftbic.recipe.RecipeToggleCondition;
 import dev.ftb.mods.ftbic.recipe.SoilOption;
 import dev.ftb.mods.ftbic.util.FluidCellIngredient;
 import dev.ftb.mods.ftbic.util.IngredientWithCount;
@@ -56,6 +57,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 public class FTBICRecipeProvider extends RecipeProvider {
@@ -70,6 +72,15 @@ public class FTBICRecipeProvider extends RecipeProvider {
 			"aluminum", "coal", "copper", "diamond", "emerald", "gold", "iridium", "iron",
 			"lapis_lazuli", "lead", "nickel", "quartz", "silver", "tin", "uranium",
 	};
+
+	private static final ICondition DUST_FROM_ORE = new RecipeToggleCondition("add_dust_from_ore_recipes");
+	private static final ICondition DUST_FROM_MATERIAL = new RecipeToggleCondition("add_dust_from_material_recipes");
+	private static final ICondition GEM_FROM_ORE = new RecipeToggleCondition("add_gem_from_ore_recipes");
+	private static final ICondition RODS = new RecipeToggleCondition("add_rod_recipes");
+	private static final ICondition PLATES = new RecipeToggleCondition("add_plate_recipes");
+	private static final ICondition GEARS = new RecipeToggleCondition("add_gear_recipes");
+	private static final ICondition CANNED_FOOD = new RecipeToggleCondition("add_canned_food_recipes");
+	private static final Set<String> GEM_ORES = Set.of("coal", "diamond", "emerald", "lapis_lazuli", "quartz");
 
 	private static final String[] MACERATE_RAW = {
 			"aluminum", "copper", "gold", "iridium", "iron", "lead", "nickel", "plutonium",
@@ -124,28 +135,28 @@ public class FTBICRecipeProvider extends RecipeProvider {
 	private void maceratingRecipes() {
 		macerate("blaze_powder", commonTag("rods/blaze"), stack(Items.BLAZE_POWDER, 5));
 		macerate("bone_meal", Ingredient.of(Items.BONE), stack(Items.BONE_MEAL, 5));
-		macerate("charcoal_dust", Ingredient.of(Items.CHARCOAL), ftbicStack("charcoal_dust", 1));
-		macerate("coal_dust", Ingredient.of(Items.COAL), ftbicStack("coal_dust", 1));
+		macerate("charcoal_dust", Ingredient.of(Items.CHARCOAL), ftbicStack("charcoal_dust", 1), DUST_FROM_MATERIAL);
+		macerate("coal_dust", Ingredient.of(Items.COAL), ftbicStack("coal_dust", 1), DUST_FROM_MATERIAL);
 		macerate("cobblestone", commonTag("stones"), stack(Items.COBBLESTONE, 1));
 		macerate("gravel", commonTag("cobblestones"), stack(Items.GRAVEL, 1));
-		macerate("obsidian_dust", commonTag("obsidians"), ftbicStack("obsidian_dust", 1));
+		macerate("obsidian_dust", commonTag("obsidians"), ftbicStack("obsidian_dust", 1), DUST_FROM_MATERIAL);
 		macerate("sand", commonTag("gravels"), stack(Items.SAND, 1));
 		macerate("snowball", Ingredient.of(Items.SNOW_BLOCK), stack(Items.SNOWBALL, 1));
 		macerate("string", tag(ItemTags.WOOL), stack(Items.STRING, 4));
 
-		macerate("gems/diamond_to_dust", commonTag("gems/diamond"), ftbicStack("diamond_dust", 1));
+		macerate("gems/diamond_to_dust", commonTag("gems/diamond"), ftbicStack("diamond_dust", 1), DUST_FROM_MATERIAL);
 
 		for (String m : MACERATE_INGOTS) {
-			macerate("ingots/" + m + "_to_dust", commonTag("ingots/" + m), ftbicStack(m + "_dust", 1));
+			macerate("ingots/" + m + "_to_dust", commonTag("ingots/" + m), ftbicStack(m + "_dust", 1), DUST_FROM_MATERIAL);
 		}
 		for (String m : MACERATE_ORES) {
 			String dust = oreDustName(m);
-			macerate("ores/" + m + "_to_dust", commonTag("ores/" + oreTagName(m)), ftbicStack(dust, 2));
+			macerate("ores/" + m + "_to_dust", commonTag("ores/" + oreTagName(m)), ftbicStack(dust, 2), GEM_ORES.contains(m) ? GEM_FROM_ORE : DUST_FROM_ORE);
 		}
 		for (String m : MACERATE_RAW) {
 			ItemStackTemplate dust = ftbicStack(m + "_dust", 1);
 			macerateRaw("raw_materials/" + m + "_to_dust", commonTag("raw_materials/" + m),
-					dust, dust, 0.35);
+					dust, dust, 0.35, DUST_FROM_ORE);
 		}
 
 		// IC2C: vanilla block-family conversions
@@ -155,15 +166,15 @@ public class FTBICRecipeProvider extends RecipeProvider {
 		macerate("ice_to_snowball", Ingredient.of(Items.ICE), stack(Items.SNOWBALL, 1));
 
 		// IC2C: redstone ore bonus output (bypasses fortune)
-		macerate("ores/redstone_to_dust", commonTag("ores/redstone"), stack(Items.REDSTONE, 6));
+		macerate("ores/redstone_to_dust", commonTag("ores/redstone"), stack(Items.REDSTONE, 6), GEM_FROM_ORE);
 
 		// IC2C: storage-block → 9 dust (direct dust extraction from compact storage)
-		macerate("storage_blocks/coal_to_dust", Ingredient.of(Items.COAL_BLOCK), ftbicStack("coal_dust", 9));
+		macerate("storage_blocks/coal_to_dust", Ingredient.of(Items.COAL_BLOCK), ftbicStack("coal_dust", 9), DUST_FROM_MATERIAL);
 		for (String m : MACERATE_INGOTS) {
-			macerate("storage_blocks/" + m + "_to_dust", commonTag("storage_blocks/" + m), ftbicStack(m + "_dust", 9));
+			macerate("storage_blocks/" + m + "_to_dust", commonTag("storage_blocks/" + m), ftbicStack(m + "_dust", 9), DUST_FROM_MATERIAL);
 		}
 		for (String m : MACERATE_RAW) {
-			macerate("storage_blocks/raw_" + m + "_to_dust", commonTag("storage_blocks/raw_" + m), ftbicStack(m + "_dust", 9));
+			macerate("storage_blocks/raw_" + m + "_to_dust", commonTag("storage_blocks/raw_" + m), ftbicStack(m + "_dust", 9), DUST_FROM_ORE);
 		}
 
 		macerateChance("sticky_resin_from_log", tag(ItemTags.LOGS), 1, ftbicStack("sticky_resin", 1), 0.25D);
@@ -173,7 +184,7 @@ public class FTBICRecipeProvider extends RecipeProvider {
 				new ItemStackTemplate(FTBICItems.MIXED_METAL_BLEND.item.get(), 1));
 	}
 
-	private void macerate(String path, Ingredient input, ItemStackTemplate result) {
+	private void macerate(String path, Ingredient input, ItemStackTemplate result, ICondition... conditions) {
 		if (result == null) return;
 		MachineRecipe recipe = new MachineRecipe(
 				FTBICRecipes.MACERATING,
@@ -183,10 +194,10 @@ public class FTBICRecipeProvider extends RecipeProvider {
 				List.of(),
 				1D,
 				false);
-		output.accept(recipeKey("macerating/" + path), recipe, null);
+		output.accept(recipeKey("macerating/" + path), recipe, null, conditions);
 	}
 
-	private void macerateRaw(String path, Ingredient input, ItemStackTemplate primary, ItemStackTemplate bonus, double chance) {
+	private void macerateRaw(String path, Ingredient input, ItemStackTemplate primary, ItemStackTemplate bonus, double chance, ICondition... conditions) {
 		if (primary == null || bonus == null) return;
 		MachineRecipe recipe = new MachineRecipe(
 				FTBICRecipes.MACERATING,
@@ -196,7 +207,7 @@ public class FTBICRecipeProvider extends RecipeProvider {
 				List.of(),
 				1D,
 				false);
-		output.accept(recipeKey("macerating/" + path), recipe, null);
+		output.accept(recipeKey("macerating/" + path), recipe, null, conditions);
 	}
 
 	private void macerateChance(String path, Ingredient input, int inputCount, ItemStackTemplate result, double chance) {
@@ -229,12 +240,12 @@ public class FTBICRecipeProvider extends RecipeProvider {
 		// ingots → rod (×2)
 		for (String m : EXTRUDE_INGOT_METALS) {
 			extrude("ingots/" + m + "_to_" + m + "_rod", commonTag("ingots/" + m), 1,
-					resolveShape(m, "rod"), 2);
+					resolveShape(m, "rod"), 2, RODS);
 		}
 		// plates (×4) → gear (×1)
 		for (String m : EXTRUDE_PLATE_ROD_MATERIALS) {
 			extrude("plates/" + m + "_to_" + m + "_gear", commonTag("plates/" + m), 4,
-					resolveShape(m, "gear"), 1);
+					resolveShape(m, "gear"), 1, GEARS);
 		}
 		// rods → wire (×2)
 		for (String m : EXTRUDE_PLATE_ROD_MATERIALS) {
@@ -242,10 +253,10 @@ public class FTBICRecipeProvider extends RecipeProvider {
 					resolveShape(m, "wire"), 2);
 		}
 		extrude("dusts/obsidian_to_obsidian_rod", commonTag("dusts/obsidian"), 1,
-				ftbicStack("obsidian_rod", 1), 2);
+				ftbicStack("obsidian_rod", 1), 2, RODS);
 	}
 
-	private void extrude(String path, Ingredient input, int inputCount, ItemStackTemplate result, int outputCount) {
+	private void extrude(String path, Ingredient input, int inputCount, ItemStackTemplate result, int outputCount, ICondition... conditions) {
 		if (result == null) return;
 		ItemStackTemplate scaled = new ItemStackTemplate(result.item(), outputCount);
 		MachineRecipe recipe = new MachineRecipe(
@@ -256,7 +267,7 @@ public class FTBICRecipeProvider extends RecipeProvider {
 				List.of(),
 				1D,
 				false);
-		output.accept(recipeKey("extruding/" + path), recipe, null);
+		output.accept(recipeKey("extruding/" + path), recipe, null, conditions);
 	}
 
 	private ItemStackTemplate resolveShape(String metal, String shape) {
@@ -277,7 +288,7 @@ public class FTBICRecipeProvider extends RecipeProvider {
 					List.of(),
 					1D,
 					false);
-			output.accept(recipeKey("rolling/ingots/" + m + "_to_" + m + "_plate"), recipe, null);
+			output.accept(recipeKey("rolling/ingots/" + m + "_to_" + m + "_plate"), recipe, null, PLATES);
 		}
 	}
 
@@ -303,13 +314,13 @@ public class FTBICRecipeProvider extends RecipeProvider {
 		compress("blaze_powder_to_blaze_rod", Ingredient.of(Items.BLAZE_POWDER), 4, stack(Items.BLAZE_ROD, 1));
 		compress("flint_to_gunpowder", Ingredient.of(Items.FLINT), 4, stack(Items.GUNPOWDER, 1));
 		compress("diamond_dust_to_diamond", i("ftbic:diamond_dust"), 2, stack(Items.DIAMOND, 1));
-		compress("obsidian_dust_to_obsidian_plate", i("ftbic:obsidian_dust"), 1, ftbicStack("obsidian_plate", 1));
+		compress("obsidian_dust_to_obsidian_plate", i("ftbic:obsidian_dust"), 1, ftbicStack("obsidian_plate", 1), PLATES);
 
 		compress("rubber_from_resin", i("ftbic:sticky_resin"), 1, ftbicStack("rubber", 3));
 		compress("rubber_from_latex", i("ftbic:latex_ball"), 2, ftbicStack("rubber", 1));
 	}
 
-	private void compress(String path, Ingredient input, int inputCount, ItemStackTemplate result) {
+	private void compress(String path, Ingredient input, int inputCount, ItemStackTemplate result, ICondition... conditions) {
 		if (input == null || result == null) return;
 		MachineRecipe recipe = new MachineRecipe(
 				FTBICRecipes.COMPRESSING,
@@ -319,7 +330,7 @@ public class FTBICRecipeProvider extends RecipeProvider {
 				List.of(),
 				1D,
 				false);
-		output.accept(recipeKey("compressing/" + path), recipe, null);
+		output.accept(recipeKey("compressing/" + path), recipe, null, conditions);
 	}
 
 
@@ -546,7 +557,7 @@ public class FTBICRecipeProvider extends RecipeProvider {
 		for (String food : CANNABLE_FOODS) {
 			Ingredient foodIng = i("minecraft:" + food);
 			if (foodIng == null) continue;
-			canning(food, foodIng, emptyCanIng, cannedFood);
+			canning(food, foodIng, emptyCanIng, cannedFood, CANNED_FOOD);
 		}
 
 		// Spray paint cans: use a FluidCellIngredient (water).
@@ -561,7 +572,7 @@ public class FTBICRecipeProvider extends RecipeProvider {
 				new ItemStackTemplate(FTBICItems.URANIUM_FUEL_ROD.get(), 1));
 	}
 
-	private void canning(String path, Ingredient a, Ingredient b, ItemStackTemplate result) {
+	private void canning(String path, Ingredient a, Ingredient b, ItemStackTemplate result, ICondition... conditions) {
 		if (a == null || b == null || result == null) return;
 		MachineRecipe recipe = new MachineRecipe(
 				FTBICRecipes.CANNING,
@@ -571,7 +582,7 @@ public class FTBICRecipeProvider extends RecipeProvider {
 				List.of(),
 				1D,
 				false);
-		output.accept(recipeKey("canning/" + path), recipe, null);
+		output.accept(recipeKey("canning/" + path), recipe, null, conditions);
 	}
 
 	private static Ingredient fluidCell(Fluid fluid) {

@@ -31,4 +31,9 @@ public class BankCellBlockEntity extends ElectricBlockEntity {
 		return false;
 	}
 
+	@Override
+	public boolean keepsEnergyWhenBroken() {
+		return true;
+	}
+
 }

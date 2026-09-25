@@ -425,6 +425,7 @@ public class FTBICLanguageProvider extends LanguageProvider {
 		add("ftbic.any_item", "Any Item");
 		add("ftbic.energy_capacity", "Capacity: %s");
 		add("ftbic.energy_output", "Output: %s");
+		add("ftbic.energy_stored", "Stored: %s");
 		add("ftbic.energy_usage", "Usage: %s");
 		add("ftbic.fuse_info", "Right-click with a fuse to repair burnt machines.");
 		add("ftbic.max_input", "Max Input: %s");

@@ -186,7 +186,6 @@ public final class FTBICConfig {
 		public final ModConfigSpec.DoubleValue TELEPORTER_TRANSPORT_DRAIN;
 		public final ModConfigSpec.IntValue TELEPORTER_ACTIVE_WINDOW_TICKS;
 		public final ModConfigSpec.IntValue TELEPORTER_CHUNK_LOAD_IDLE_TICKS;
-		public final ModConfigSpec.DoubleValue TELEPORTER_BALANCE_RATE;
 		public final ModConfigSpec.DoubleValue CHARGE_PAD_CAPACITY;
 		public final ModConfigSpec.DoubleValue POWERED_CRAFTING_TABLE_CAPACITY;
 		public final ModConfigSpec.DoubleValue POWERED_CRAFTING_TABLE_USE;
@@ -208,7 +207,6 @@ public final class FTBICConfig {
 		public final ModConfigSpec.DoubleValue OVERCLOCKER_SPEED;
 		public final ModConfigSpec.DoubleValue OVERCLOCKER_ENERGY_USE;
 		public final ModConfigSpec.DoubleValue STORAGE_UPGRADE;
-		public final ModConfigSpec.DoubleValue SCRAP_CHANCE;
 
 		Machines(ModConfigSpec.Builder b) {
 			b.push("machines");
@@ -278,7 +276,6 @@ public final class FTBICConfig {
 			TELEPORTER_TRANSPORT_DRAIN = b.comment("Zaps drained once per active second from the sending teleporter while items or fluids are flowing through a linked pair.").defineInRange("teleporter_transport_drain", 32D, 0D, 1_000_000D);
 			TELEPORTER_ACTIVE_WINDOW_TICKS = b.comment("How recent the last successful transfer must be (in ticks) for the pair to be considered active for drain and chunk-loading.").defineInRange("teleporter_active_window_ticks", 20, 1, 12_000);
 			TELEPORTER_CHUNK_LOAD_IDLE_TICKS = b.comment("Release the peer chunk ticket after this many ticks of inactivity. Should be >= teleporter_active_window_ticks.").defineInRange("teleporter_chunk_load_idle_ticks", 1_200, 1, 72_000);
-			TELEPORTER_BALANCE_RATE = b.comment("Maximum zaps per tick shuffled between a linked pair to keep their energy buffers in balance.").defineInRange("teleporter_balance_rate", 128D, 0D, 1_000_000D);
 			CHARGE_PAD_CAPACITY = b.defineInRange("charge_pad_capacity", 1_000_000D, 1D, 10_000_000D);
 			POWERED_CRAFTING_TABLE_CAPACITY = b.defineInRange("powered_crafting_table_capacity", 1_200D, 1D, 100_000D);
 			POWERED_CRAFTING_TABLE_USE = b.defineInRange("powered_crafting_table_use", 1D, 0D, 100_000D);
@@ -301,7 +298,6 @@ public final class FTBICConfig {
 			OVERCLOCKER_SPEED = b.defineInRange("overclocker_speed", 1.45D, 0D, 100_000D);
 			OVERCLOCKER_ENERGY_USE = b.defineInRange("overclocker_energy_use", 1.6D, 0D, 100_000D);
 			STORAGE_UPGRADE = b.defineInRange("storage_upgrade", 10_000D, 0D, 100_000D);
-			SCRAP_CHANCE = b.defineInRange("scrap_chance", 0.125D, 0D, 1D);
 			b.pop();
 		}
 	}
@@ -312,8 +308,6 @@ public final class FTBICConfig {
 		public final ModConfigSpec.DoubleValue NUCLEAR_REACTOR_EXPLOSION_MULTIPLIER;
 		public final ModConfigSpec.DoubleValue NUCLEAR_REACTOR_EXPLOSION_LIMIT;
 		public final ModConfigSpec.IntValue FLUID_CELL_CAPACITY;
-		public final ModConfigSpec.BooleanValue ADD_ALL_FLUID_CELLS;
-		public final ModConfigSpec.BooleanValue NUCLEAR_EXPLOSION_DAEMON_THREAD;
 		public final ModConfigSpec.DoubleValue WATER_COOLING_MULTIPLIER;
 		public final ModConfigSpec.IntValue NUKE_FUSE_TICKS;
 		public final ModConfigSpec.BooleanValue REACTOR_MELTDOWN_RESPECTS_CLAIMS;
@@ -326,8 +320,6 @@ public final class FTBICConfig {
 			NUCLEAR_REACTOR_EXPLOSION_MULTIPLIER = b.defineInRange("nuclear_reactor_explosion_multiplier", 0.5D, 0.001D, 100D);
 			NUCLEAR_REACTOR_EXPLOSION_LIMIT = b.defineInRange("nuclear_reactor_explosion_limit", 80D, 1D, 10_000D);
 			FLUID_CELL_CAPACITY = b.defineInRange("fluid_cell_capacity", FLUID_BUCKET_VOLUME, 1, 100_000);
-			ADD_ALL_FLUID_CELLS = b.define("add_all_fluid_cells", false);
-			NUCLEAR_EXPLOSION_DAEMON_THREAD = b.comment("Spawn a daemon thread for explosion calc (experimental).").define("nuclear_explosion_daemon_thread", false);
 			WATER_COOLING_MULTIPLIER = b.comment("Max reactor-hull cooling multiplier when every outward face is water-clad. 1.0 disables the bonus; 2.0 doubles cooling; scales linearly with water-adjacent faces.")
 					.defineInRange("water_cooling_multiplier", 2.0D, 1.0D, 10.0D);
 			NUKE_FUSE_TICKS = b.comment("Fuse length for the placed Nuke block in ticks (20 ticks per second).")
@@ -351,13 +343,13 @@ public final class FTBICConfig {
 
 		Recipes(ModConfigSpec.Builder b) {
 			b.push("recipes");
-			ADD_DUST_FROM_ORE_RECIPES = b.define("add_dust_from_ore_recipes", true);
-			ADD_DUST_FROM_MATERIAL_RECIPES = b.define("add_dust_from_material_recipes", true);
-			ADD_GEM_FROM_ORE_RECIPES = b.define("add_gem_from_ore_recipes", true);
-			ADD_ROD_RECIPES = b.define("add_rod_recipes", true);
-			ADD_PLATE_RECIPES = b.define("add_plate_recipes", true);
-			ADD_GEAR_RECIPES = b.define("add_gear_recipes", true);
-			ADD_CANNED_FOOD_RECIPES = b.define("add_canned_food_recipes", true);
+			ADD_DUST_FROM_ORE_RECIPES = b.comment("Macerator recipes that turn metal ores, raw metals and raw metal blocks into dust.").define("add_dust_from_ore_recipes", true);
+			ADD_DUST_FROM_MATERIAL_RECIPES = b.comment("Macerator recipes that turn ingots, gems, storage blocks, coal, charcoal and obsidian into dust.").define("add_dust_from_material_recipes", true);
+			ADD_GEM_FROM_ORE_RECIPES = b.comment("Macerator recipes for coal, diamond, emerald, lapis, quartz and redstone ores.").define("add_gem_from_ore_recipes", true);
+			ADD_ROD_RECIPES = b.comment("Extruder recipes that turn ingots and obsidian dust into rods.").define("add_rod_recipes", true);
+			ADD_PLATE_RECIPES = b.comment("Roller recipes that turn ingots into plates, and the obsidian plate compressor recipe.").define("add_plate_recipes", true);
+			ADD_GEAR_RECIPES = b.comment("Extruder recipes that turn plates into gears.").define("add_gear_recipes", true);
+			ADD_CANNED_FOOD_RECIPES = b.comment("Canning Machine recipes that pack food into cans.").define("add_canned_food_recipes", true);
 			b.pop();
 		}
 	}

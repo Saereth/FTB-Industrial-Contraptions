@@ -1,6 +1,7 @@
 package dev.ftb.mods.ftbic.item;
 
 import dev.ftb.mods.ftbic.block.ElectricBlockInstance;
+import dev.ftb.mods.ftbic.registry.ModDataComponents;
 import dev.ftb.mods.ftbic.util.EnergyDisplay;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
@@ -40,6 +41,12 @@ public class ElectricBlockItem extends BlockItem {
 		double cap = instance.energyCapacity.get();
 		if (cap > 0D) {
 			tooltip.accept(Component.translatable("ftbic.energy_capacity", EnergyDisplay.compactAmount(cap))
+					.withStyle(ChatFormatting.GRAY));
+		}
+
+		Double stored = stack.get(ModDataComponents.ENERGY.get());
+		if (stored != null) {
+			tooltip.accept(Component.translatable("ftbic.energy_stored", EnergyDisplay.compactAmount(stored))
 					.withStyle(ChatFormatting.GRAY));
 		}
 

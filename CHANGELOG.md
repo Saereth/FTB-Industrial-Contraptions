@@ -52,6 +52,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Server lag from generators rescanning their cable networks on unrelated block updates.
 * Config screen errors for the quarry and pump tick options.
 * Wrong tiers, speeds and recharge rules on several guide pages.
+* The `[recipes]` config toggles having no effect.
+* Lag from other mods feeding FE into large cable networks.
 
 ### Added
 
@@ -80,6 +82,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * GuideMe instructions for recording and applying Reactor Blueprints.
 * Items with the `ftbic:loot_box` data component can open a chosen loot table. Crouching opens the whole stack at once. Based on [PR 56](https://github.com/FTBTeam/FTB-Industrial-Contraptions/pull/56) by @jshipley.
 * Full FE mode lets other mods charge FTBIC batteries and armour, and FTBIC battery slots and Charge Pads accept other mods' FE items.
+* Battery boxes and Industrial Battery Bank blocks keep their stored energy when broken.
 
 ### Changed
 
@@ -94,6 +97,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Guide energy figures follow the active energy mode and the config values.
 * Four Transformer Upgrades let a machine accept any amount of power without burning out.
 * Pumps use their own speed settings, which are slower than the quarry's by default.
+
+### Removed
+
+* Unused config options `teleporter_balance_rate`, `scrap_chance`, `add_all_fluid_cells` and `nuclear_explosion_daemon_thread`.
 
 ## [26.1.2.10]
 

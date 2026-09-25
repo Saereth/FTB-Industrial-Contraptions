@@ -24,6 +24,9 @@ public final class FTBICRecipes {
 	public static final DeferredHolder<MapCodec<? extends ICondition>, MapCodec<FullFEModeCondition>> FULL_FE_MODE =
 			CONDITIONS.register("full_fe_mode", () -> FullFEModeCondition.CODEC);
 
+	public static final DeferredHolder<MapCodec<? extends ICondition>, MapCodec<RecipeToggleCondition>> RECIPE_TOGGLE =
+			CONDITIONS.register("recipe_toggle", () -> RecipeToggleCondition.CODEC);
+
 	// Machine recipes: MachineRecipeType auto-registers its RecipeType + RecipeSerializer.
 	public static final MachineRecipeType SMELTING = new MachineRecipeType("smelting", false, false, TYPES, SERIALIZERS);
 	public static final MachineRecipeType MACERATING = new MachineRecipeType("macerating", false, true, TYPES, SERIALIZERS);

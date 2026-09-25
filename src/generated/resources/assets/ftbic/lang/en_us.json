@@ -136,6 +136,7 @@
   "ftbic.batch.transfer_hint": "Sends complete batches through the front.\nNo power required; a redstone signal pauses feeding.\nWaits if any ingredient or destination space is missing.",
   "ftbic.energy_capacity": "Capacity: %s",
   "ftbic.energy_output": "Output: %s",
+  "ftbic.energy_stored": "Stored: %s",
   "ftbic.energy_usage": "Usage: %s",
   "ftbic.fuse_info": "Right-click with a fuse to repair burnt machines.",
   "ftbic.gui.antimatter_constructor.boost": "Click to show boost items",

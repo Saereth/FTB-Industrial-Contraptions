@@ -6,6 +6,7 @@ import dev.ftb.mods.ftbic.FTBICConfig;
 import dev.ftb.mods.ftbic.block.ElectricBlock;
 import dev.ftb.mods.ftbic.block.ElectricBlockInstance;
 import dev.ftb.mods.ftbic.block.NuclearReactorChamberBlock;
+import dev.ftb.mods.ftbic.registry.ModDataComponents;
 import dev.ftb.mods.ftbic.screen.MachineMenu;
 import dev.ftb.mods.ftbic.util.GhostItem;
 import dev.ftb.mods.ftbic.util.ZapEnergyHandler;
@@ -26,12 +27,15 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.UUIDUtil;
+import net.minecraft.core.component.DataComponentGetter;
+import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.Util;
@@ -64,13 +68,13 @@ public class ElectricBlockEntity extends BlockEntity implements ZapEnergyHandler
 	private static final Map<ResourceKey<Level>, long[]> ELECTRIC_NETWORK_CHANGES = new HashMap<>();
 
 	public static void electricNetworkUpdated(LevelAccessor level, BlockPos pos) {
-		if (level instanceof Level l) {
+		if (level instanceof ServerLevel l) {
 			ELECTRIC_NETWORK_CHANGES.computeIfAbsent(l.dimension(), k -> new long[1])[0]++;
 		}
 	}
 
 	public static long getCurrentElectricNetwork(LevelAccessor level, BlockPos pos) {
-		if (level instanceof Level l) {
+		if (level instanceof ServerLevel l) {
 			long[] counter = ELECTRIC_NETWORK_CHANGES.get(l.dimension());
 			return counter == null ? 0L : counter[0];
 		}
@@ -307,6 +311,34 @@ public class ElectricBlockEntity extends BlockEntity implements ZapEnergyHandler
 	}
 
 	@Override
+	protected void collectImplicitComponents(DataComponentMap.Builder components) {
+		super.collectImplicitComponents(components);
+		if (keepsEnergyWhenBroken() && energy > 0D) {
+			components.set(ModDataComponents.ENERGY.get(), energy);
+		}
+	}
+
+	@Override
+	protected void applyImplicitComponents(DataComponentGetter components) {
+		super.applyImplicitComponents(components);
+		if (keepsEnergyWhenBroken()) {
+			Double stored = components.get(ModDataComponents.ENERGY.get());
+			if (stored != null) {
+				energy = Math.clamp(stored, 0D, getEnergyCapacity());
+			}
+		}
+	}
+
+	@Override
+	@SuppressWarnings("deprecation")
+	public void removeComponentsFromTag(ValueOutput output) {
+		super.removeComponentsFromTag(output);
+		if (keepsEnergyWhenBroken()) {
+			output.discard("Energy");
+		}
+	}
+
+	@Override
 	public Packet<ClientGamePacketListener> getUpdatePacket() {
 		return ClientboundBlockEntityDataPacket.create(this);
 	}
@@ -435,6 +467,10 @@ public class ElectricBlockEntity extends BlockEntity implements ZapEnergyHandler
 	}
 
 	public boolean savePlacer() {
+		return false;
+	}
+
+	public boolean keepsEnergyWhenBroken() {
 		return false;
 	}
 

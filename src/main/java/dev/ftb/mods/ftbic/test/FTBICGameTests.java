@@ -63,6 +63,14 @@ public class FTBICGameTests {
 		reg(event, "review_bank_blocks_drop_themselves", ReviewFixGameTests::bankBlocksDropThemselves, env, 60);
 		reg(event, "review_upgraded_energy_survives_reload", ReviewFixGameTests::upgradedEnergySurvivesReload, env, 60);
 		reg(event, "review_configuration_card_syncs_enchanted_items", ReviewFixGameTests::configurationCardSyncsEnchantedItems, env, 60);
+		reg(event, "review_recipe_toggles_follow_config", ReviewFixGameTests::recipeTogglesFollowConfig, env, 60);
+		reg(event, "energy_retention_battery_box_drop", EnergyRetentionGameTests::batteryBoxDropKeepsEnergy, env, 60);
+		reg(event, "energy_retention_battery_box_place", EnergyRetentionGameTests::batteryBoxPlacementRestoresEnergy, env, 60);
+		reg(event, "energy_retention_bank_cell", EnergyRetentionGameTests::bankCellRoundTrip, env, 60);
+		reg(event, "cable_route_cache_reuse", CableRouteCacheGameTests::repeatedInsertsReuseRoute, env, 60);
+		reg(event, "cable_route_cache_new_receiver", CableRouteCacheGameTests::newReceiverIsPickedUp, env, 60);
+		reg(event, "cable_route_cache_removals", CableRouteCacheGameTests::removalsArePickedUp, env, 60);
+		reg(event, "cable_route_cache_disabled_side", CableRouteCacheGameTests::disabledSideIsRespected, env, 60);
 		reg(event, "digging_area_survives_reload", DiggingGameTests::areaSurvivesReload, env, 100);
 		reg(event, "digging_no_energy_without_area", DiggingGameTests::noEnergyWithoutArea, env, 100);
 		reg(event, "digging_quarry_clears_fluid", DiggingGameTests::quarryClearsFluid, env, 100);

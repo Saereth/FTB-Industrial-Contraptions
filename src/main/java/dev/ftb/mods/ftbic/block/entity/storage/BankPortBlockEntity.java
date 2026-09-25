@@ -53,6 +53,11 @@ public class BankPortBlockEntity extends GeneratorBlockEntity {
 	}
 
 	@Override
+	public boolean keepsEnergyWhenBroken() {
+		return true;
+	}
+
+	@Override
 	public void handleGeneration() {
 		if (level == null) return;
 		walkBank();

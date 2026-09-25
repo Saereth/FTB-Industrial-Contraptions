@@ -75,6 +75,7 @@
   "ftbic.any_item": "任意物品",
   "ftbic.energy_capacity": "能源容量: %s",
   "ftbic.energy_output": "能量输出: %s",
+  "ftbic.energy_stored": "已储存能量: %s",
   "ftbic.energy_usage": "能量消耗: %s",
   "ftbic.fuse_info": "用保险丝在这台机器上点击右键，就可以修复它!",
   "ftbic.gui.antimatter_constructor.boost": "点击显示加速物品",
