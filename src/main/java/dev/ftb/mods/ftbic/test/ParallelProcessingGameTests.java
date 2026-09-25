@@ -201,13 +201,13 @@ final class ParallelProcessingGameTests {
 			machine.tick();
 			h.assertValueEqual(2, machine.getRunningOperations(), "Stored power limits starting batch size");
 			machine.tick();
-			h.assertTrue(machine.starving && machine.progress == 0 && machine.outputItems[0].isEmpty(), "Starvation resets unpaid work without output");
+			h.assertTrue(machine.starving && machine.progress == 1 && machine.outputItems[0].isEmpty(), "Starvation pauses the batch without losing progress");
 			machine.energy = machine.getEnergyCapacity();
 			machine.tick();
-			h.assertValueEqual(4, machine.getRunningOperations(), "Power recovery starts a fresh four-operation batch");
+			h.assertTrue(machine.progress == 2 && machine.getRunningOperations() == 2, "Power recovery resumes the paused two-operation batch");
 			var menu = new MachineMenu(7, h.makeMockPlayer(GameType.SURVIVAL).getInventory(), machine);
 			menu.broadcastChanges();
-			h.assertValueEqual(4, menu.runningOperations.get(), "Menu synchronizes running operations");
+			h.assertValueEqual(2, menu.runningOperations.get(), "Menu synchronizes running operations");
 			h.assertValueEqual(4, menu.parallelCapacity.get(), "Menu synchronizes capacity");
 		});
 		h.succeed();

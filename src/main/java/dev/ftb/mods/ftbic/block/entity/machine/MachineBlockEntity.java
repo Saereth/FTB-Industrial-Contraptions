@@ -305,10 +305,6 @@ public class MachineBlockEntity extends BasicMachineBlockEntity {
 		}
 		if (parallelOperations == 0 || energy < energyUse * parallelOperations) {
 			boolean insufficientPower = energy < energyUse * Math.max(1, parallelOperations);
-			if (insufficientPower) {
-				resetCycle();
-				setChanged();
-			}
 			active = false;
 			setStarving(insufficientPower);
 			return;

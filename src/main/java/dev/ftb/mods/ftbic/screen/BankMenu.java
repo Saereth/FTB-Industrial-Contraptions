@@ -8,6 +8,8 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.DataSlot;
 
 public class BankMenu extends ElectricBlockMenu {
+	private static final int SNAPSHOT_INTERVAL = 5;
+
 	@Override
 	protected int getPlayerSlotOffset() {
 		return 134;
@@ -28,10 +30,9 @@ public class BankMenu extends ElectricBlockMenu {
 	}
 	public final DataSlot cells = DataSlot.standalone();
 	public final DataSlot ports = DataSlot.standalone();
-	private final DataSlot storedLow = DataSlot.standalone();
-	private final DataSlot storedHigh = DataSlot.standalone();
-	private final DataSlot capacityLow = DataSlot.standalone();
-	private final DataSlot capacityHigh = DataSlot.standalone();
+	private final DataSlot[] stored = DataSlotPacking.slots(4);
+	private final DataSlot[] capacity = DataSlotPacking.slots(4);
+	private long lastSnapshotTime = Long.MIN_VALUE;
 
 	public BankMenu(int id, Inventory inventory, FriendlyByteBuf buffer) {
 		super(FTBICMenus.BANK.get(), id, inventory, buffer);
@@ -46,33 +47,31 @@ public class BankMenu extends ElectricBlockMenu {
 	private void addBankSlots() {
 		addDataSlot(cells);
 		addDataSlot(ports);
-		addDataSlot(storedLow);
-		addDataSlot(storedHigh);
-		addDataSlot(capacityLow);
-		addDataSlot(capacityHigh);
+		for (DataSlot slot : stored) addDataSlot(slot);
+		for (DataSlot slot : capacity) addDataSlot(slot);
 	}
 
 	@Override
 	public void broadcastChanges() {
 		if (blockEntity != null && blockEntity.getLevel() != null) {
-			BankTopology.Snapshot snapshot = BankTopology.snapshot(blockEntity.getLevel(), blockEntity.getBlockPos());
-			cells.set(snapshot.cells());
-			ports.set(snapshot.ports());
-			long storedBits = Double.doubleToRawLongBits(snapshot.stored());
-			long capacityBits = Double.doubleToRawLongBits(snapshot.capacity());
-			storedLow.set((int) storedBits);
-			storedHigh.set((int) (storedBits >>> 32));
-			capacityLow.set((int) capacityBits);
-			capacityHigh.set((int) (capacityBits >>> 32));
+			long time = blockEntity.getLevel().getGameTime();
+			if (lastSnapshotTime == Long.MIN_VALUE || time - lastSnapshotTime >= SNAPSHOT_INTERVAL) {
+				lastSnapshotTime = time;
+				BankTopology.Snapshot snapshot = BankTopology.snapshot(blockEntity.getLevel(), blockEntity.getBlockPos());
+				cells.set(snapshot.cells());
+				ports.set(snapshot.ports());
+				DataSlotPacking.pack(Double.doubleToRawLongBits(snapshot.stored()), stored);
+				DataSlotPacking.pack(Double.doubleToRawLongBits(snapshot.capacity()), capacity);
+			}
 		}
 		super.broadcastChanges();
 	}
 
 	public double stored() {
-		return Double.longBitsToDouble((Integer.toUnsignedLong(storedHigh.get()) << 32) | Integer.toUnsignedLong(storedLow.get()));
+		return Double.longBitsToDouble(DataSlotPacking.unpack(stored));
 	}
 
 	public double capacity() {
-		return Double.longBitsToDouble((Integer.toUnsignedLong(capacityHigh.get()) << 32) | Integer.toUnsignedLong(capacityLow.get()));
+		return Double.longBitsToDouble(DataSlotPacking.unpack(capacity));
 	}
 }

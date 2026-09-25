@@ -334,7 +334,7 @@ public class GeneratorBlockEntity extends ElectricBlockEntity {
 		}
 
 		BlockPos pos = currentPos.relative(direction);
-		if (traversed.contains(pos.asLong())) {
+		if (traversed.contains(pos.asLong()) || !level.isLoaded(pos)) {
 			return;
 		}
 
@@ -430,6 +430,9 @@ public class GeneratorBlockEntity extends ElectricBlockEntity {
 		queue.add(startPos);
 		while (!queue.isEmpty()) {
 			BlockPos pos = queue.poll();
+			if (!level.isLoaded(pos)) {
+				continue;
+			}
 			BlockState state = level.getBlockState(pos);
 			if (!(state.getBlock() instanceof CableBlock cable) || cable.tier != tier) {
 				continue;

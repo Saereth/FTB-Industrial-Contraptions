@@ -19,6 +19,7 @@ public class ReactorSimulatorMenu extends ElectricBlockMenu {
 	public final DataSlot waterSlot = DataSlot.standalone();
 	public final DataSlot peakHeatSlot = DataSlot.standalone();
 	public final DataSlot lastEnergySlot = DataSlot.standalone();
+	public final DataSlot lastEnergyHigh = DataSlot.standalone();
 	public final DataSlot totalEnergy0 = DataSlot.standalone();
 	public final DataSlot totalEnergy1 = DataSlot.standalone();
 	public final DataSlot totalEnergy2 = DataSlot.standalone();
@@ -53,6 +54,7 @@ public class ReactorSimulatorMenu extends ElectricBlockMenu {
 		addDataSlot(waterSlot);
 		addDataSlot(peakHeatSlot);
 		addDataSlot(lastEnergySlot);
+		addDataSlot(lastEnergyHigh);
 		addDataSlot(totalEnergy0);
 		addDataSlot(totalEnergy1);
 		addDataSlot(totalEnergy2);
@@ -117,13 +119,13 @@ public class ReactorSimulatorMenu extends ElectricBlockMenu {
 			chambersSlot.set(s.chambers);
 			waterSlot.set(s.waterThousandths);
 			peakHeatSlot.set(Math.min(Short.MAX_VALUE, s.peakHeat));
-			lastEnergySlot.set((int) Math.min(Short.MAX_VALUE, Math.round(s.lastEnergyOutput)));
+			DataSlotPacking.pack(Math.clamp(Math.round(s.lastEnergyOutput), 0L, Integer.MAX_VALUE), lastEnergySlot, lastEnergyHigh);
 			long te = Math.max(0L, Math.round(s.totalEnergy));
-			packLong(te, totalEnergy0, totalEnergy1, totalEnergy2, totalEnergy3);
-			packLong(Math.max(0L, s.elapsedCycles), elapsed0, elapsed1, elapsed2, elapsed3);
+			DataSlotPacking.pack(te, totalEnergy0, totalEnergy1, totalEnergy2, totalEnergy3);
+			DataSlotPacking.pack(Math.max(0L, s.elapsedCycles), elapsed0, elapsed1, elapsed2, elapsed3);
 			verdictSlot.set(s.verdict);
 			long uc = s.unstableCycle + 1L;
-			packLong(Math.max(0L, uc), unstable0, unstable1, unstable2, unstable3);
+			DataSlotPacking.pack(Math.max(0L, uc), unstable0, unstable1, unstable2, unstable3);
 			maxHeatSlot.set(Math.min(Short.MAX_VALUE, s.simReactor.maxHeat));
 			int max = Math.max(1, s.simReactor.maxHeat);
 			heatScaledSlot.set((int) Math.min(1000L, Math.round(1000D * s.simReactor.heat / max)));
@@ -131,19 +133,6 @@ public class ReactorSimulatorMenu extends ElectricBlockMenu {
 		super.broadcastChanges();
 	}
 
-	private static void packLong(long v, DataSlot a, DataSlot b, DataSlot c, DataSlot d) {
-		a.set((int) (v & 0xFFFF));
-		b.set((int) ((v >>> 16) & 0xFFFF));
-		c.set((int) ((v >>> 32) & 0xFFFF));
-		d.set((int) ((v >>> 48) & 0xFFFF));
-	}
-
-	private static long unpackLong(DataSlot a, DataSlot b, DataSlot c, DataSlot d) {
-		return (a.get() & 0xFFFFL)
-				| ((b.get() & 0xFFFFL) << 16)
-				| ((c.get() & 0xFFFFL) << 32)
-				| ((d.get() & 0xFFFFL) << 48);
-	}
 
 	public boolean isRunning() { return runningSlot.get() == 1; }
 	public boolean isPaused() { return pausedSlot.get() == 1; }
@@ -151,11 +140,11 @@ public class ReactorSimulatorMenu extends ElectricBlockMenu {
 	public int getChambers() { return chambersSlot.get(); }
 	public int getWaterThousandths() { return waterSlot.get(); }
 	public int getPeakHeat() { return peakHeatSlot.get(); }
-	public int getLastEnergy() { return lastEnergySlot.get(); }
-	public long getTotalEnergy() { return unpackLong(totalEnergy0, totalEnergy1, totalEnergy2, totalEnergy3); }
-	public long getElapsedCycles() { return unpackLong(elapsed0, elapsed1, elapsed2, elapsed3); }
+	public int getLastEnergy() { return (int) DataSlotPacking.unpack(lastEnergySlot, lastEnergyHigh); }
+	public long getTotalEnergy() { return DataSlotPacking.unpack(totalEnergy0, totalEnergy1, totalEnergy2, totalEnergy3); }
+	public long getElapsedCycles() { return DataSlotPacking.unpack(elapsed0, elapsed1, elapsed2, elapsed3); }
 	public byte getVerdict() { return (byte) verdictSlot.get(); }
-	public long getUnstableCycle() { return unpackLong(unstable0, unstable1, unstable2, unstable3) - 1L; }
+	public long getUnstableCycle() { return DataSlotPacking.unpack(unstable0, unstable1, unstable2, unstable3) - 1L; }
 	public int getMaxHeat() { return maxHeatSlot.get(); }
 	public float getHeatFraction() { return heatScaledSlot.get() / 1000F; }
 	public boolean isEditLocked() { return isRunning() && !isPaused(); }

@@ -19,6 +19,7 @@ public class NuclearReactorMenu extends ElectricBlockMenu {
 	public final DataSlot heatScaled = DataSlot.standalone();
 	public final DataSlot maxHeatScaled = DataSlot.standalone();
 	public final DataSlot energyOutShort = DataSlot.standalone();
+	public final DataSlot energyOutHigh = DataSlot.standalone();
 	public final DataSlot runningFlag = DataSlot.standalone();
 	public final DataSlot activeColumnsSlot = DataSlot.standalone();
 	public final DataSlot coolingThousandths = DataSlot.standalone();
@@ -39,6 +40,7 @@ public class NuclearReactorMenu extends ElectricBlockMenu {
 		addDataSlot(heatScaled);
 		addDataSlot(maxHeatScaled);
 		addDataSlot(energyOutShort);
+		addDataSlot(energyOutHigh);
 		addDataSlot(runningFlag);
 		addDataSlot(activeColumnsSlot);
 		addDataSlot(coolingThousandths);
@@ -105,7 +107,7 @@ public class NuclearReactorMenu extends ElectricBlockMenu {
 			heatScaled.set((int) Math.min(1000L, Math.round(1000D * reactor.reactor.heat / max)));
 			maxHeatScaled.set(Math.min(Short.MAX_VALUE, max));
 			double output = reactor.reactor.energyOutput * FTBICConfig.MACHINES.NUCLEAR_GENERATOR_OUTPUT.get();
-			energyOutShort.set((int) Math.min(Short.MAX_VALUE, Math.round(output)));
+			DataSlotPacking.pack(Math.clamp(Math.round(output), 0L, Integer.MAX_VALUE), energyOutShort, energyOutHigh);
 			runningFlag.set(reactor.reactor.energyOutput > 0D ? 1 : 0);
 			activeColumnsSlot.set(Math.max(3, Math.min(NuclearReactor.MAX_COLUMNS, reactor.reactor.activeColumns)));
 			double extraCooling = FTBICConfig.NUCLEAR.WATER_COOLING_MULTIPLIER.get() - 1D;
@@ -140,7 +142,7 @@ public class NuclearReactorMenu extends ElectricBlockMenu {
 	public boolean allowRedstone()      { return allowRedstoneSlot.get() == 1; }
 	public boolean isRunning()          { return runningFlag.get() == 1; }
 	public float getHeatFraction()      { return heatScaled.get() / 1000F; }
-	public int getEnergyOutput()        { return energyOutShort.get(); }
+	public int getEnergyOutput()        { return (int) DataSlotPacking.unpack(energyOutShort, energyOutHigh); }
 	public int getActiveColumns()       { return Math.max(3, Math.min(NuclearReactor.MAX_COLUMNS, activeColumnsSlot.get())); }
 
 	@Override

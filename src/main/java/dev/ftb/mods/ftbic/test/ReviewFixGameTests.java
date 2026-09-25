@@ -8,10 +8,12 @@ import dev.ftb.mods.ftbic.block.entity.generator.GeneratorBlockEntity;
 import dev.ftb.mods.ftbic.block.entity.machine.BasicMachineBlockEntity;
 import dev.ftb.mods.ftbic.block.entity.storage.BankCellBlockEntity;
 import dev.ftb.mods.ftbic.block.entity.storage.BankPortBlockEntity;
+import dev.ftb.mods.ftbic.block.entity.storage.BankTopology;
 import dev.ftb.mods.ftbic.item.BatteryItem;
 import dev.ftb.mods.ftbic.item.FTBICItems;
 import dev.ftb.mods.ftbic.recipe.RecipeToggleCondition;
 import dev.ftb.mods.ftbic.registry.ModDataComponents;
+import dev.ftb.mods.ftbic.screen.BankMenu;
 import dev.ftb.mods.ftbic.screen.ChargeSlot;
 import dev.ftb.mods.ftbic.util.GhostItem;
 import dev.ftb.mods.ftbic.util.MachineConfiguration;
@@ -194,6 +196,11 @@ final class ReviewFixGameTests {
 
 		cell.setEnergyRaw(cell.getEnergyCapacity());
 		double before = cell.getEnergy();
+		BankMenu bankMenu = (BankMenu) portMenu;
+		bankMenu.broadcastChanges();
+		BankTopology.Snapshot snapshot = BankTopology.snapshot(helper.getLevel(), port.getBlockPos());
+		helper.assertValueEqual(snapshot.stored(), bankMenu.stored(), "The bank screen carries the full stored value");
+		helper.assertValueEqual(snapshot.capacity(), bankMenu.capacity(), "The bank screen carries the full capacity");
 		helper.runAfterDelay(20, () -> {
 			for (int slot : new int[] {0, 3}) {
 				ItemStack battery = port.chargeSlots.get(slot).getStackInSlot(0);
@@ -202,6 +209,19 @@ final class ReviewFixGameTests {
 			helper.assertTrue(cell.getEnergy() < before, "Charging draws on the bank's cells");
 			helper.succeed();
 		});
+	}
+
+	static void underpoweredMachineFinishes(GameTestHelper helper) {
+		helper.setBlock(POS, FTBICElectricBlocks.MACERATOR.block.get());
+		BasicMachineBlockEntity machine = helper.getBlockEntity(POS, BasicMachineBlockEntity.class);
+		machine.setStackInSlot(0, new ItemStack(Items.BONE, 1));
+		machine.energy = 0D;
+		for (int tick = 0; tick < 10_000 && machine.outputItems[0].isEmpty(); tick++) {
+			machine.energy = Math.min(machine.energyCapacity, machine.energy + machine.energyUse * 0.6D);
+			machine.tick();
+		}
+		helper.assertTrue(machine.outputItems[0].is(Items.BONE_MEAL), "A machine fed below its usage rate still finishes its recipe");
+		helper.succeed();
 	}
 
 	private static int playerSlot(AbstractContainerMenu menu, Player player, int inventorySlot) {

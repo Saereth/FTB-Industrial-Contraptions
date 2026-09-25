@@ -55,6 +55,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * The `[recipes]` config toggles having no effect.
 * Lag from other mods feeding FE into large cable networks.
 * Battery boxes having no usable charge slot.
+* Underpowered machines restarting their recipe from zero instead of pausing.
+* Industrial Battery Bank screen showing wrong values on dedicated servers.
+* Reactor output readouts capping at 32,767.
+* Cable networks loading chunks when they reach unloaded areas.
 
 ### Added
 
