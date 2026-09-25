@@ -30,6 +30,7 @@ import dev.ftb.mods.ftbic.util.IngredientWithCount;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.constants.RecipeTypes;
+import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.handlers.IGuiContainerHandler;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.types.IRecipeHolderType;
@@ -235,6 +236,17 @@ public class FTBICJEIPlugin implements IModPlugin {
 	public void onRuntimeAvailable(IJeiRuntime jeiRuntime) {
 		ClientRecipeCache.setRuntime(jeiRuntime);
 		hideEmptyInputRecipes(jeiRuntime);
+		hideUnusedElectricBlocks(jeiRuntime);
+	}
+
+	private static void hideUnusedElectricBlocks(IJeiRuntime runtime) {
+		List<ItemStack> hidden = FTBICElectricBlocks.ALL.stream()
+				.filter(FTBICElectricBlocks::isHidden)
+				.map(inst -> new ItemStack(inst.item.get()))
+				.toList();
+		if (!hidden.isEmpty()) {
+			runtime.getIngredientManager().removeIngredientsAtRuntime(VanillaTypes.ITEM_STACK, hidden);
+		}
 	}
 
 	private static void hideEmptyInputRecipes(IJeiRuntime runtime) {

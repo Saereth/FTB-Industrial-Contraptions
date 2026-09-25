@@ -12,6 +12,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.world.level.block.Blocks;
+import net.neoforged.neoforge.capabilities.BlockCapabilityCache;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
 
@@ -47,6 +48,24 @@ final class CableFEGameTests {
 				helper.assertTrue(beam.isTransferring(), "Committed FE transfer pulses superconducting cable");
 				machine.setEnergyRaw(0D);
 			}
+		}
+		helper.succeed();
+	}
+
+	static void cachedLookupSeesPlacedCable(GameTestHelper helper) {
+		BlockPos pos = new BlockPos(1, 2, 2);
+		for (var entry : Stream.concat(FTBICBlocks.CABLES.stream(), FTBICBlocks.REINFORCED_CABLES.stream()).toList()) {
+			helper.setBlock(pos, Blocks.AIR);
+			var cache = BlockCapabilityCache.create(Capabilities.Energy.BLOCK, helper.getLevel(), helper.absolutePos(pos), Direction.WEST);
+			helper.assertTrue(cache.getCapability() == null, "Empty position exposes no FE capability");
+			helper.setBlock(pos, entry.get());
+			if (!FTBICConfig.ENERGY.FULL_FE_MODE.get()) {
+				helper.assertTrue(cache.getCapability() == null, "Native mode keeps cable FE input disabled");
+				continue;
+			}
+			helper.assertTrue(cache.getCapability() != null, "Placing " + entry.getId() + " refreshes cached FE lookups");
+			helper.setBlock(pos, Blocks.AIR);
+			helper.assertTrue(cache.getCapability() == null, "Removing " + entry.getId() + " refreshes cached FE lookups");
 		}
 		helper.succeed();
 	}

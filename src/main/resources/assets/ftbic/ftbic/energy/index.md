@@ -10,7 +10,7 @@ navigation:
 <Column alignItems="center" fullWidth={true}>
   <ItemImage id="lv_cable" scale="2" />
 
-  FTBIC runs on its own power unit — the **zap**. Every cable, battery, and machine uses zaps internally. FTBIC generators and cables can power FE-consuming machines directly; the opposite direction — feeding FE **into** an FTBIC machine — requires a <ItemLink id="lv_rectifier" />.
+  FTBIC runs on its own power unit — the **zap**. Every cable, battery, and machine uses zaps internally. FTBIC generators and cables can power FE-consuming machines directly; the opposite direction — feeding FE **into** an FTBIC machine — requires a <ItemLink id="lv_rectifier" />. With **full FE mode** enabled in the config, FTBIC machines accept FE directly and no rectifier is needed.
 
   When FTBIC pushes into an FE consumer through a cable, the flow is capped at the cable tier's transfer rate. An LV cable running into an FE machine that would happily drink thousands of FE per tick still only delivers 32 zaps per tick worth of FE, keeping the cable safe instead of burning it out.
 </Column>

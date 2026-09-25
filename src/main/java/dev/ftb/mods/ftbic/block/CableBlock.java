@@ -88,12 +88,14 @@ public class CableBlock extends BaseCableBlock {
 	protected void onPlace(BlockState state, Level level, BlockPos pos, BlockState oldState, boolean movedByPiston) {
 		super.onPlace(state, level, pos, oldState, movedByPiston);
 		if (!level.isClientSide() && !state.is(oldState.getBlock())) {
+			level.invalidateCapabilities(pos);
 			ElectricBlockEntity.electricNetworkUpdated(level, pos);
 		}
 	}
 
 	@Override
 	protected void affectNeighborsAfterRemoval(BlockState state, ServerLevel level, BlockPos pos, boolean movedByPiston) {
+		level.invalidateCapabilities(pos);
 		ElectricBlockEntity.electricNetworkUpdated(level, pos);
 	}
 }

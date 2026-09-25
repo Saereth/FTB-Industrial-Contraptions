@@ -8,6 +8,7 @@ import dev.ftb.mods.ftbic.material.MaterialEntries;
 import dev.ftb.mods.ftbic.recipe.AntimatterBoostRecipe;
 import dev.ftb.mods.ftbic.recipe.BasicGeneratorFuelRecipe;
 import dev.ftb.mods.ftbic.recipe.FTBICRecipes;
+import dev.ftb.mods.ftbic.recipe.FullFEModeCondition;
 import dev.ftb.mods.ftbic.recipe.MachineRecipe;
 import dev.ftb.mods.ftbic.recipe.MachineRecipeType;
 import dev.ftb.mods.ftbic.recipe.SoilOption;
@@ -45,6 +46,8 @@ import net.minecraft.world.item.crafting.SmeltingRecipe;
 import net.minecraft.world.item.crafting.SmokingRecipe;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
+import net.neoforged.neoforge.common.conditions.ICondition;
+import net.neoforged.neoforge.common.conditions.NotCondition;
 import net.neoforged.neoforge.common.crafting.CompoundIngredient;
 import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
 
@@ -742,6 +745,14 @@ public class FTBICRecipeProvider extends RecipeProvider {
 	}
 
 	protected void shaped(String name, ItemStackTemplate result, String[] pattern, Object... pairs) {
+		shapedWithConditions(name, result, pattern, new ICondition[0], pairs);
+	}
+
+	protected void shapedUnlessFullFE(String name, ItemStackTemplate result, String[] pattern, Object... pairs) {
+		shapedWithConditions(name, result, pattern, new ICondition[] {new NotCondition(FullFEModeCondition.INSTANCE)}, pairs);
+	}
+
+	private void shapedWithConditions(String name, ItemStackTemplate result, String[] pattern, ICondition[] conditions, Object... pairs) {
 		if (result == null) return;
 		Map<Character, Ingredient> key = new HashMap<>();
 		List<Ingredient> allIngredients = new ArrayList<>();
@@ -758,7 +769,7 @@ public class FTBICRecipeProvider extends RecipeProvider {
 				new CraftingRecipe.CraftingBookInfo(CraftingBookCategory.MISC, ""),
 				shaped,
 				result);
-		output.accept(recipeKey("shaped/" + name), recipe, null);
+		output.accept(recipeKey("shaped/" + name), recipe, null, conditions);
 	}
 
 	protected void shapeless(String name, ItemStackTemplate result, Ingredient... ingredients) {
@@ -893,7 +904,7 @@ public class FTBICRecipeProvider extends RecipeProvider {
 		shaped("industrial_bank_cell", ftbicStack("industrial_bank_cell", 1), new String[] {"AGA", "EBE", "AMA"}, 'A', i("ftbic:advanced_alloy"), 'G', commonOrTag("c:glass_blocks/colorless"), 'E', i("ftbic:energy_crystal"), 'B', i("ftbic:ev_battery_box"), 'M', i("ftbic:advanced_machine_block"));
 		shaped("industrial_bank_port", ftbicStack("industrial_bank_port", 1), new String[] {"AWA", "CMC", "AWA"}, 'A', i("ftbic:advanced_alloy"), 'W', i("ftbic:iv_cable"), 'C', i("ftbic:advanced_circuit"), 'M', i("ftbic:advanced_machine_block"));
 		shaped("ev_cable", ftbicStack("ev_cable", 6), new String[] {"RRR", "MMM", "RRR"}, 'R', i("ftbic:rubber"), 'M', commonOrTag("c:ingots/enderium"));
-		shaped("ev_rectifier", ftbicStack("ev_rectifier", 1), new String[] {"RWR", "PTP", "RWR"}, 'R', i("minecraft:redstone_block"), 'W', i("ftbic:ev_cable"), 'P', commonOrTag("c:ingots/iron"), 'T', i("ftbic:ev_transformer"));
+		shapedUnlessFullFE("ev_rectifier", ftbicStack("ev_rectifier", 1), new String[] {"RWR", "PTP", "RWR"}, 'R', i("minecraft:redstone_block"), 'W', i("ftbic:ev_cable"), 'P', commonOrTag("c:ingots/iron"), 'T', i("ftbic:ev_transformer"));
 		shaped("ev_solar_panel", ftbicStack("ev_solar_panel", 1), new String[] {"SAS", "SCS", "SNS"}, 'S', i("ftbic:hv_solar_panel"), 'A', i("ftbic:antimatter"), 'C', i("ftbic:large_coolant_cell"), 'N', i("minecraft:netherite_block"));
 		shaped("ev_transformer", ftbicStack("ev_transformer", 1), new String[] {" W ", "CTE", " W "}, 'W', i("ftbic:ev_cable"), 'C', i("ftbic:advanced_circuit"), 'E', i("ftbic:advanced_alloy"), 'T', i("ftbic:hv_transformer"));
 		shaped("extruder", ftbicStack("extruder", 1), new String[] {"SCS", "SMS"}, 'S', commonOrTag("c:rods/iron"), 'M', i("ftbic:machine_block"), 'C', i("ftbic:electronic_circuit"));
@@ -905,7 +916,7 @@ public class FTBICRecipeProvider extends RecipeProvider {
 		shaped("heat_vent", ftbicStack("heat_vent", 1), new String[] {"MIM", "ICI", "MIM"}, 'I', i("minecraft:iron_bars"), 'C', i("ftbic:copper_coil"), 'M', i("ftbic:industrial_grade_metal"));
 		shaped("hv_battery_box", ftbicStack("hv_battery_box", 1), new String[] {"GCG", "EXE", "GMG"}, 'C', i("ftbic:advanced_circuit"), 'G', i("ftbic:graphene"), 'E', i("ftbic:energy_crystal"), 'X', i("ftbic:mv_battery_box"), 'M', i("ftbic:advanced_machine_block"));
 		shaped("hv_cable", ftbicStack("hv_cable", 6), new String[] {"RRR", "MMM", "RRR"}, 'R', i("ftbic:rubber"), 'M', commonOrTag("c:ingots/gold"));
-		shaped("hv_rectifier", ftbicStack("hv_rectifier", 1), new String[] {"RWR", "PTP", "RWR"}, 'R', i("minecraft:redstone"), 'W', i("ftbic:hv_cable"), 'P', commonOrTag("c:ingots/iron"), 'T', i("ftbic:hv_transformer"));
+		shapedUnlessFullFE("hv_rectifier", ftbicStack("hv_rectifier", 1), new String[] {"RWR", "PTP", "RWR"}, 'R', i("minecraft:redstone"), 'W', i("ftbic:hv_cable"), 'P', commonOrTag("c:ingots/iron"), 'T', i("ftbic:hv_transformer"));
 		shaped("hv_solar_panel", ftbicStack("hv_solar_panel", 1), new String[] {"SGS", "SAS", "SCS"}, 'S', i("ftbic:mv_solar_panel"), 'G', i("ftbic:graphene"), 'A', i("ftbic:advanced_machine_block"), 'C', i("ftbic:iridium_circuit"));
 		shaped("hv_transformer", ftbicStack("hv_transformer", 1), new String[] {" W ", "CTE", " W "}, 'W', i("ftbic:hv_cable"), 'C', i("ftbic:electronic_circuit"), 'E', i("ftbic:energy_crystal"), 'T', i("ftbic:mv_transformer"));
 		shaped("ingots/enderium_to_enderium_gear", ftbicStack("enderium_gear", 1), new String[] {" X ", "XIX", " X "}, 'X', commonOrTag("c:ingots/enderium"), 'I', i("minecraft:iron_nugget"));
@@ -915,14 +926,14 @@ public class FTBICRecipeProvider extends RecipeProvider {
 		shaped("iron_furnace", ftbicStack("iron_furnace", 1), new String[] {" I ", "I I", "IFI"}, 'I', commonOrTag("c:ingots/iron"), 'F', i("minecraft:furnace"));
 		shaped("iron_rod", ftbicStack("iron_rod", 1), new String[] {"I", "I"}, 'I', commonOrTag("c:ingots/iron"));
 		shaped("iv_cable", ftbicStack("iv_cable", 6), new String[] {"GGG", " C ", "GGG"}, 'G', commonOrTag("c:glass_blocks/colorless"), 'C', i("ftbic:energy_crystal"));
-		shaped("iv_rectifier", ftbicStack("iv_rectifier", 1), new String[] {"RWR", "PTP", "RWR"}, 'R', i("minecraft:redstone_block"), 'W', i("ftbic:ev_cable"), 'P', commonOrTag("c:ingots/iridium"), 'T', i("ftbic:ev_rectifier"));
+		shapedUnlessFullFE("iv_rectifier", ftbicStack("iv_rectifier", 1), new String[] {"RWR", "PTP", "RWR"}, 'R', i("minecraft:redstone_block"), 'W', i("ftbic:ev_cable"), 'P', commonOrTag("c:ingots/iridium"), 'T', i("ftbic:ev_rectifier"));
 		shaped("large_coolant_cell", ftbicStack("large_coolant_cell", 1), new String[] {"TCT", "TAT", "TCT"}, 'T', commonOrTag("c:ingots/tin"), 'C', i("ftbic:medium_coolant_cell"), 'A', i("ftbic:dense_copper_plate"));
 		shaped("location_card", ftbicStack("location_card", 1), new String[] {" P ", "PCP", " P "}, 'P', i("minecraft:paper"), 'C', i("ftbic:electronic_circuit"));
 		shapeless("configuration_card", ftbicStack("configuration_card", 1), i("minecraft:paper"), i("minecraft:redstone"), i("ftbic:electronic_circuit"));
 		shapeless("reactor_blueprint", ftbicStack("reactor_blueprint", 1), i("minecraft:paper"), i("minecraft:blue_dye"), i("ftbic:electronic_circuit"));
 		shaped("lv_battery_box", ftbicStack("lv_battery_box", 1), new String[] {"PWP", "BBB", "PPP"}, 'W', i("ftbic:lv_cable"), 'B', i("ftbic:lv_battery"), 'P', commonOrTag("minecraft:planks"));
 		shaped("lv_cable", ftbicStack("lv_cable", 6), new String[] {"RRR", "MMM", "RRR"}, 'R', i("ftbic:rubber"), 'M', commonOrTag("c:ingots/copper"));
-		shaped("lv_rectifier", ftbicStack("lv_rectifier", 1), new String[] {"RWR", "PTP", "RWR"}, 'R', i("minecraft:redstone"), 'W', i("ftbic:lv_cable"), 'P', commonOrTag("c:ingots/copper"), 'T', i("ftbic:lv_transformer"));
+		shapedUnlessFullFE("lv_rectifier", ftbicStack("lv_rectifier", 1), new String[] {"RWR", "PTP", "RWR"}, 'R', i("minecraft:redstone"), 'W', i("ftbic:lv_cable"), 'P', commonOrTag("c:ingots/copper"), 'T', i("ftbic:lv_transformer"));
 		shaped("lv_solar_panel", ftbicStack("lv_solar_panel", 1), new String[] {"LLL", "DSD", "CGC"}, 'L', commonOrTag("c:glass_blocks/colorless"), 'D', commonOrTag("c:dusts/coal"), 'S', commonOrTag("c:silicon"), 'G', i("ftbic:basic_generator"), 'C', i("ftbic:electronic_circuit"));
 		shaped("lv_transformer", ftbicStack("lv_transformer", 1), new String[] {"PWP", "CCC", "PWP"}, 'W', i("ftbic:lv_cable"), 'C', commonOrTag("c:ingots/copper"), 'P', commonOrTag("minecraft:planks"));
 		shaped("macerator", ftbicStack("macerator", 1), new String[] {"FFF", "SMS", " C "}, 'F', i("minecraft:flint"), 'S', commonOrTag("c:cobblestones"), 'M', i("ftbic:machine_block"), 'C', i("ftbic:electronic_circuit"));
@@ -931,7 +942,7 @@ public class FTBICRecipeProvider extends RecipeProvider {
 		shaped("medium_coolant_cell", ftbicStack("medium_coolant_cell", 1), new String[] {"TTT", "CCC", "TTT"}, 'T', commonOrTag("c:ingots/tin"), 'C', i("ftbic:small_coolant_cell"));
 		shaped("mv_battery_box", ftbicStack("mv_battery_box", 1), new String[] {"WBW", "BMB", "WBW"}, 'W', i("ftbic:mv_cable"), 'B', i("ftbic:energy_crystal"), 'M', i("ftbic:machine_block"));
 		shaped("mv_cable", ftbicStack("mv_cable", 6), new String[] {"RRR", "MMM", "RRR"}, 'R', i("ftbic:rubber"), 'M', commonOrTag("c:ingots/aluminum"));
-		shaped("mv_rectifier", ftbicStack("mv_rectifier", 1), new String[] {"RWR", "PTP", "RWR"}, 'R', i("minecraft:redstone"), 'W', i("ftbic:mv_cable"), 'P', commonOrTag("c:ingots/iron"), 'T', i("ftbic:mv_transformer"));
+		shapedUnlessFullFE("mv_rectifier", ftbicStack("mv_rectifier", 1), new String[] {"RWR", "PTP", "RWR"}, 'R', i("minecraft:redstone"), 'W', i("ftbic:mv_cable"), 'P', commonOrTag("c:ingots/iron"), 'T', i("ftbic:mv_transformer"));
 		shaped("mv_solar_panel", ftbicStack("mv_solar_panel", 1), new String[] {"SES", "SAS", "SCS"}, 'S', i("ftbic:lv_solar_panel"), 'E', i("ftbic:energy_crystal"), 'A', i("ftbic:advanced_alloy"), 'C', i("ftbic:advanced_circuit"));
 		shaped("mv_transformer", ftbicStack("mv_transformer", 1), new String[] {"W", "M", "W"}, 'W', i("ftbic:mv_cable"), 'M', i("ftbic:machine_block"));
 		shaped("neutron_reflector", ftbicStack("neutron_reflector", 1), new String[] {"TCT", "TPT", "TCT"}, 'T', commonOrTag("c:dusts/tin"), 'C', commonOrTag("c:dusts/coal"), 'P', i("ftbic:dense_copper_plate"));

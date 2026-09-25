@@ -1,12 +1,15 @@
 package dev.ftb.mods.ftbic.recipe;
 
+import com.mojang.serialization.MapCodec;
 import dev.ftb.mods.ftbic.FTBIC;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
+import net.neoforged.neoforge.common.conditions.ICondition;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
 public final class FTBICRecipes {
 	public static final DeferredRegister<RecipeSerializer<?>> SERIALIZERS =
@@ -14,6 +17,12 @@ public final class FTBICRecipes {
 
 	public static final DeferredRegister<RecipeType<?>> TYPES =
 			DeferredRegister.create(Registries.RECIPE_TYPE, FTBIC.MOD_ID);
+
+	public static final DeferredRegister<MapCodec<? extends ICondition>> CONDITIONS =
+			DeferredRegister.create(NeoForgeRegistries.Keys.CONDITION_CODECS, FTBIC.MOD_ID);
+
+	public static final DeferredHolder<MapCodec<? extends ICondition>, MapCodec<FullFEModeCondition>> FULL_FE_MODE =
+			CONDITIONS.register("full_fe_mode", () -> FullFEModeCondition.CODEC);
 
 	// Machine recipes — MachineRecipeType auto-registers its RecipeType + RecipeSerializer.
 	public static final MachineRecipeType SMELTING = new MachineRecipeType("smelting", false, false, TYPES, SERIALIZERS);

@@ -29,7 +29,9 @@ public final class ModCreativeTabs {
 							out.accept(FTBICItems.GUIDE.get());
 						}
 
-						FTBICElectricBlocks.ALL.forEach(inst -> out.accept(inst.item.get()));
+						FTBICElectricBlocks.ALL.stream()
+								.filter(inst -> !FTBICElectricBlocks.isHidden(inst))
+								.forEach(inst -> out.accept(inst.item.get()));
 
 						out.accept(FTBICItems.RUBBER_SHEET.get());
 						out.accept(FTBICItems.REINFORCED_STONE.get());

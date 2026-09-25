@@ -365,6 +365,12 @@ public interface FTBICElectricBlocks {
 			.maxEnergyInput(FTBICConfig.ENERGY.IV_TRANSFER_RATE)
 			.maxEnergyOutput(FTBICConfig.ENERGY.IV_TRANSFER_RATE);
 
+	List<ElectricBlockInstance> RECTIFIERS = List.of(LV_RECTIFIER, MV_RECTIFIER, HV_RECTIFIER, EV_RECTIFIER, IV_RECTIFIER);
+
+	static boolean isHidden(ElectricBlockInstance instance) {
+		return FTBICConfig.ENERGY.FULL_FE_MODE.get() && RECTIFIERS.contains(instance);
+	}
+
 	static void init() {
 	}
 }

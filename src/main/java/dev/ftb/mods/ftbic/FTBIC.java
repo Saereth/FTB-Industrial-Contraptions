@@ -46,6 +46,7 @@ public class FTBIC {
 		FTBICMenus.REGISTRY.register(eventBus);
 		FTBICRecipes.SERIALIZERS.register(eventBus);
 		FTBICRecipes.TYPES.register(eventBus);
+		FTBICRecipes.CONDITIONS.register(eventBus);
 		FTBICIngredientTypes.REGISTRY.register(eventBus);
 		FTBICGameTests.TEST_INSTANCE_TYPES.register(eventBus);
 

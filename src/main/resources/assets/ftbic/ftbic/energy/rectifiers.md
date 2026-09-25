@@ -20,6 +20,8 @@ item_ids:
   FTBIC cables and generators already **push FE** into any FE-accepting block — you do not need a rectifier to run vanilla quarries, mekanism machines, or any other FE-consuming mod.
 
   You **do** need a rectifier when an FE-producing source needs to feed power **into** an FTBIC machine or network. FTBIC machines do not accept FE directly; the rectifier is the one-way adapter that converts incoming FE into zaps.
+
+  When **full FE mode** is enabled in the FTBIC config, every FTBIC machine accepts FE directly, so rectifiers are not needed and cannot be crafted.
 </Column>
 
 <ItemImage id="minecraft:air" scale="0.25"/>
@@ -51,32 +53,32 @@ If you only need to power **FE** machines from FTBIC generators, skip the rectif
   ### <Color id="aqua">LV Energy Rectifier</Color>
 </Row>
 
-<RecipeFor id="lv_rectifier" />
+<RecipeFor id="lv_rectifier" fallbackText="Not craftable while full FE mode is enabled." />
 
 <Row>
   <ItemImage id="mv_rectifier" />
   ### <Color id="aqua">MV Energy Rectifier</Color>
 </Row>
 
-<RecipeFor id="mv_rectifier" />
+<RecipeFor id="mv_rectifier" fallbackText="Not craftable while full FE mode is enabled." />
 
 <Row>
   <ItemImage id="hv_rectifier" />
   ### <Color id="aqua">HV Energy Rectifier</Color>
 </Row>
 
-<RecipeFor id="hv_rectifier" />
+<RecipeFor id="hv_rectifier" fallbackText="Not craftable while full FE mode is enabled." />
 
 <Row>
   <ItemImage id="ev_rectifier" />
   ### <Color id="aqua">EV Energy Rectifier</Color>
 </Row>
 
-<RecipeFor id="ev_rectifier" />
+<RecipeFor id="ev_rectifier" fallbackText="Not craftable while full FE mode is enabled." />
 
 <Row>
   <ItemImage id="iv_rectifier" />
   ### <Color id="aqua">IV Energy Rectifier</Color>
 </Row>
 
-<RecipeFor id="iv_rectifier" />
+<RecipeFor id="iv_rectifier" fallbackText="Not craftable while full FE mode is enabled." />
